@@ -4,6 +4,7 @@ from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter, column_index_from_string
 
 
+# TODO вынести из файла
 @dataclass
 class Cell:
     title: int or str
@@ -34,6 +35,7 @@ class Excel:
 
     def get_cell(self, cell: Cell) -> int or float or str or bool or None:
         if cell.row is None:
+            # TODO добавить кастомные исключения
             raise Exception('It is not possible to get a cell without pointing to a specific row')
 
         self.handle_cell(cell)
