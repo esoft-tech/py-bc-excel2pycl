@@ -38,11 +38,47 @@ class SeparatorToken(RegexpBaseToken):
     regexp = r';|,'
 
 
-class OperatorToken(RegexpBaseToken):
-    regexp = r'\+|-|/|\*|=|!=|>|>=|<|<=|!'
+class EqOperatorToken(RegexpBaseToken):
+    regexp = r'='
 
 
-class AndToken(RegexpBaseToken):
+class NotEqOperatorToken(RegexpBaseToken):
+    regexp = r'<>'
+
+
+class GtOperatorToken(RegexpBaseToken):
+    regexp = r'>'
+
+
+class GtOrEqualOperatorToken(RegexpBaseToken):
+    regexp = r'>='
+
+
+class LtOperatorToken(RegexpBaseToken):
+    regexp = r'<'
+
+
+class LtOrEqualOperatorToken(RegexpBaseToken):
+    regexp = r'<='
+
+
+class PlusOperatorToken(RegexpBaseToken):
+    regexp = r'\+'
+
+
+class MinusOperatorToken(RegexpBaseToken):
+    regexp = r'-'
+
+
+class MultiplicationOperatorToken(RegexpBaseToken):
+    regexp = r'\*'
+
+
+class DivOperatorToken(RegexpBaseToken):
+    regexp = r'/'
+
+
+class AndLambdaToken(RegexpBaseToken):
     regexp = r'&'
 
 

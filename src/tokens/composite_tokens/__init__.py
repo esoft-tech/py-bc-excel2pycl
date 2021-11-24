@@ -3,12 +3,29 @@ from src.tokens.recursive_composite_base_token import RecursiveCompositeBaseToke
 from src.tokens.regexp_tokens import *
 
 
+class LogicalOperatorToken(CompositeBaseToken):
+    _TOKEN_SETS = [[EqOperatorToken], [NotEqOperatorToken], [GtOperatorToken], [GtOrEqualOperatorToken],
+                   [LtOperatorToken], [LtOrEqualOperatorToken]]
+
+
+class OneOperandArithmeticOperatorToken(CompositeBaseToken):
+    _TOKEN_SETS = [[PlusOperatorToken], [MinusOperatorToken]]
+
+
+class ArithmeticOperatorToken(CompositeBaseToken):
+    _TOKEN_SETS = [[OneOperandArithmeticOperatorToken], [MultiplicationOperatorToken], [DivOperatorToken]]
+
+
 class OperandToken(CompositeBaseToken):
     _TOKEN_SETS = [[LiteralToken], [CellIdentifierToken], [SetOfCellIdentifiersToken], [MatrixOfCellIdentifiersToken]]
 
 
+class OperatorToken(CompositeBaseToken):
+    _TOKEN_SETS = [[ArithmeticOperatorToken], [LogicalOperatorToken]]
+
+
 class ExpressionToken(RecursiveCompositeBaseToken):
-    _TOKEN_SETS = [[OperandToken, OperatorToken, CLS], [OperatorToken, OperandToken],
+    _TOKEN_SETS = [[OperandToken, OperatorToken, CLS], [OneOperandArithmeticOperatorToken, OperandToken],
                    [BracketStartToken, CLS, BracketFinishToken], [OperandToken]]
 
 
@@ -17,7 +34,7 @@ class IterableExpressionToken(RecursiveCompositeBaseToken):
 
 
 class LambdaToken(CompositeBaseToken):
-    _TOKEN_SETS = [[LiteralToken, AndToken, ExpressionToken], [ExpressionToken]]
+    _TOKEN_SETS = [[LiteralToken, AndLambdaToken, ExpressionToken], [ExpressionToken]]
 
 
 class IfControlConstructionToken(CompositeBaseToken):
@@ -52,3 +69,7 @@ class ControlConstructionToken(CompositeBaseToken):
 
 
 OperandToken.add_token_set([ControlConstructionToken])
+
+
+class EntryPointToken(CompositeBaseToken):
+    _TOKEN_SETS = [[EqOperatorToken, ExpressionToken]]
