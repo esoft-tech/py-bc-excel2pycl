@@ -8,10 +8,6 @@ class RegexpBaseToken(BaseToken):
     regexp = r''
 
     @classmethod
-    def subclasses(cls):
-        return cls.__subclasses__() + [UndefinedToken]
-
-    @classmethod
     def get(cls, expression: str):
         result = re.findall(rf'^({cls.regexp})(.*)', expression)
 

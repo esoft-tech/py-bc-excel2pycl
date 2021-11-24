@@ -1,3 +1,4 @@
+from src.ast_builder import AstBuilder
 from src.excel import Excel, Cell
 from src.lexer import Lexer
 
@@ -7,3 +8,5 @@ if __name__ == '__main__':
     data = excel.get_cell(cell)
     tokens = Lexer.parse(data)
     print(tokens)
+    entry_point = AstBuilder.parse(tokens)
+    print(entry_point)

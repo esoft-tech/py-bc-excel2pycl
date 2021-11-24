@@ -1,4 +1,3 @@
-from src.tokens.undefined_token import UndefinedToken
 from src.tokens.base_token import BaseToken
 
 
@@ -9,15 +8,6 @@ class CompositeBaseToken(BaseToken):
     @classmethod
     def add_token_set(cls, tokens: list):
         cls._TOKEN_SETS.append(tokens)
-
-    @classmethod
-    def subclasses(cls) -> list:
-        from src.tokens.recursive_composite_base_token import RecursiveCompositeBaseToken
-
-        subclasses = set(cls.__subclasses__() + RecursiveCompositeBaseToken.subclasses())
-        subclasses.difference_update({RecursiveCompositeBaseToken})
-
-        return list(subclasses) + [UndefinedToken]
 
     @classmethod
     def get_token_sets(cls) -> list:
@@ -34,13 +24,15 @@ class CompositeBaseToken(BaseToken):
                 elif token == _expression[0].__class__:
                     new_expression_part.append(_expression[0])
                     _expression = _expression[1:]
-                else:
+                elif token in CompositeBaseToken.subclasses():
                     new_token, _expression = token.get(_expression)
                     if not new_token:
                         break
                     new_expression_part.append(new_token)
+                else:
+                    break
 
-            if len(new_expression_part) == len(tokens):
+            if len(new_expression_part) == len(tokens) and len(new_expression_part):
                 return cls(new_expression_part), _expression
 
         return None, expression
