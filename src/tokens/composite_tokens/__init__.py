@@ -42,9 +42,13 @@ class VlookupControlConstructionToken(CompositeBaseToken):
          SeparatorToken, ExpressionToken, BracketFinishToken]]
 
 
+class AverageControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[AverageKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]]
+
+
 class ControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[IfControlConstructionToken], [SumControlConstructionToken], [SumIfControlConstructionToken],
-                   [VlookupControlConstructionToken]]
+                   [VlookupControlConstructionToken], [AverageControlConstructionToken]]
 
 
 OperandToken.add_token_set([ControlConstructionToken])
