@@ -17,7 +17,7 @@ class ArithmeticOperatorToken(CompositeBaseToken):
 
 
 class OperandToken(CompositeBaseToken):
-    _TOKEN_SETS = [[LiteralToken], [CellIdentifierToken], [SetOfCellIdentifiersToken], [MatrixOfCellIdentifiersToken]]
+    _TOKEN_SETS = [[LiteralToken], [CellIdentifierToken], [CellIdentifierRangeToken], [MatrixOfCellIdentifiersToken]]
 
 
 class OperatorToken(CompositeBaseToken):
@@ -47,10 +47,10 @@ class SumControlConstructionToken(CompositeBaseToken):
 
 
 class SumIfControlConstructionToken(CompositeBaseToken):
-    _TOKEN_SETS = [[SumIfKeywordToken, BracketStartToken, SetOfCellIdentifiersToken, SeparatorToken, LambdaToken,
+    _TOKEN_SETS = [[SumIfKeywordToken, BracketStartToken, CellIdentifierRangeToken, SeparatorToken, LambdaToken,
                     BracketFinishToken],
-                   [SumIfKeywordToken, BracketStartToken, SetOfCellIdentifiersToken, SeparatorToken, LambdaToken,
-                    SeparatorToken, SetOfCellIdentifiersToken, BracketFinishToken]]
+                   [SumIfKeywordToken, BracketStartToken, CellIdentifierRangeToken, SeparatorToken, LambdaToken,
+                    SeparatorToken, CellIdentifierRangeToken, BracketFinishToken]]
 
 
 class VlookupControlConstructionToken(CompositeBaseToken):

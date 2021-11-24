@@ -3,13 +3,7 @@ from dataclasses import dataclass
 from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter, column_index_from_string
 
-
-# TODO вынести из файла
-@dataclass
-class Cell:
-    title: int or str
-    column: int or str
-    row: int or None = None
+from src.cell import Cell
 
 
 class Excel:

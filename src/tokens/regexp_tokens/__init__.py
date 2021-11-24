@@ -1,16 +1,68 @@
+from src.cell import Cell
 from src.tokens.regexp_base_token import RegexpBaseToken
+
+
+class CellIdentifierRangeToken(RegexpBaseToken):
+    regexp = r'((\'(.*?)\')!)?((\$?([A-Z]+)(\$?(\d+))?:\$?\7(\$?(\d+))?)|(\$?([A-Z]+)(\$?(\d+))?:\$?([A-Z]+)(\$?\15)?))'
+    last_match_regexp = r'([^\d].*)?'
+    value_range = [0, -1]
+
+    def __init__(self, *args, **kwargs):
+        self._range = None, None
+        super().__init__(*args, *kwargs)
+
+    def __str__(self):
+        return f'<{self.__class__.__name__}>({self.range})'
+
+    @property
+    def range(self):
+        if self._range[0] is None:
+            self._range = Cell(title=self.value[3], column=self.value[6] or self.value[12],
+                               row=self.value[8] or self.value[14]), Cell(title=self.value[3],
+                                                                          column=self.value[6] or self.value[15],
+                                                                          row=self.value[10] or self.value[14])
+        return self._range
 
 
 class MatrixOfCellIdentifiersToken(RegexpBaseToken):
     regexp = r'((\'(.*?)\')!)?\$?([A-Z]+)(\$?(\d+))?:\$?([A-Z]+)(\$?(\d+))?'
+    last_match_regexp = r'([^\d].*)?'
+    value_range = [0, -1]
 
+    def __init__(self, *args, **kwargs):
+        self._matrix = None, None
+        super().__init__(*args, *kwargs)
 
-class SetOfCellIdentifiersToken(RegexpBaseToken):
-    regexp = r'((\'(.*?)\')!)?\$?([A-Z]+)(\$?(\d+))?:\$?([A-Z]+)(\$?(\d+))?'
+    def __str__(self):
+        return f'<{self.__class__.__name__}>({self.matrix})'
+
+    @property
+    def matrix(self):
+        if self._matrix[0] is None:
+            self._matrix = Cell(title=self.value[3], column=self.value[4], row=self.value[6]), Cell(title=self.value[3],
+                                                                                                    column=self.value[
+                                                                                                        7],
+                                                                                                    row=self.value[9])
+        return self._matrix
 
 
 class CellIdentifierToken(RegexpBaseToken):
     regexp = r'((\'(.*?)\')!)?\$?([A-Z]+)\$?(\d+)'
+    last_match_regexp = r'([^\d]|[^:\d].*)?'
+    value_range = [0, -1]
+
+    def __init__(self, *args, **kwargs):
+        self._cell = None
+        super().__init__(*args, *kwargs)
+
+    def __str__(self):
+        return f'<{self.__class__.__name__}>({self.cell})'
+
+    @property
+    def cell(self):
+        if self._cell is None:
+            self._cell = Cell(title=self.value[3], column=self.value[4], row=self.value[5])
+        return self._cell
 
 
 class IfKeywordToken(RegexpBaseToken):
