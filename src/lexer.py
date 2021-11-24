@@ -1,4 +1,4 @@
-from src.tokens import RegexpBaseToken
+from src.tokens import RegexpBaseToken, WhitespaceToken
 
 
 class Lexer:
@@ -10,7 +10,7 @@ class Lexer:
         while expression:
             for token_class in cls.TOKENS:
                 token, sub_expression = token_class.get(expression)
-                if token:
+                if token and token.__class__ is not WhitespaceToken:
                     tokens.append(token)
                     expression = sub_expression
                     break
