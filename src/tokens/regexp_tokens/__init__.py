@@ -13,8 +13,24 @@ class CellIdentifierToken(RegexpBaseToken):
     regexp = r'((\'(.*?)\')!)?\$?([A-Z]+)\$?(\d+)'
 
 
-class KeywordToken(RegexpBaseToken):
-    regexp = r'IF|SUM|SUMIF|VLOOKUP|AVERAGE'
+class IfKeywordToken(RegexpBaseToken):
+    regexp = r'IF'
+
+
+class SumKeywordToken(RegexpBaseToken):
+    regexp = r'SUM'
+
+
+class SumIfKeywordToken(RegexpBaseToken):
+    regexp = r'SUMIF'
+
+
+class VlookupKeywordToken(RegexpBaseToken):
+    regexp = r'VLOOKUP'
+
+
+class AverageKeywordToken(RegexpBaseToken):
+    regexp = r'AVERAGE'
 
 
 # TODO добавить условие для локализации
@@ -24,6 +40,10 @@ class SeparatorToken(RegexpBaseToken):
 
 class OperatorToken(RegexpBaseToken):
     regexp = r'\+|-|/|\*|=|!=|>|>=|<|<=|!'
+
+
+class AndToken(RegexpBaseToken):
+    regexp = r'&'
 
 
 # TODO добавить условие для локализации
