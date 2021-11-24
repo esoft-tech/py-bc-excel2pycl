@@ -136,7 +136,28 @@ class AndLambdaToken(RegexpBaseToken):
 
 # TODO добавить условие для локализации
 class LiteralToken(RegexpBaseToken):
-    regexp = r'\"(.*?)\"|(\d+)((,|.)(\d+))?(e(-?\d+))?|TRUE\(\)|FALSE\(\)'
+    regexp = r'\"(.*?)\"|(\d+)((,|.)(\d+))?(e(-?\d+))?|(TRUE\(\))|(FALSE\(\))'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, *kwargs)
+
+        if self.value[2]:
+            real_value = int(self.value[2])
+            if self.value[5]:
+                real_value += float(f'0.{self.value[5]}')
+            if self.value[7]:
+                # TODO in theory, the degree can be calculated using the expression
+                real_value *= 10**int(self.value[7])
+        elif self.value[1]:
+            real_value = self.value[1]
+        elif self.value[8]:
+            real_value = True
+        elif self.value[9]:
+            real_value = False
+        else:
+            raise Exception('Unknown literal value')
+
+        self.value = real_value
 
 
 class BracketStartToken(RegexpBaseToken):
