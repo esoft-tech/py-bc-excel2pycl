@@ -15,10 +15,10 @@ class CellIdentifierRangeToken(RegexpBaseToken):
         return f'<{self.__class__.__name__}>({self.range})'
 
     @property
-    def range(self):
+    def range(self) -> (Cell, Cell,):
         if self._range[0] is None:
-            self._range = Cell(title=self.value[3], column=self.value[6] or self.value[12],
-                               row=self.value[8] or self.value[14]), Cell(title=self.value[3],
+            self._range = Cell(title=self.value[3] or self.in_cell.title, column=self.value[6] or self.value[12],
+                               row=self.value[8] or self.value[14]), Cell(title=self.value[3] or self.in_cell.title,
                                                                           column=self.value[6] or self.value[15],
                                                                           row=self.value[10] or self.value[14])
         return self._range
@@ -37,12 +37,11 @@ class MatrixOfCellIdentifiersToken(RegexpBaseToken):
         return f'<{self.__class__.__name__}>({self.matrix})'
 
     @property
-    def matrix(self):
+    def matrix(self) -> (Cell, Cell,):
         if self._matrix[0] is None:
-            self._matrix = Cell(title=self.value[3], column=self.value[4], row=self.value[6]), Cell(title=self.value[3],
-                                                                                                    column=self.value[
-                                                                                                        7],
-                                                                                                    row=self.value[9])
+            self._matrix = Cell(title=self.value[3] or self.in_cell.title, column=self.value[4],
+                                row=self.value[6]), Cell(title=self.value[3] or self.in_cell.title,
+                                                         column=self.value[7], row=self.value[9])
         return self._matrix
 
 
@@ -59,9 +58,9 @@ class CellIdentifierToken(RegexpBaseToken):
         return f'<{self.__class__.__name__}>({self.cell})'
 
     @property
-    def cell(self):
+    def cell(self) -> Cell:
         if self._cell is None:
-            self._cell = Cell(title=self.value[3], column=self.value[4], row=self.value[5])
+            self._cell = Cell(title=self.value[3] or self.in_cell.title, column=self.value[4], row=self.value[5])
         return self._cell
 
 
@@ -136,7 +135,8 @@ class AndLambdaToken(RegexpBaseToken):
 
 # TODO добавить условие для локализации
 class LiteralToken(RegexpBaseToken):
-    regexp = r'\"(.*?)\"|(\d+)((,|.)(\d+))?(e(-?\d+))?|(TRUE\(\))|(FALSE\(\))'
+    regexp = r'\"(.*?)\"|(\d+)((,|\.)(\d+))?(e(-?\d+))?|(TRUE\(\))|(FALSE\(\))'
+    value_range = [0, -1]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, *kwargs)
@@ -147,13 +147,14 @@ class LiteralToken(RegexpBaseToken):
                 real_value += float(f'0.{self.value[5]}')
             if self.value[7]:
                 # TODO in theory, the degree can be calculated using the expression
-                real_value *= 10**int(self.value[7])
+                real_value *= 10 ** int(self.value[7])
+            real_value = str(real_value)
         elif self.value[1]:
-            real_value = self.value[1]
+            real_value = f'\'{self.value[1]}\''
         elif self.value[8]:
-            real_value = True
+            real_value = 'True'
         elif self.value[9]:
-            real_value = False
+            real_value = 'False'
         else:
             raise Exception('Unknown literal value')
 

@@ -1,12 +1,11 @@
-from src.ast_builder import AstBuilder
+from src.context import Context
 from src.excel import Excel, Cell
-from src.lexer import Lexer
+from src.translators import CellTranslator
+
 
 if __name__ == '__main__':
     excel = Excel.parse('./test.xlsx')
     cell = Cell(0, 1, 0)
-    data = excel.get_cell(cell)
-    tokens = Lexer.parse(data)
-    print(tokens)
-    entry_point = AstBuilder.parse(tokens)
-    print(entry_point)
+    context = Context()
+    CellTranslator.translate(cell, excel, context)
+    print(context.build_class([Cell(0, 1, 10)], excel))

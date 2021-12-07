@@ -1,3 +1,4 @@
+from src.cell import Cell
 from src.tokens.base_token import BaseToken
 
 
@@ -14,7 +15,7 @@ class CompositeBaseToken(BaseToken):
         return cls._TOKEN_SETS
 
     @classmethod
-    def get(cls, expression: list):
+    def get(cls, expression: list, in_cell: Cell):
         for tokens in cls.get_token_sets():
             new_expression_part = []
             _expression = expression.copy()
@@ -25,7 +26,7 @@ class CompositeBaseToken(BaseToken):
                     new_expression_part.append(_expression[0])
                     _expression = _expression[1:]
                 elif token in CompositeBaseToken.subclasses():
-                    new_token, _expression = token.get(_expression)
+                    new_token, _expression = token.get(_expression, in_cell)
                     if not new_token:
                         break
                     new_expression_part.append(new_token)
@@ -33,6 +34,6 @@ class CompositeBaseToken(BaseToken):
                     break
 
             if len(new_expression_part) == len(tokens) and len(new_expression_part):
-                return cls(new_expression_part), _expression
+                return cls(new_expression_part, in_cell), _expression
 
         return None, expression

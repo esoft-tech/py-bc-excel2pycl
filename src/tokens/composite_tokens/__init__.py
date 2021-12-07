@@ -32,23 +32,23 @@ class OperandToken(CompositeBaseToken):
     _TOKEN_SETS = [[LiteralToken], [CellIdentifierToken], [CellIdentifierRangeToken], [MatrixOfCellIdentifiersToken]]
 
     @property
-    def cell(self):
+    def cell(self) -> Cell:
         return self.value[0].cell if self.value[0].__class__ == CellIdentifierToken else None
 
     @property
-    def range(self):
+    def range(self) -> (Cell, Cell, ):
         return self.value[0].range if self.value[0].__class__ == CellIdentifierRangeToken else (None, None)
 
     @property
-    def matrix(self):
+    def matrix(self) -> (Cell, Cell, ):
         return self.value[0].matrix if self.value[0].__class__ == MatrixOfCellIdentifiersToken else (None, None)
 
     @property
-    def literal(self):
+    def literal(self) -> int or float or str or bool:
         return self.value[0].value if self.value[0].__class__ == LiteralToken else None
 
     @property
-    def control_construction(self):
+    def control_construction(self) -> CompositeBaseToken:
         return self.value[0] if self.value[0].__class__ == ControlConstructionToken else None
 
 
@@ -61,11 +61,11 @@ class OperatorToken(CompositeBaseToken):
 
 
 class ExpressionToken(RecursiveCompositeBaseToken):
-    _TOKEN_SETS = [[OperandToken, OperatorToken, CLS], [OneOperandArithmeticOperatorToken, OperandToken],
+    _TOKEN_SETS = [[OperandToken, OperatorToken, CLS], [OneOperandArithmeticOperatorToken, CLS],
                    [BracketStartToken, CLS, BracketFinishToken], [OperandToken]]
 
     @property
-    def in_brackets(self):
+    def in_brackets(self) -> bool:
         return self.value[0].__class__ in [OneOperandArithmeticOperatorToken, BracketStartToken]
 
     @property
@@ -74,17 +74,12 @@ class ExpressionToken(RecursiveCompositeBaseToken):
             self.value) > 1 and self.value[1].__class__ is OperatorToken else None
 
     @property
-    def left_operand(self):
-        return self.value[0] if self.value[0].__class__ is OperandToken else self.value[1] if len(self.value) > 1 and \
-                                                                                              self.value[
-                                                                                                  1].__class__ in [
-                                                                                                  OperandToken,
-                                                                                                  self.__class__] else None
+    def left_operand(self) -> OperandToken:
+        return self.value[0] if self.value[0].__class__ is OperandToken else None
 
     @property
     def right_operand(self):
-        return self.value[2] if len(self.value) == 3 and self.value[2].__class__ in [OperandToken,
-                                                                                     self.__class__] else None
+        return self.value[2] if len(self.value) == 3 and self.value[2].__class__ is self.__class__ else self.value[1] if len(self.value) >= 2 and self.value[1].__class__ is self.__class__ else None
 
 
 class IterableExpressionToken(RecursiveCompositeBaseToken):

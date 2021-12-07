@@ -1,8 +1,12 @@
+from src.cell import Cell
+
+
 class BaseToken:
     _SUBCLASSES = []
 
-    def __init__(self, value):
+    def __init__(self, value, in_cell: Cell):
         self.value = value
+        self._in_cell = in_cell
 
     def __str__(self):
         return f'<{self.__class__.__name__}>(value=`{self.value}`)'
@@ -11,8 +15,12 @@ class BaseToken:
         return self.__str__()
 
     @classmethod
-    def get(cls, expression: str or list):
+    def get(cls, expression: str or list, in_cell: Cell):
         pass
+
+    @property
+    def in_cell(self) -> Cell:
+        return self._in_cell
 
     @classmethod
     def subclasses(cls) -> list:
