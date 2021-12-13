@@ -9,6 +9,7 @@ class Context:
 
     @property
     def __class_template(self) -> str:
+        # TODO можно сделать кэш ячеек просчитанных
         return '''class ExcelInPython:
     def __init__(self, arguments):
         self._arguments = arguments
