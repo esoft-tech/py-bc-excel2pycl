@@ -48,7 +48,7 @@ class OperandToken(CompositeBaseToken):
         return self.value[0].value if self.value[0].__class__ == LiteralToken else None
 
     @property
-    def control_construction(self) -> CompositeBaseToken:
+    def control_construction(self):
         return self.value[0] if self.value[0].__class__ == ControlConstructionToken else None
 
 
@@ -105,15 +105,15 @@ class IfControlConstructionToken(CompositeBaseToken):
                     ExpressionToken, BracketFinishToken]]
 
     @property
-    def condition(self):
+    def condition(self) -> ExpressionToken:
         return self.value[2]
 
     @property
-    def when_true(self):
+    def when_true(self) -> ExpressionToken:
         return self.value[4]
 
     @property
-    def when_false(self):
+    def when_false(self) -> ExpressionToken:
         return self.value[6]
 
 

@@ -25,7 +25,7 @@ class OperandTokenTranslator(AbstractTranslator):
         elif token.literal:
             return token.literal
         elif token.control_construction:
-            # TODO Control constructions
-            raise Exception('Excel control constructions is unavailable. We are working on it')
+            from src.translators.cc_token_translator import ControlConstructionTokenTranslator
+            return ControlConstructionTokenTranslator.translate(token.control_construction, excel, context)
         else:
             raise Exception('Undefined token value')
