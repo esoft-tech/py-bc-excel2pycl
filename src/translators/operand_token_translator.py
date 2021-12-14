@@ -11,17 +11,13 @@ class OperandTokenTranslator(AbstractTranslator):
 
         if token.cell:
             return CellTranslator.translate(token.cell, excel, context)
-        elif token.range[0]:
-            start_cell, finish_cell = token.range
-            range_ = excel.get_range(start_cell, finish_cell)
-            range_code = '[' + ','.join([CellTranslator.translate(i, excel, context) for i in range_]) + ']'
-            return context.set_sub_cell(token.in_cell, range_code)
-        elif token.matrix[0]:
-            start_cell, finish_cell = token.matrix
-            matrix = excel.get_matrix(start_cell, finish_cell)
-            matrix_cell_codes = '[' + ','.join(
-                ['[' + ','.join([CellTranslator.translate(j, excel, context) for j in i]) + ']' for i in matrix]) + ']'
-            return context.set_sub_cell(token.in_cell, matrix_cell_codes)
+        elif token.range:
+            from src.translators.cell_identifier_range_token_translator import CellIdentifierRangeTokenTranslator
+            return CellIdentifierRangeTokenTranslator.translate(token.range, excel, context)
+        elif token.matrix:
+            from src.translators.matrix_of_cell_identifiers_token_translator import \
+                MatrixOfCellIdentifiersTokenTranslator
+            return MatrixOfCellIdentifiersTokenTranslator.translate(token.matrix, excel, context)
         elif token.literal:
             return token.literal
         elif token.control_construction:

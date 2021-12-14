@@ -36,12 +36,12 @@ class OperandToken(CompositeBaseToken):
         return self.value[0].cell if self.value[0].__class__ == CellIdentifierToken else None
 
     @property
-    def range(self) -> (Cell, Cell, ):
-        return self.value[0].range if self.value[0].__class__ == CellIdentifierRangeToken else (None, None)
+    def range(self) -> CellIdentifierRangeToken:
+        return self.value[0] if self.value[0].__class__ == CellIdentifierRangeToken else None
 
     @property
-    def matrix(self) -> (Cell, Cell, ):
-        return self.value[0].matrix if self.value[0].__class__ == MatrixOfCellIdentifiersToken else (None, None)
+    def matrix(self) -> MatrixOfCellIdentifiersToken:
+        return self.value[0] if self.value[0].__class__ == MatrixOfCellIdentifiersToken else None
 
     @property
     def literal(self) -> int or float or str or bool:
@@ -133,9 +133,23 @@ class SumIfControlConstructionToken(CompositeBaseToken):
 
 
 class VlookupControlConstructionToken(CompositeBaseToken):
-    _TOKEN_SETS = [
-        [VlookupKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken,
-         SeparatorToken, ExpressionToken, BracketFinishToken]]
+    _TOKEN_SETS = [[VlookupKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken], [VlookupKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken, BracketFinishToken]]
+
+    @property
+    def lookup_value(self) -> ExpressionToken:
+        return self.value[2]
+
+    @property
+    def matrix(self) -> MatrixOfCellIdentifiersToken:
+        return self.value[4]
+
+    @property
+    def column_number(self) -> ExpressionToken:
+        return self.value[6]
+
+    @property
+    def range_lookup(self) -> ExpressionToken:
+        return self.value[8] if len(self.value) == 10 else None
 
 
 class AverageControlConstructionToken(CompositeBaseToken):

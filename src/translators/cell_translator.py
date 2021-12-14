@@ -19,5 +19,7 @@ class CellTranslator(AbstractTranslator):
                     AstBuilder.parse(Lexer.parse(cell.value, in_cell=cell), in_cell=cell), excel, context)
             else:
                 code = cell.value
+                if type(code) is str:
+                    code = f"'{code}'"
             context.set_cell(cell, code)
         return context.get_cell(cell)

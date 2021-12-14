@@ -23,6 +23,15 @@ class Context:
                 result.append(i)
         
         return result
+        
+    def _vlookup(self, lookup_value, table_array: list, col_index_num: int, range_lookup: bool = False):
+        # TODO add Range Lookup (https://support.microsoft.com/en-us/office/vlookup-function-0bbc8083-26fe-4963-8ab8-93a18ad188a1)
+        # TODO search optimization needed
+        for row in table_array:
+            if row[0] == lookup_value:
+                return row[col_index_num - 1]
+
+        return None
 
     def exec_function_in(self, cell):
         return self.__class__.__dict__[cell.uid](self)
