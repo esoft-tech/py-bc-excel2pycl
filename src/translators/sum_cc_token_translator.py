@@ -8,5 +8,6 @@ class SumControlConstructionTokenTranslator(AbstractTranslator):
     @classmethod
     def translate(cls, token: SumControlConstructionToken, excel: Excel, context: Context) -> str:
         from src.translators.expression_token_translator import ExpressionTokenTranslator
-        return 'sum(self._flatten_list([' + ','.join(
-            [ExpressionTokenTranslator.translate(i, excel, context) for i in token.expressions]) + ']))'
+        flatten_list = context.set_sub_cell(token.in_cell, 'self._flatten_list([' + ','.join(
+            [ExpressionTokenTranslator.translate(i, excel, context) for i in token.expressions]) + '])')
+        return context.set_sub_cell(token.in_cell, f'sum({flatten_list})')
