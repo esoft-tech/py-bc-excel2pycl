@@ -8,6 +8,7 @@ class Lexer:
     @classmethod
     def parse(cls, expression, in_cell: Cell):
         tokens = []
+        # TODO remove spaces on the left side
         while expression:
             for token_class in cls.TOKENS:
                 token, sub_expression = token_class.get(expression, in_cell)

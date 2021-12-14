@@ -22,6 +22,6 @@ if __name__ == '__main__':
     cell = Cell(0, 1, 0)
     context = Context()
     CellTranslator.translate(cell, excel, context)
-    filename = write_class_to_file(context.build_class([Cell(0, 1, 10), Cell(0, 2, 23)], excel))
-    print(exec_from_file_with_cells(filename, {Cell(0, 1, 10).uid: 125, Cell(0, 2, 23).uid: 22}, cell))
+    filename = write_class_to_file(context.build_class([Cell(0, 1, 10)], excel))
+    print(exec_from_file_with_cells(filename, {Cell(0, 1, 10).uid: 125}, cell))
 
