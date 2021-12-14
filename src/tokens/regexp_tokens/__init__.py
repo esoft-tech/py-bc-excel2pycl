@@ -72,10 +72,6 @@ class SumKeywordToken(RegexpBaseToken):
     regexp = r'SUM'
 
 
-class SumIfKeywordToken(RegexpBaseToken):
-    regexp = r'SUMIF'
-
-
 class VlookupKeywordToken(RegexpBaseToken):
     regexp = r'VLOOKUP'
 

@@ -31,7 +31,16 @@ class Context:
             if row[0] == lookup_value:
                 return row[col_index_num - 1]
 
-        return None
+        return 1  # When the vlookup has not found anything similar to lookup_value, it returns 1 in the excel implementation for this function
+        
+    def _sum_if(self, range_: list, criteria: callable, sum_range: list = None):
+        result = 0
+        range_, sum_range = self._flatten_list(range_), self._flatten_list(sum_range)
+        for i in range(len(range_)):
+            if i < len(sum_range) and criteria(range_[i]):
+                result += sum_range[i] or 0
+                
+        return result
 
     def exec_function_in(self, cell):
         return self.__class__.__dict__[cell.uid](self)

@@ -3,6 +3,26 @@ from src.tokens.recursive_composite_base_token import RecursiveCompositeBaseToke
 from src.tokens.regexp_tokens import *
 
 
+class SumIfKeywordToken(CompositeBaseToken):
+    _TOKEN_SETS = [[SumKeywordToken, IfKeywordToken]]
+
+
+class SimilarCellToken(CompositeBaseToken):
+    _TOKEN_SETS = [[CellIdentifierToken], [CellIdentifierRangeToken], [MatrixOfCellIdentifiersToken]]
+
+    @property
+    def cell(self) -> Cell:
+        return self.value[0].cell if self.value[0].__class__ == CellIdentifierToken else None
+
+    @property
+    def range(self) -> CellIdentifierRangeToken:
+        return self.value[0] if self.value[0].__class__ == CellIdentifierRangeToken else None
+
+    @property
+    def matrix(self) -> MatrixOfCellIdentifiersToken:
+        return self.value[0] if self.value[0].__class__ == MatrixOfCellIdentifiersToken else None
+
+
 class LogicalOperatorToken(CompositeBaseToken):
     _TOKEN_SETS = [[EqOperatorToken], [NotEqOperatorToken], [GtOperatorToken], [GtOrEqualOperatorToken],
                    [LtOperatorToken], [LtOrEqualOperatorToken]]
@@ -79,7 +99,8 @@ class ExpressionToken(RecursiveCompositeBaseToken):
 
     @property
     def right_operand(self):
-        return self.value[2] if len(self.value) == 3 and self.value[2].__class__ is self.__class__ else self.value[1] if len(self.value) >= 2 and self.value[1].__class__ is self.__class__ else None
+        return self.value[2] if len(self.value) == 3 and self.value[2].__class__ is self.__class__ else self.value[
+            1] if len(self.value) >= 2 and self.value[1].__class__ is self.__class__ else None
 
 
 class IterableExpressionToken(RecursiveCompositeBaseToken):
@@ -97,7 +118,16 @@ class IterableExpressionToken(RecursiveCompositeBaseToken):
 
 
 class LambdaToken(CompositeBaseToken):
-    _TOKEN_SETS = [[LiteralToken, AndLambdaToken, ExpressionToken], [ExpressionToken]]
+    _TOKEN_SETS = [[LiteralToken, AndLambdaToken, ExpressionToken], [LiteralToken], [ExpressionToken]]
+
+    @property
+    def literal(self) -> int or float or str or bool:
+        return self.value[0].value if self.value[0].__class__ == LiteralToken else None
+
+    @property
+    def expression(self) -> ExpressionToken:
+        return self.value[0] if self.value[0].__class__ == ExpressionToken else self.value[2] if len(
+            self.value) == 3 and self.value[2].__class__ == ExpressionToken else None
 
 
 class IfControlConstructionToken(CompositeBaseToken):
@@ -126,14 +156,39 @@ class SumControlConstructionToken(CompositeBaseToken):
 
 
 class SumIfControlConstructionToken(CompositeBaseToken):
-    _TOKEN_SETS = [[SumIfKeywordToken, BracketStartToken, CellIdentifierRangeToken, SeparatorToken, LambdaToken,
+    _TOKEN_SETS = [[SumIfKeywordToken, BracketStartToken, SimilarCellToken, SeparatorToken, LambdaToken,
                     BracketFinishToken],
-                   [SumIfKeywordToken, BracketStartToken, CellIdentifierRangeToken, SeparatorToken, LambdaToken,
-                    SeparatorToken, CellIdentifierRangeToken, BracketFinishToken]]
+                   [SumIfKeywordToken, BracketStartToken, SimilarCellToken, SeparatorToken, LambdaToken,
+                    SeparatorToken, SimilarCellToken, BracketFinishToken]]
+
+    @property
+    def cell(self) -> Cell:
+        return self.value[2].cell
+
+    @property
+    def range(self) -> CellIdentifierRangeToken:
+        return self.value[2].range
+
+    @property
+    def matrix(self) -> MatrixOfCellIdentifiersToken:
+        return self.value[2].matrix
+
+    @property
+    def lambda_(self) -> LambdaToken:
+        return self.value[4]
+
+    @property
+    def first_cell_of_needed(self) -> Cell:
+        return (self.value[6].cell if self.value[6].cell else self.value[6].range.range[0] if self.value[6].range else
+        self.value[6].matrix.matrix[0] if self.value[6].matrix else None) if len(self.value) == 8 else None
 
 
 class VlookupControlConstructionToken(CompositeBaseToken):
-    _TOKEN_SETS = [[VlookupKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken], [VlookupKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken, BracketFinishToken]]
+    _TOKEN_SETS = [
+        [VlookupKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken,
+         SeparatorToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken],
+        [VlookupKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken,
+         SeparatorToken, ExpressionToken, BracketFinishToken]]
 
     @property
     def lookup_value(self) -> ExpressionToken:

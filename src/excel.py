@@ -62,6 +62,13 @@ class Excel:
 
         return result
 
+    def get_similar_second(self, base: Cell, first: Cell, second: Cell):
+        self.handle_cell(base)
+        self.handle_cell(first)
+        self.handle_cell(second)
+
+        return Cell(base.title, base.column + (second.column - first.column), base.row + (second.row - first.row))
+
     def _get_vertical_range(self, first: Cell, second: Cell) -> list:
         start_row = first.row
         finish_row = second.row
