@@ -4,7 +4,7 @@ from src.tokens.regexp_base_token import RegexpBaseToken
 
 class CellIdentifierRangeToken(RegexpBaseToken):
     regexp = r'((\'(.*?)\')!)?((\$?([A-Z]+)(\$?(\d+))?:\$?\7(\$?(\d+))?)|(\$?([A-Z]+)(\$?(\d+))?:\$?([A-Z]+)(\$?\15)?))'
-    last_match_regexp = r'([^\d].*)?'
+    last_match_regexp = r'([^\d$].*)?'
     value_range = [0, -1]
 
     def __init__(self, *args, **kwargs):
@@ -25,6 +25,7 @@ class CellIdentifierRangeToken(RegexpBaseToken):
 
 
 class MatrixOfCellIdentifiersToken(RegexpBaseToken):
+    # TODO Consider the possibility of a matrix like A:A
     regexp = r'((\'(.*?)\')!)?\$?([A-Z]+)(\$?(\d+))?:\$?([A-Z]+)(\$?(\d+))?'
     last_match_regexp = r'([^\d].*)?'
     value_range = [0, -1]
