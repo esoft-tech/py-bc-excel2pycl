@@ -24,11 +24,23 @@ class Excel:
             cell.column = column_index_from_string(cell.column) - 1
 
         if type(cell.row) is str:
-            cell.row = int(cell.row) - 1
+            if cell.row:
+                cell.row = int(cell.row) - 1
+            else:
+                cell.row = None
+
 
         cell._handled_identifiers = True
 
+    @staticmethod
+    def _handle_cell(cell: Cell):
+        """
+        If cell hasn't only integer identifiers, throws exception
+        """
+        cell.uid
+
     def _fill_cell(self, cell: Cell) -> Cell:
+        self._handle_cell(cell)
         cell.value = self._data[cell.title][cell.row][cell.column] if 0 <= cell.title < len(
             self._data) and 0 <= cell.row < len(self._data[cell.title]) and 0 <= cell.column < len(
             self._data[cell.title][cell.row]) else None
@@ -67,7 +79,7 @@ class Excel:
         self.handle_cell(first)
         self.handle_cell(second)
 
-        return Cell(base.title, base.column + (second.column - first.column), base.row + (second.row - first.row))
+        return Cell(base.title, base.column + (second.column - first.column), base.row + (second.row - first.row) if first.row is not None or second.row is not None else None)
 
     def _get_vertical_range(self, first: Cell, second: Cell) -> list:
         start_row = first.row
@@ -94,11 +106,7 @@ class Excel:
 
         return result
 
-    # TODO добавить проверки аналогичные get_set
-    def get_matrix(self, first: Cell, second: Cell) -> list:
-        self.handle_cell(first)
-        self.handle_cell(second)
-
+    def _get_matrix(self, first: Cell, second: Cell) -> list:
         if first.title != second.title:
             raise Exception('It is impossible to get matrix if the values are located in different workspaces')
 
@@ -110,6 +118,18 @@ class Excel:
             result.append(row_data)
 
         return result
+
+    # TODO добавить проверки аналогичные get_set
+    def get_matrix(self, first: Cell, second: Cell) -> list:
+        self.handle_cell(first)
+        self.handle_cell(second)
+
+        if first.row is None and second.row is None and first.column == second.column:
+            return [[i] for i in self._get_vertical_range(first, second)]
+        elif type(first.row) is int and first.row >= 0 and second.row >= 0:
+            return self._get_matrix(first, second)
+        else:
+            raise Exception('Invalid cell coordinates')
 
     @classmethod
     def parse(cls, path: str):

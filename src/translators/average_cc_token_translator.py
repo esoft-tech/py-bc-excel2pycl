@@ -10,6 +10,7 @@ class AverageControlConstructionTokenTranslator(AbstractTranslator):
         from src.translators.expression_token_translator import ExpressionTokenTranslator
         flatten_list = context.set_sub_cell(token.in_cell, 'self._flatten_list([' + ','.join(
             [ExpressionTokenTranslator.translate(i, excel, context) for i in token.expressions]) + '])')
-        flatten_list_sum = context.set_sub_cell(token.in_cell, f'sum({flatten_list})')
+        flatten_numeric_list = context.set_sub_cell(token.in_cell, f'self._only_numeric_list({flatten_list})')
+        flatten_numeric_list_sum = context.set_sub_cell(token.in_cell, f'self._sum({flatten_numeric_list})')
 
-        return f'({flatten_list_sum}/len({flatten_list}))'
+        return f'self._average({flatten_numeric_list_sum})'

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 class Cell:
     title: int or str
     column: int or str
-    row: int or None = None
+    row: int or str = None
     value: str or int or float or bool or None = None
     _handled_identifiers: bool = False
 

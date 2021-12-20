@@ -24,6 +24,16 @@ class Context:
         
         return result
         
+    @staticmethod
+    def _only_numeric_list(flatten_list: list):
+        return [i for i in flatten_list if type(i) in [float, int]]
+
+    def _sum(self, flatten_list: list):
+        return sum(self._only_numeric_list(flatten_list))
+
+    def _average(self, flatten_list: list):
+        return self._sum(flatten_list)/len(self._only_numeric_list(flatten_list))
+        
     def _vlookup(self, lookup_value, table_array: list, col_index_num: int, range_lookup: bool = False):
         # TODO add Range Lookup (https://support.microsoft.com/en-us/office/vlookup-function-0bbc8083-26fe-4963-8ab8-93a18ad188a1)
         # TODO search optimization needed
