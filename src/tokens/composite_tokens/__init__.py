@@ -82,25 +82,34 @@ class OperatorToken(CompositeBaseToken):
 
 class ExpressionToken(RecursiveCompositeBaseToken):
     _TOKEN_SETS = [[OperandToken, OperatorToken, CLS], [OneOperandArithmeticOperatorToken, CLS],
+                   [BracketStartToken, CLS, BracketFinishToken, OperatorToken, CLS],
                    [BracketStartToken, CLS, BracketFinishToken], [OperandToken]]
 
     @property
-    def in_brackets(self) -> bool:
-        return self.value[0].__class__ in [OneOperandArithmeticOperatorToken, BracketStartToken]
+    def left_brackets(self) -> bool:
+        return self.value[0].__class__ == BracketStartToken and len(self.value) == 5
+
+    @property
+    def right_brackets(self) -> bool:
+        return self.value[0].__class__ in [OneOperandArithmeticOperatorToken, BracketStartToken] and len(
+            self.value) in [2, 3]
 
     @property
     def operator(self):
         return self.value[0].operator if self.value[0].__class__ is OperatorToken else self.value[1].operator if len(
-            self.value) > 1 and self.value[1].__class__ is OperatorToken else None
+            self.value) == 3 and self.value[1].__class__ is OperatorToken else self.value[3].operator if len(
+            self.value) == 5 and self.value[3].__class__ is OperatorToken else None
 
     @property
-    def left_operand(self) -> OperandToken:
-        return self.value[0] if self.value[0].__class__ is OperandToken else None
+    def left_operand(self):
+        return self.value[0] if len(self.value) in [1, 3] and self.value[0].__class__ is OperandToken else self.value[
+            1] if len(self.value) == 5 and self.value[1].__class__ is self.__class__ else None
 
     @property
     def right_operand(self):
         return self.value[2] if len(self.value) == 3 and self.value[2].__class__ is self.__class__ else self.value[
-            1] if len(self.value) >= 2 and self.value[1].__class__ is self.__class__ else None
+            1] if len(self.value) in [2, 3] and self.value[1].__class__ is self.__class__ else self.value[4] if len(
+            self.value) == 5 and self.value[4].__class__ is self.__class__ else None
 
 
 class IterableExpressionToken(RecursiveCompositeBaseToken):

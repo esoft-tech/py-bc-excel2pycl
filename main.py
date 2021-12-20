@@ -19,7 +19,7 @@ def exec_from_file_with_cells(filename, cells, exec_cell):
 
 if __name__ == '__main__':
     excel = Excel.parse('./test.xlsx')
-    cell = Cell(0, 3, 0)
+    cell = Cell(0, 2, 0)
     context = Context()
     CellTranslator.translate(cell, excel, context)
     filename = write_class_to_file(context.build_class([], excel))
