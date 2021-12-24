@@ -1,7 +1,19 @@
+import re
+
 from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter, column_index_from_string
 
 from src.cell import Cell
+
+
+class ExcelException(Exception):
+    pass
+
+
+class ExcelSafeException(ExcelException):
+    def __init__(self, *args, **kwargs):
+        self.suspicious_cells = kwargs.get('suspicious_cells', {})
+        super().__init__('\n\t'.join([f"{k}: {v}" for k, v in self.suspicious_cells.items()]))
 
 
 class Excel:
@@ -9,6 +21,11 @@ class Excel:
         self._data = worksheets['data']
         self._titles = {title: worksheet_number for title, worksheet_number
                         in zip(worksheets['titles'], range(len(worksheets['titles'])))}
+        self._suspicious_cells = worksheets['suspicious_cells']
+
+    def is_safe(self):
+        if self._suspicious_cells:
+            raise ExcelSafeException(suspicious_cells=self._suspicious_cells)
 
     def _title_to_number(self, title: str) -> int:
         return self._titles[title]
@@ -132,9 +149,20 @@ class Excel:
             raise Exception('Invalid cell coordinates')
 
     @classmethod
+    def _get_suspicious_constructions(cls, value):
+        value = str(value)
+        suspicious_constructions = re.findall(r'[a-zA-Z_\d]+\(.*?\)', value)
+        if suspicious_constructions:
+            return [i for i in suspicious_constructions if not re.findall(r'[A-Z]+\(.*?\)', i)]
+
+        return []
+
+
+    @classmethod
     def parse(cls, path: str):
         worksheets_data = []
         worksheets_titles = []
+        suspicious_cells = {}
         wb = load_workbook(filename=path)
         for worksheet in wb.worksheets:
             worksheets_titles.append(worksheet.title)
@@ -145,8 +173,11 @@ class Excel:
                 rows_data = []
                 for column_number in range(1, last_column + 1):
                     column_letter = get_column_letter(column_number)
+                    suspicious_constructions = cls._get_suspicious_constructions(worksheet[f'{column_letter}{row_number}'].value)
+                    if suspicious_constructions:
+                        suspicious_cells[f"'{worksheet.title}'{column_letter}{row_number}"] = suspicious_constructions
                     rows_data.append(worksheet[f'{column_letter}{row_number}'].value)
                 worksheet_data.append(rows_data)
             worksheets_data.append(worksheet_data)
 
-        return cls({'data': worksheets_data, 'titles': worksheets_titles})
+        return cls({'data': worksheets_data, 'titles': worksheets_titles, 'suspicious_cells': suspicious_cells})
