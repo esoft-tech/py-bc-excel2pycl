@@ -1,1 +1,1 @@
-# excel-to-func
+# excel2pycl

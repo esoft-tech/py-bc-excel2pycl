@@ -1,0 +1,1 @@
+from excel2pycl.src.translators.cell_translator import CellTranslator
