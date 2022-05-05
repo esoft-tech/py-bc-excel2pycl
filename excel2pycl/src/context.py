@@ -12,7 +12,8 @@ class Context:
         # TODO можно сделать кэш ячеек просчитанных
         return '''class ExcelInPython:
     def __init__(self, arguments):
-        self._arguments = arguments
+        for key, value in arguments.items():
+            setattr(self, key, lambda _=None: value)
         
     def _flatten_list(self, subject: list) -> list:
         result = []
