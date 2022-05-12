@@ -46,7 +46,6 @@ class Excel:
             else:
                 cell.row = None
 
-
         cell._handled_identifiers = True
 
     @staticmethod
@@ -156,7 +155,6 @@ class Excel:
             return [i for i in suspicious_constructions if not re.findall(r'[A-Z]+\(.*?\)', i)]
 
         return []
-
 
     @classmethod
     def parse(cls, path: str):
