@@ -3,6 +3,10 @@ from excel2pycl.src.excel import Excel
 
 
 class Context:
+    """
+    Will be storing cell translation map.
+    """
+
     def __init__(self):
         self._cell_translations = {}
         self._sub_cell_translations = {}
@@ -12,8 +16,7 @@ class Context:
         # TODO можно сделать кэш ячеек просчитанных
         return '''class ExcelInPython:
     def __init__(self, arguments):
-        for key, value in arguments.items():
-            setattr(self, key, lambda _=None: value)
+        self._arguments = {{i['uid']: i['value'] for i in arguments}}
         
     def _flatten_list(self, subject: list) -> list:
         result = []
@@ -53,8 +56,8 @@ class Context:
                 
         return result
 
-    def exec_function_in(self, cell):
-        return self.__class__.__dict__[cell.uid](self)
+    def exec_function_in(self, cell_uid: str):
+        return self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self)
 
 {functions}
 '''
@@ -62,7 +65,7 @@ class Context:
     @property
     def __function_template(self) -> str:
         return '''    def {name}(self):
-        return {code}'''
+        return self._arguments.get('{name}', {code})'''
 
     def __build_function(self, name: str, code: str) -> str:
         return self.__function_template.format(name=name, code=code)
@@ -106,11 +109,7 @@ class Context:
 
         return result
 
-    def build_class(self, argument_cells: list, excel: Excel) -> str:
-        for cell in argument_cells:
-            excel.handle_cell(cell)
-            self.set_cell(cell, f'self._arguments[\'{cell.uid}\']')
-
+    def build_class(self) -> str:
         summary_functions = self._cell_translations.copy()
         summary_functions.update(self._get_divided_sub_cell_translations())
 

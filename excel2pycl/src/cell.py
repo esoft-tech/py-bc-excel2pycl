@@ -24,3 +24,6 @@ class Cell:
 
     def __repr__(self):
         return self.__str__()
+
+    def to_dict(self) -> dict:
+        return {'uid': self.uid, 'title': self.title, 'column': self.column, 'row': self.row, 'value': self.value}

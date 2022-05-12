@@ -1,8 +1,9 @@
-import re
+import importlib.util
 
 
-def load_object(module: str, object_name: str):
-    module_name = module
-    if module_name.find('.') != -1:
-        module_name: str = re.findall(r'^.*\.([\d\w]+)$', module)[0]
-    return __import__(module).__dict__[module_name].__dict__[object_name]
+def load_module(module_path: str):
+    spec = importlib.util.spec_from_file_location(module_path, module_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    return module

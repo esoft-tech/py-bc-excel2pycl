@@ -24,6 +24,9 @@ class Excel:
         self._suspicious_cells = worksheets['suspicious_cells']
 
     def is_safe(self):
+        """
+        Throws as exception if Excel file contains Python-like content
+        """
         if self._suspicious_cells:
             raise ExcelSafeException(suspicious_cells=self._suspicious_cells)
 
