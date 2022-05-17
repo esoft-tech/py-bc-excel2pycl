@@ -17,7 +17,7 @@ class Cell:
         if not self._handled_identifiers and not (type(self.title) is int and type(self.column) is int and type(self.row) is int):
             raise Exception('Cell identifier must be integer when when used to get uid')
 
-        return f'_{self.title}_{self.column}_{self.row}'
+        return f"_{'_'.join([str(i) if i is not None else 'any' for i in [self.title, self.column, self.row]])}"
 
     def __str__(self):
         return f'<{self.__class__.__name__}>(`{self.title}`, `{self.column}`, {self.row})'

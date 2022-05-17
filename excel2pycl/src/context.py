@@ -1,5 +1,6 @@
+from typing import Dict
+
 from excel2pycl.src.cell import Cell
-from excel2pycl.src.excel import Excel
 
 
 class Context:
@@ -9,7 +10,7 @@ class Context:
 
     def __init__(self):
         self._cell_translations = {}
-        self._sub_cell_translations = {}
+        self._sub_cell_translations: Dict[str, list] = {}
 
     @property
     def __class_template(self) -> str:
@@ -55,9 +56,12 @@ class Context:
                 result += sum_range[i] or 0
                 
         return result
+        
+    def _cell_preprocessor(self, cell_uid: str):
+        return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))
 
     def exec_function_in(self, cell_uid: str):
-        return self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self)
+        return self._cell_preprocessor(cell_uid)
 
 {functions}
 '''
@@ -65,7 +69,7 @@ class Context:
     @property
     def __function_template(self) -> str:
         return '''    def {name}(self):
-        return self._arguments.get('{name}', {code})'''
+        return {code}'''
 
     def __build_function(self, name: str, code: str) -> str:
         return self.__function_template.format(name=name, code=code)
@@ -85,8 +89,13 @@ class Context:
     def _get_sub_cell_function_name(cls, cell: Cell = None, sub_number: int = None, cell_prefix: str = None) -> str:
         return f'{cell_prefix or cls._get_cell_function_name(cell)}_{sub_number}'
 
+    @staticmethod
+    def _get_cell_with_cell_preprocessor(cell_function_name: str) -> str:
+        return f"self._cell_preprocessor('{cell_function_name}')"
+
     def get_cell(self, cell: Cell) -> str or None:
-        return f'self.{self._get_cell_function_name(cell)}()' if cell.uid in self._cell_translations else None
+        return self._get_cell_with_cell_preprocessor(
+            self._get_cell_function_name(cell)) if cell.uid in self._cell_translations else None
 
     def set_cell(self, cell: Cell, code: str) -> str:
         self._cell_translations[self._get_cell_function_name(cell)] = code
@@ -97,15 +106,20 @@ class Context:
         cell_function_name = self._get_cell_function_name(cell)
         if not self._sub_cell_translations.get(cell_function_name):
             self._sub_cell_translations[self._get_cell_function_name(cell)] = []
-        self._sub_cell_translations[cell_function_name].append(code)
+        if code in self._sub_cell_translations[cell_function_name]:
+            sub_number = self._sub_cell_translations[cell_function_name].index(code)
+        else:
+            self._sub_cell_translations[cell_function_name].append(code)
+            sub_number = len(self._sub_cell_translations[cell_function_name]) - 1
 
-        return f'self.{self._get_sub_cell_function_name(cell=cell, sub_number=len(self._sub_cell_translations[cell_function_name]) - 1)}()'
+        return self._get_cell_with_cell_preprocessor(self._get_sub_cell_function_name(cell=cell, sub_number=sub_number))
 
     def _get_divided_sub_cell_translations(self) -> dict:
         result = {}
         for cell_prefix, sub_cell_expressions in self._sub_cell_translations.items():
             for sub_cell_expression, sub_cell_index in zip(sub_cell_expressions, range(len(sub_cell_expressions))):
-                result[self._get_sub_cell_function_name(cell_prefix=cell_prefix, sub_number=sub_cell_index)] = sub_cell_expression
+                result[self._get_sub_cell_function_name(cell_prefix=cell_prefix,
+                                                        sub_number=sub_cell_index)] = sub_cell_expression
 
         return result
 
@@ -114,4 +128,3 @@ class Context:
         summary_functions.update(self._get_divided_sub_cell_translations())
 
         return self.__build_class(summary_functions)
-

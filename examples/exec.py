@@ -10,8 +10,8 @@ def load_module_with_cells(module_path, cells):
 def main():
     module_path = sys.argv[1]
 
-    cell = Cell(0, 1, 20)
-    excel_class = load_module_with_cells(module_path, [Cell(0, 2, 0, 150).to_dict(), Cell(0, 1, 20, 30000).to_dict()])
+    cell = Cell(0, 2, 0)
+    excel_class = load_module_with_cells(module_path, [Cell(0, 1, 20, 20000).to_dict()])
     print(excel_class.exec_function_in(cell.uid))
 
 
