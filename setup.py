@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='excel2pycl',
-    version='0.0.5',
+    version='0.0.6',
     description='Package for translating an excel file to python code',
     url='https://github.com/etagi-esoft/py-excel-to-func',
     author='Esoft',
