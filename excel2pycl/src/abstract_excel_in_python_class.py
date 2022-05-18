@@ -2,13 +2,13 @@ from abc import ABC
 
 
 class AbstractExcelInPython(ABC):
-    def __init__(self, arguments: dict = None):
+    def __init__(self, arguments: list = None):
         if arguments is None:
-            arguments = {}
+            arguments = []
         self._arguments = {}
         self.set_arguments(arguments)
 
-    def set_arguments(self, arguments: dict):
+    def set_arguments(self, arguments: list):
         self._arguments = {
             **self._arguments,
             **{i['uid']: i['value'] for i in arguments}

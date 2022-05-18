@@ -16,17 +16,17 @@ class Context:
     def __class_template(self) -> str:
         # TODO можно сделать кэш ячеек просчитанных
         return '''class ExcelInPython:
-    def __init__(self, arguments: dict = None):
+    def __init__(self, arguments: list = None):
         if arguments is None:
-            arguments = {}
-        self._arguments = {}
+            arguments = []
+        self._arguments = {{}}
         self.set_arguments(arguments)
         
-    def set_arguments(self, arguments: dict):
-        self._arguments = {
+    def set_arguments(self, arguments: list):
+        self._arguments = {{
             **self._arguments,
-            **{i['uid']: i['value'] for i in arguments}
-        }
+            **{{i['uid']: i['value'] for i in arguments}}
+        }}
         
     def _flatten_list(self, subject: list) -> list:
         result = []
