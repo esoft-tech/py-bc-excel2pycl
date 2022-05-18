@@ -16,8 +16,17 @@ class Context:
     def __class_template(self) -> str:
         # TODO можно сделать кэш ячеек просчитанных
         return '''class ExcelInPython:
-    def __init__(self, arguments):
-        self._arguments = {{i['uid']: i['value'] for i in arguments}}
+    def __init__(self, arguments: dict = None):
+        if arguments is None:
+            arguments = {}
+        self._arguments = {}
+        self.set_arguments(arguments)
+        
+    def set_arguments(self, arguments: dict):
+        self._arguments = {
+            **self._arguments,
+            **{i['uid']: i['value'] for i in arguments}
+        }
         
     def _flatten_list(self, subject: list) -> list:
         result = []
