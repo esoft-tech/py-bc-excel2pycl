@@ -1,18 +1,16 @@
 import sys
 
-from excel2pycl import Cell, load_module
-
-
-def load_module_with_cells(module_path, cells):
-    return load_module(module_path).ExcelInPython(cells)
+from excel2pycl import Cell, Executor
 
 
 def main():
-    module_path = sys.argv[1]
+    class_file = sys.argv[1]
 
-    cell = Cell(0, 2, 0)
-    excel_class = load_module_with_cells(module_path, [Cell(0, 1, 20, 20000).to_dict()])
-    print(excel_class.exec_function_in(cell.uid))
+    print(Executor()
+          .set_executed_class(class_file=class_file)
+          .set_cells([Cell(0, 1, 20, 20000)])
+          .get_cell(Cell(0, 2, 0))
+          .value)
 
 
 if __name__ == '__main__':

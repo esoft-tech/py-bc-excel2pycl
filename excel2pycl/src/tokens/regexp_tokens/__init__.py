@@ -1,4 +1,5 @@
 from excel2pycl.src.cell import Cell
+from excel2pycl.src.exceptions import E2PyclParserException
 from excel2pycl.src.tokens.regexp_base_token import RegexpBaseToken
 
 
@@ -153,7 +154,7 @@ class LiteralToken(RegexpBaseToken):
         elif self.value[9]:
             real_value = 'False'
         else:
-            raise Exception('Unknown literal value')
+            raise E2PyclParserException('Unknown literal value')
 
         self.value = real_value
 

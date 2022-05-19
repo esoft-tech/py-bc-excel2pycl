@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from excel2pycl.src.exceptions import E2PyclCellException
+
 
 @dataclass
 class Cell:
@@ -15,7 +17,7 @@ class Cell:
     @property
     def uid(self) -> str:
         if not self._handled_identifiers and not (type(self.title) is int and type(self.column) is int and type(self.row) is int):
-            raise Exception('Cell identifier must be integer when when used to get uid')
+            raise E2PyclCellException('Cell identifier must be integer when when used to get uid')
 
         return f"_{'_'.join([str(i) if i is not None else 'any' for i in [self.title, self.column, self.row]])}"
 
@@ -24,6 +26,9 @@ class Cell:
 
     def __repr__(self):
         return self.__str__()
+
+    def __hash__(self):
+        return hash(frozenset([self.uid, self.value]))
 
     def to_dict(self) -> dict:
         return {'uid': self.uid, 'title': self.title, 'column': self.column, 'row': self.row, 'value': self.value}

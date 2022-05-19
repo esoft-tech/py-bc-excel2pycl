@@ -4,16 +4,7 @@ from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter, column_index_from_string
 
 from excel2pycl.src.cell import Cell
-
-
-class ExcelException(Exception):
-    pass
-
-
-class ExcelSafeException(ExcelException):
-    def __init__(self, *args, **kwargs):
-        self.suspicious_cells = kwargs.get('suspicious_cells', {})
-        super().__init__('\n\t'.join([f"{k}: {v}" for k, v in self.suspicious_cells.items()]))
+from excel2pycl.src.exceptions import E2PyclSafetyException, E2PyclParserException
 
 
 class Excel:
@@ -28,7 +19,7 @@ class Excel:
         Throws as exception if Excel file contains Python-like content
         """
         if self._suspicious_cells:
-            raise ExcelSafeException(suspicious_cells=self._suspicious_cells)
+            raise E2PyclSafetyException(suspicious_cells=self._suspicious_cells)
 
     def _title_to_number(self, title: str) -> int:
         return self._titles[title]
@@ -68,7 +59,7 @@ class Excel:
     def fill_cell(self, cell: Cell) -> Cell:
         if cell.row is None:
             # TODO добавить кастомные исключения
-            raise Exception('It is not possible to get a cell without pointing to a specific row')
+            raise E2PyclParserException('It is not possible to get a cell without pointing to a specific row')
 
         self.handle_cell(cell)
 
@@ -82,14 +73,14 @@ class Excel:
         self.handle_cell(second)
 
         if first.title != second.title:
-            raise Exception('It is impossible to get range if the values are located in different workspaces')
+            raise E2PyclParserException('It is impossible to get range if the values are located in different workspaces')
 
         if first.column == second.column:
             result = self._get_vertical_range(first, second)
         elif first.row == second.row:
             result = self._get_horizontal_range(first, second)
         else:
-            raise Exception('It is impossible to get a range if its values are not located in a straight line')
+            raise E2PyclParserException('It is impossible to get a range if its values are not located in a straight line')
 
         return result
 
@@ -127,7 +118,7 @@ class Excel:
 
     def _get_matrix(self, first: Cell, second: Cell) -> list:
         if first.title != second.title:
-            raise Exception('It is impossible to get matrix if the values are located in different workspaces')
+            raise E2PyclParserException('It is impossible to get matrix if the values are located in different workspaces')
 
         result = []
         for row in range(first.row, second.row + 1):
@@ -148,7 +139,7 @@ class Excel:
         elif type(first.row) is int and first.row >= 0 and second.row >= 0:
             return self._get_matrix(first, second)
         else:
-            raise Exception('Invalid cell coordinates')
+            raise E2PyclParserException('Invalid cell coordinates')
 
     @classmethod
     def _get_suspicious_constructions(cls, value):
