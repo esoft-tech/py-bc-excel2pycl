@@ -87,16 +87,17 @@ class Parser:
         if not self._excel_file_path:
             raise E2PyclParserException('The file path is not set.')
 
-        if not self._entrypoint_cell:
-            raise E2PyclParserException('The entrypoint cell is not set.')
-
         excel = Excel.parse(self._excel_file_path)
         if self._safety_check:
             excel.is_safe()
 
         context = Context()
 
-        CellTranslator.translate(self._entrypoint_cell, excel, context)
+        if self._entrypoint_cell:
+            CellTranslator.translate(self._entrypoint_cell, excel, context)
+        else:
+            CellTranslator.translate_file(excel, context)
+
         self._translation = context.build_class()
 
         self._excel_file_path_has_been_changed = False

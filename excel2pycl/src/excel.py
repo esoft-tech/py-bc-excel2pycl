@@ -1,4 +1,5 @@
 import re
+from typing import List
 
 from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter, column_index_from_string
@@ -173,3 +174,18 @@ class Excel:
             worksheets_data.append(worksheet_data)
 
         return cls({'data': worksheets_data, 'titles': worksheets_titles, 'suspicious_cells': suspicious_cells})
+
+    def get_cells(self) -> List[Cell]:
+        """
+        Returns all cells from Excel file.
+
+        Returns:
+            List[Cell]: List of filled cells.
+        """
+        cells: List[Cell] = []
+        for title_number, title in enumerate(self._data):
+            for row_number, row in enumerate(title):
+                for column_number, column in enumerate(row):
+                    cells.append(self.fill_cell(Cell(title_number, column_number, row_number)))
+
+        return cells
