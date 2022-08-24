@@ -2,15 +2,15 @@ from setuptools import setup
 
 setup(
     name='excel2pycl',
-    version='1.0.0',
+    version='1.0.1',
     description='Package for translating an excel file to python code',
     url='https://github.com/etagi-esoft/py-excel-to-func',
     author='Esoft',
     author_email='it@esoft.tech',
     license='MIT',
-    packages=['excel2pycl', 'excel2pycl.src'],
+    packages=['excel2pycl', 'excel2pycl.src', 'excel2pycl.src.utilities', 'excel2pycl.src.translators',
+              'excel2pycl.src.tokens', 'excel2pycl.src.exceptions'],
     install_requires=['openpyxl>=3.0.9'],
-
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Environment :: Console',
