@@ -9,5 +9,5 @@ from excel2pycl.src.tokens.base_token import BaseToken
 class AbstractTranslator(ABC):
     @classmethod
     @abstractmethod
-    def translate(cls, subject: BaseToken | Cell, excel: Excel, context: Context) -> str:
+    def translate(cls, subject: BaseToken or Cell, excel: Excel, context: Context) -> str:
         pass
