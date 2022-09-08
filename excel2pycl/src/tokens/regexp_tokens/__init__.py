@@ -4,7 +4,7 @@ from excel2pycl.src.tokens.regexp_base_token import RegexpBaseToken
 
 
 class CellIdentifierRangeToken(RegexpBaseToken):
-    regexp = r'((\'(.*?)\')!)?((\$?([A-Z]+)(\$?(\d+))?:\$?\7(\$?(\d+))?)|(\$?([A-Z]+)(\$?(\d+))?:\$?([A-Z]+)(\$?\15)?))'
+    regexp = r'((\'(.*?)\'|(\w*?))!)?((\$?([A-Z]+)(\$?(\d+))?:\$?\8(\$?(\d+))?)|(\$?([A-Z]+)(\$?(\d+))?:\$?([A-Z]+)(\$?\15)?))'
     last_match_regexp = r'([^\d$].*)?'
     value_range = [0, -1]
 
@@ -18,16 +18,16 @@ class CellIdentifierRangeToken(RegexpBaseToken):
     @property
     def range(self) -> (Cell, Cell,):
         if self._range[0] is None:
-            self._range = Cell(title=self.value[3] or self.in_cell.title, column=self.value[6] or self.value[12],
-                               row=self.value[8] or self.value[14]), Cell(title=self.value[3] or self.in_cell.title,
-                                                                          column=self.value[6] or self.value[15],
-                                                                          row=self.value[10] or self.value[14])
+            self._range = Cell(title=self.value[3] or self.value[4] or self.in_cell.title, column=self.value[7] or self.value[13],
+                               row=self.value[9] or self.value[15]), Cell(title=self.value[3] or self.value[4] or self.in_cell.title,
+                                                                          column=self.value[7] or self.value[16],
+                                                                          row=self.value[11] or self.value[15])
         return self._range
 
 
 class MatrixOfCellIdentifiersToken(RegexpBaseToken):
     # TODO Consider the possibility of a matrix like A:A
-    regexp = r'((\'(.*?)\')!)?\$?([A-Z]+)(\$?(\d+))?:\$?([A-Z]+)(\$?(\d+))?'
+    regexp = r'((\'(.*?)\'|(\w*?))!)?\$?([A-Z]+)(\$?(\d+))?:\$?([A-Z]+)(\$?(\d+))?'
     last_match_regexp = r'([^\d].*)?'
     value_range = [0, -1]
 
@@ -41,14 +41,14 @@ class MatrixOfCellIdentifiersToken(RegexpBaseToken):
     @property
     def matrix(self) -> (Cell, Cell,):
         if self._matrix[0] is None:
-            self._matrix = Cell(title=self.value[3] or self.in_cell.title, column=self.value[4],
-                                row=self.value[6]), Cell(title=self.value[3] or self.in_cell.title,
-                                                         column=self.value[7], row=self.value[9])
+            self._matrix = Cell(title=self.value[3] or self.value[4] or self.in_cell.title, column=self.value[5],
+                                row=self.value[7]), Cell(title=self.value[3] or self.value[4] or self.in_cell.title,
+                                                         column=self.value[8], row=self.value[10])
         return self._matrix
 
 
 class CellIdentifierToken(RegexpBaseToken):
-    regexp = r'((\'(.*?)\')!)?\$?([A-Z]+)\$?(\d+)'
+    regexp = r'((\'(.*?)\'|(\w*?))!)?\$?([A-Z]+)\$?(\d+)'
     last_match_regexp = r'([^\d]|[^:\d].*)?'
     value_range = [0, -1]
 
@@ -62,7 +62,8 @@ class CellIdentifierToken(RegexpBaseToken):
     @property
     def cell(self) -> Cell:
         if self._cell is None:
-            self._cell = Cell(title=self.value[3] or self.in_cell.title, column=self.value[4], row=self.value[5])
+            self._cell = Cell(title=self.value[3] or self.value[4] or self.in_cell.title, column=self.value[5],
+                              row=self.value[6])
         return self._cell
 
 
