@@ -29,8 +29,7 @@ class Excel:
         if cell.has_handled_identifiers():
             return
 
-        if type(cell.title) is str:
-            cell.title = self._title_to_number(cell.title)
+        cell.title_index = self._title_to_number(cell.title)
 
         if type(cell.column) is str:
             cell.column = column_index_from_string(cell.column) - 1
@@ -52,9 +51,9 @@ class Excel:
 
     def _fill_cell(self, cell: Cell) -> Cell:
         self._handle_cell(cell)
-        cell.value = self._data[cell.title][cell.row][cell.column] if 0 <= cell.title < len(
-            self._data) and 0 <= cell.row < len(self._data[cell.title]) and 0 <= cell.column < len(
-            self._data[cell.title][cell.row]) else None
+        cell.value = self._data[cell.title_index][cell.row][cell.column] if 0 <= cell.title_index < len(
+            self._data) and 0 <= cell.row < len(self._data[cell.title_index]) and 0 <= cell.column < len(
+            self._data[cell.title_index][cell.row]) else None
         return cell
 
     def fill_cell(self, cell: Cell) -> Cell:
