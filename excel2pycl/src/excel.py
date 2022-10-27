@@ -1,8 +1,8 @@
 import re
-from typing import List
+from typing import List, Dict
 
 from openpyxl import load_workbook
-from openpyxl.utils import get_column_letter, column_index_from_string
+from openpyxl.utils import get_column_letter
 
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.exceptions import E2PyclSafetyException, E2PyclParserException
@@ -22,26 +22,6 @@ class Excel:
         if self._suspicious_cells:
             raise E2PyclSafetyException(suspicious_cells=self._suspicious_cells)
 
-    def _title_to_number(self, title: str) -> int:
-        return self._titles[title]
-
-    def handle_cell(self, cell: Cell):
-        if cell.has_handled_identifiers():
-            return
-
-        cell.title_index = self._title_to_number(cell.title)
-
-        if type(cell.column) is str:
-            cell.column = column_index_from_string(cell.column) - 1
-
-        if type(cell.row) is str:
-            if cell.row:
-                cell.row = int(cell.row) - 1
-            else:
-                cell.row = None
-
-        cell._handled_identifiers = True
-
     @staticmethod
     def _handle_cell(cell: Cell):
         """
@@ -51,9 +31,9 @@ class Excel:
 
     def _fill_cell(self, cell: Cell) -> Cell:
         self._handle_cell(cell)
-        cell.value = self._data[cell.title_index][cell.row][cell.column] if 0 <= cell.title_index < len(
-            self._data) and 0 <= cell.row < len(self._data[cell.title_index]) and 0 <= cell.column < len(
-            self._data[cell.title_index][cell.row]) else None
+        cell.value = self._data[cell.title][cell.row][cell.column] if 0 <= cell.title < len(
+            self._data) and 0 <= cell.row < len(self._data[cell.title]) and 0 <= cell.column < len(
+            self._data[cell.title][cell.row]) else None
         return cell
 
     def fill_cell(self, cell: Cell) -> Cell:
@@ -61,7 +41,7 @@ class Excel:
             # TODO добавить кастомные исключения
             raise E2PyclParserException('It is not possible to get a cell without pointing to a specific row')
 
-        self.handle_cell(cell)
+        cell.handle_cell(self._titles)
 
         return self._fill_cell(cell)
 
@@ -69,8 +49,8 @@ class Excel:
     # TODO добавить проверки на предмет выхода за диапазоны excel-файлика
     # TODO добавить проверки на предмет того, что дальше, а что ближе
     def get_range(self, first: Cell, second: Cell) -> list:
-        self.handle_cell(first)
-        self.handle_cell(second)
+        first.handle_cell(self._titles)
+        second.handle_cell(self._titles)
 
         if first.title != second.title:
             raise E2PyclParserException('It is impossible to get range if the values are located in different workspaces')
@@ -85,9 +65,9 @@ class Excel:
         return result
 
     def get_similar_second(self, base: Cell, first: Cell, second: Cell):
-        self.handle_cell(base)
-        self.handle_cell(first)
-        self.handle_cell(second)
+        base.handle_cell(self._titles)
+        first.handle_cell(self._titles)
+        second.handle_cell(self._titles)
 
         return Cell(base.title, base.column + (second.column - first.column), base.row + (second.row - first.row) if first.row is not None or second.row is not None else None)
 
@@ -131,8 +111,8 @@ class Excel:
 
     # TODO добавить проверки аналогичные get_set
     def get_matrix(self, first: Cell, second: Cell) -> list:
-        self.handle_cell(first)
-        self.handle_cell(second)
+        first.handle_cell(self._titles)
+        second.handle_cell(self._titles)
 
         if first.row is None and second.row is None and first.column == second.column:
             return [[i] for i in self._get_vertical_range(first, second)]
@@ -188,3 +168,6 @@ class Excel:
                     cells.append(self.fill_cell(Cell(title_number, column_number, row_number)))
 
         return cells
+
+    def get_titles(self) -> Dict[str, int]:
+        return self._titles

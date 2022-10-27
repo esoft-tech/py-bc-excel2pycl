@@ -1,5 +1,7 @@
 from dataclasses import dataclass
-import sys
+from typing import Dict
+
+from openpyxl.utils import column_index_from_string
 
 from excel2pycl.src.exceptions import E2PyclCellException
 
@@ -10,22 +12,35 @@ class Cell:
     column: int or str
     row: int or str = None
     value: str or int or float or bool or None = None
-    title_index: int = 0
     _handled_identifiers: bool = False
 
     def has_handled_identifiers(self):
         return self._handled_identifiers
 
-    def _get_title_hash(self, title):
-        from hashlib import blake2b
-        return blake2b(str(title).encode()).hexdigest()[:10]
+    def handle_cell(self, titles: Dict[str, int]):
+        if self.has_handled_identifiers():
+            return
+
+        if type(self.title) is str:
+            self.title = titles[self.title]
+
+        if type(self.column) is str:
+            self.column = column_index_from_string(self.column) - 1
+
+        if type(self.row) is str:
+            if self.row:
+                self.row = int(self.row) - 1
+            else:
+                self.row = None
+
+        self._handled_identifiers = True
 
     @property
     def uid(self) -> str:
         if not self._handled_identifiers and not (type(self.column) is int and type(self.row) is int):
             raise E2PyclCellException('Cell column and row identifiers must be integer when used to get uid')
 
-        return f"_{'_'.join([str(i) if i is not None else 'any' for i in [self._get_title_hash(self.title), self.column, self.row]])}"
+        return f"_{'_'.join([str(i) if i is not None else 'any' for i in [self.title, self.column, self.row]])}"
 
     def __str__(self):
         return f'<{self.__class__.__name__}>(`{self.title}`, `{self.column}`, {self.row})'

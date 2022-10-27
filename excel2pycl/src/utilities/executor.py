@@ -16,6 +16,7 @@ class Executor:
         self._cells_have_been_changed: bool = False
         self._executed_instance: Optional[AbstractExcelInPython] = None
         self._cells: Set[Cell] = set()
+        self._titles = None
 
     def set_executed_class(self, class_object: AbstractExcelInPython.__class__ = None,
                            class_file: str = None) -> Executor:
@@ -39,6 +40,8 @@ class Executor:
         else:
             raise E2PyclExecutorException('There is no data to get an instance of an excel in python object.')
 
+        self._titles = self._executed_instance.get_titles()
+
         return self
 
     def set_cells(self, cells: List[Cell]) -> Executor:
@@ -52,6 +55,8 @@ class Executor:
         Returns:
             Executor.
         """
+        for cell in cells:
+            cell.handle_cell(self._titles)
         self._cells = {*cells, *self._cells}
         self._cells_have_been_changed = True
         return self
@@ -82,6 +87,7 @@ class Executor:
         if self._cells_have_been_changed:
             self._set_cells_to_executed_instance()
 
+        cell.handle_cell(self._titles)
         cell.value = self._executed_instance.exec_function_in(cell.uid)
 
         return cell
