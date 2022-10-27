@@ -11,7 +11,7 @@ class Context:
     def __init__(self):
         self._cell_translations = {}
         self._sub_cell_translations: Dict[str, list] = {}
-        self._titles = None
+        self._titles: Dict[str, int] = {}
 
     @property
     def __class_template(self) -> str:
@@ -92,8 +92,7 @@ class Context:
         return '\n\n'.join([self.__build_function(name, code) for name, code in functions.items()])
 
     def __build_class(self, functions: dict) -> str:
-        a = self.__class_template.format(functions=self.__build_functions(functions), titles=self._titles)
-        return a
+        return self.__class_template.format(functions=self.__build_functions(functions), titles=self._titles)
 
     @staticmethod
     def _get_cell_function_name(cell: Cell) -> str:

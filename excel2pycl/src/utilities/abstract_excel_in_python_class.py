@@ -8,7 +8,7 @@ class AbstractExcelInPython(ABC):
             arguments = []
         self._arguments = {}
         self.set_arguments(arguments)
-        self._titles = None
+        self._titles = {}
 
     def set_arguments(self, arguments: list):
         self._arguments = {

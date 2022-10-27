@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Optional, Set
+from typing import List, Optional, Set, Dict
 
 from excel2pycl.src.utilities.abstract_excel_in_python_class import AbstractExcelInPython
 from excel2pycl.src.cell import Cell
@@ -16,7 +16,7 @@ class Executor:
         self._cells_have_been_changed: bool = False
         self._executed_instance: Optional[AbstractExcelInPython] = None
         self._cells: Set[Cell] = set()
-        self._titles = None
+        self._titles: Dict[str, int] = {}
 
     def set_executed_class(self, class_object: AbstractExcelInPython.__class__ = None,
                            class_file: str = None) -> Executor:
