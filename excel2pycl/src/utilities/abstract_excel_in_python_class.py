@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import Dict
 
 
 class AbstractExcelInPython(ABC):
@@ -7,12 +8,16 @@ class AbstractExcelInPython(ABC):
             arguments = []
         self._arguments = {}
         self.set_arguments(arguments)
+        self._titles = {}
 
     def set_arguments(self, arguments: list):
         self._arguments = {
             **self._arguments,
             **{i['uid']: i['value'] for i in arguments}
         }
+
+    def get_titles(self) -> Dict[str, int]:
+        return self._titles
 
     def _flatten_list(self, subject: list) -> list:
         result = []
