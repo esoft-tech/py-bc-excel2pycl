@@ -9,8 +9,8 @@ class Cell:
     title: int or str
     column: int or str
     row: int or str = None
-    title_index: int = 0
     value: str or int or float or bool or None = None
+    title_index: int = 0
     _handled_identifiers: bool = False
 
     def has_handled_identifiers(self):
