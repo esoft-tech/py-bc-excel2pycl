@@ -17,24 +17,6 @@ class Cell:
     def has_handled_identifiers(self):
         return self._handled_identifiers
 
-    def handle_cell(self, titles: Dict[str, int]):
-        if self.has_handled_identifiers():
-            return
-
-        if type(self.title) is str:
-            self.title = titles[self.title]
-
-        if type(self.column) is str:
-            self.column = column_index_from_string(self.column) - 1
-
-        if type(self.row) is str:
-            if self.row:
-                self.row = int(self.row) - 1
-            else:
-                self.row = None
-
-        self._handled_identifiers = True
-
     @property
     def uid(self) -> str:
         if not self._handled_identifiers and not (type(self.column) is int and type(self.row) is int):

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import List, Optional, Set, Dict
 
+from excel2pycl.src.handle_cell import handle_cell
 from excel2pycl.src.utilities.abstract_excel_in_python_class import AbstractExcelInPython
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.exceptions import E2PyclExecutorException
@@ -56,7 +57,7 @@ class Executor:
             Executor.
         """
         for cell in cells:
-            cell.handle_cell(self._titles)
+            handle_cell(cell, self._titles)
         self._cells = {*cells, *self._cells}
         self._cells_have_been_changed = True
         return self
@@ -87,7 +88,7 @@ class Executor:
         if self._cells_have_been_changed:
             self._set_cells_to_executed_instance()
 
-        cell.handle_cell(self._titles)
+        handle_cell(cell, self._titles)
         cell.value = self._executed_instance.exec_function_in(cell.uid)
 
         return cell

@@ -6,6 +6,7 @@ from openpyxl.utils import get_column_letter
 
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.exceptions import E2PyclSafetyException, E2PyclParserException
+from excel2pycl.src.handle_cell import handle_cell
 
 
 class Excel:
@@ -41,7 +42,7 @@ class Excel:
             # TODO добавить кастомные исключения
             raise E2PyclParserException('It is not possible to get a cell without pointing to a specific row')
 
-        cell.handle_cell(self._titles)
+        handle_cell(cell, self._titles)
 
         return self._fill_cell(cell)
 
@@ -49,8 +50,8 @@ class Excel:
     # TODO добавить проверки на предмет выхода за диапазоны excel-файлика
     # TODO добавить проверки на предмет того, что дальше, а что ближе
     def get_range(self, first: Cell, second: Cell) -> list:
-        first.handle_cell(self._titles)
-        second.handle_cell(self._titles)
+        handle_cell(first, self._titles)
+        handle_cell(second, self._titles)
 
         if first.title != second.title:
             raise E2PyclParserException('It is impossible to get range if the values are located in different workspaces')
@@ -65,9 +66,9 @@ class Excel:
         return result
 
     def get_similar_second(self, base: Cell, first: Cell, second: Cell):
-        base.handle_cell(self._titles)
-        first.handle_cell(self._titles)
-        second.handle_cell(self._titles)
+        handle_cell(base, self._titles)
+        handle_cell(first, self._titles)
+        handle_cell(second, self._titles)
 
         return Cell(base.title, base.column + (second.column - first.column), base.row + (second.row - first.row) if first.row is not None or second.row is not None else None)
 
@@ -111,8 +112,8 @@ class Excel:
 
     # TODO добавить проверки аналогичные get_set
     def get_matrix(self, first: Cell, second: Cell) -> list:
-        first.handle_cell(self._titles)
-        second.handle_cell(self._titles)
+        handle_cell(first, self._titles)
+        handle_cell(second, self._titles)
 
         if first.row is None and second.row is None and first.column == second.column:
             return [[i] for i in self._get_vertical_range(first, second)]
