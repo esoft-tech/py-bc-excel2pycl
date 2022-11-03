@@ -134,7 +134,7 @@ class AndLambdaToken(RegexpBaseToken):
 
 # TODO добавить условие для локализации
 class LiteralToken(RegexpBaseToken):
-    regexp = r'\"(.*?)\"|(\d+)((\.)(\d+))?(e(-?\d+))?|(TRUE\(\))|(FALSE\(\))'
+    regexp = r'\"(.*?)\"|(\d+)((\.)(\d+))?(e(-?\d+))?|(TRUE\(\))|(FALSE(\(\))?)'
     value_range = [0, -1]
 
     def __init__(self, *args, **kwargs):
