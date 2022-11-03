@@ -83,6 +83,10 @@ class AverageKeywordToken(RegexpBaseToken):
     regexp = r'AVERAGE'
 
 
+class OrKeywordToken(RegexpBaseToken):
+    regexp = r'OR'
+
+
 # TODO добавить условие для локализации
 class SeparatorToken(RegexpBaseToken):
     regexp = r';|,'
