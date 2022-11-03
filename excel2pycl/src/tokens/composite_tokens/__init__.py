@@ -1,3 +1,5 @@
+from typing import Union
+
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.tokens.composite_base_token import CompositeBaseToken
 from excel2pycl.src.tokens.recursive_composite_base_token import RecursiveCompositeBaseToken, CLS
@@ -5,7 +7,7 @@ from excel2pycl.src.tokens.regexp_tokens import SumKeywordToken, IfKeywordToken,
     CellIdentifierRangeToken, MatrixOfCellIdentifiersToken, EqOperatorToken, NotEqOperatorToken, GtOperatorToken, \
     GtOrEqualOperatorToken, LtOperatorToken, LtOrEqualOperatorToken, PlusOperatorToken, MinusOperatorToken, \
     MultiplicationOperatorToken, DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, \
-    AndLambdaToken, VlookupKeywordToken, AverageKeywordToken
+    AndLambdaToken, VlookupKeywordToken, AverageKeywordToken, AndKeywordToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
@@ -229,13 +231,22 @@ class AverageControlConstructionToken(CompositeBaseToken):
         return self.value[2].expressions
 
 
-class ControlConstructionToken(CompositeBaseToken):
-    _TOKEN_SETS = [[IfControlConstructionToken], [SumControlConstructionToken], [SumIfControlConstructionToken],
-                   [VlookupControlConstructionToken], [AverageControlConstructionToken]]
+class AndControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[AndKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]]
 
     @property
-    def control_construction(
-            self) -> IfControlConstructionToken or SumControlConstructionToken or SumIfControlConstructionToken or VlookupControlConstructionToken or AverageControlConstructionToken:
+    def expressions(self):
+        return self.value[2].expressions
+
+
+class ControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[IfControlConstructionToken], [SumControlConstructionToken], [SumIfControlConstructionToken],
+                   [VlookupControlConstructionToken], [AverageControlConstructionToken], [AndControlConstructionToken]]
+
+    @property
+    def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,
+                                            SumIfControlConstructionToken, VlookupControlConstructionToken,
+                                            AverageControlConstructionToken, AndControlConstructionToken]:
         return self.value[0]
 
 
