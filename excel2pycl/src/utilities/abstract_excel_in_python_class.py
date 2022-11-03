@@ -52,6 +52,9 @@ class AbstractExcelInPython(ABC):
 
         return result
 
+    def _round(self, number: float, num_digits: int):
+        return round(number, int(num_digits))
+
     def _cell_preprocessor(self, cell_uid: str):
         return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))
 

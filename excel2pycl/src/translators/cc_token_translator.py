@@ -1,7 +1,8 @@
 from excel2pycl.src.context import Context
 from excel2pycl.src.excel import Excel
 from excel2pycl.src.tokens import IfControlConstructionToken, ControlConstructionToken, SumIfControlConstructionToken, \
-    SumControlConstructionToken, AverageControlConstructionToken, VlookupControlConstructionToken
+    SumControlConstructionToken, AverageControlConstructionToken, VlookupControlConstructionToken, \
+    RoundControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
@@ -13,6 +14,7 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
         from excel2pycl.src.translators.sum_cc_token_translator import SumControlConstructionTokenTranslator
         from excel2pycl.src.translators.average_cc_token_translator import AverageControlConstructionTokenTranslator
         from excel2pycl.src.translators.vlookup_cc_token_translator import VlookupControlConstructionTokenTranslator
+        from excel2pycl.src.translators.round_cc_token_translator import RoundControlConstructionTokenTranslator
 
         translate_functions = {
             IfControlConstructionToken.__name__: IfControlConstructionTokenTranslator.translate,
@@ -20,6 +22,7 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             SumControlConstructionToken.__name__: SumControlConstructionTokenTranslator.translate,
             AverageControlConstructionToken.__name__: AverageControlConstructionTokenTranslator.translate,
             VlookupControlConstructionToken.__name__: VlookupControlConstructionTokenTranslator.translate,
+            RoundControlConstructionToken.__name__: RoundControlConstructionTokenTranslator.translate
         }
 
         sub_token = token.control_construction
