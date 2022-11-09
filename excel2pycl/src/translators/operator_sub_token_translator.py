@@ -1,6 +1,6 @@
 from excel2pycl.src.context import Context
 from excel2pycl.src.excel import Excel
-from excel2pycl.src.tokens import RegexpBaseToken, NotEqOperatorToken, EqOperatorToken
+from excel2pycl.src.tokens import RegexpBaseToken, NotEqOperatorToken, EqOperatorToken, AmpersandToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
@@ -12,5 +12,7 @@ class OperatorSubTokenTranslator(AbstractTranslator):
             operator = '!='
         elif token.__class__ == EqOperatorToken:
             operator = '=='
+        elif token.__class__ == AmpersandToken:
+            operator = '+'
 
         return operator
