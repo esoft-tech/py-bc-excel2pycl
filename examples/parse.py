@@ -4,11 +4,11 @@ from excel2pycl import Cell, Parser
 
 
 def main():
-    translation_file_path = f'1.py'
+    translation_file_path = f'temp/{uuid.uuid4()}.py'
 
     Parser() \
-        .set_excel_file_path('TokensTest.xlsx') \
-        .set_entrypoint_cell(Cell("Лист1", 0, 0)) \
+        .set_excel_file_path('./test.xlsx') \
+        .set_entrypoint_cell(Cell(0, 2, 0)) \
         .enable_safety_check() \
         .write_translation(translation_file_path)
 

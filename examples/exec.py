@@ -4,12 +4,12 @@ from excel2pycl import Cell, Executor
 
 
 def main():
-    class_file = '1.py'
+    class_file = sys.argv[1]
 
     print(Executor()
           .set_executed_class(class_file=class_file)
-          .set_cells([Cell("Лист1", 3, 0, 48)])
-          .get_cell(Cell("Лист1", 0, 0))
+          .set_cells([Cell(0, 1, 20, 20000)])
+          .get_cell(Cell(0, 2, 0))
           .value)
 
 
