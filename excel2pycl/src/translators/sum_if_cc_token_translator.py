@@ -24,7 +24,7 @@ class SumIfControlConstructionTokenTranslator(AbstractTranslator):
         sum_range = MatrixOfCellIdentifiersTokenTranslator.translate_with_cells(start_cell_of_needed,
                                                                                 finish_cell_of_needed, excel, context)
 
-        from excel2pycl.src.translators.lambda_token_translator import LambdaTokenTranslator
-        lambda_ = LambdaTokenTranslator.translate(token.lambda_, excel, context)
+        from excel2pycl.src.translators.expression_token_translator import ExpressionTokenTranslator
+        condition = ExpressionTokenTranslator.translate(token.condition, excel, context)
 
-        return f'self._sum_if({range_},{lambda_}, {sum_range})'
+        return f'self._sum_if({range_}, {condition}, {sum_range})'

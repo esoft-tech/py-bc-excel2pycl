@@ -56,12 +56,33 @@ class Context:
                 return row[col_index_num - 1]
 
         return 1  # When the vlookup has not found anything similar to lookup_value, it returns 1 in the excel implementation for this function
-        
-    def _sum_if(self, range_: list, criteria: callable, sum_range: list = None):
+
+    def _check_criteria(self, value: str or int, criteria: str) -> bool:
+        def criteria_to_number(criteria: str) -> int or str:
+            try:
+                return int(criteria)
+            except ValueError:
+                return criteria
+
+        if not criteria.find('>='):
+            return value >= (criteria_to_number(criteria[2:]) if type(value) == int else criteria[2:])
+        if not criteria.find('<='):
+            return value <= (criteria_to_number(criteria[2:]) if type(value) == int else criteria[2:])
+        if not criteria.find('>'):
+            return value > (criteria_to_number(criteria[1:]) if type(value) == int else criteria[1:])
+        if not criteria.find('<'):
+            return value >= (criteria_to_number(criteria[1:]) if type(value) == int else criteria[2:])
+        if not criteria.find('!='):
+            return value >= (criteria_to_number(criteria[2:]) if type(value) == int else criteria[2:])
+        if not criteria.find('=='):
+            return value == (criteria_to_number(criteria[2:]) if type(value) == int else criteria[2:])
+        return value == (criteria_to_number(criteria) if type(value) == int else criteria)
+
+    def _sum_if(self, range_: list, criteria: str, sum_range: list = None):
         result = 0
         range_, sum_range = self._flatten_list(range_), self._flatten_list(sum_range)
         for i in range(len(range_)):
-            if i < len(sum_range) and criteria(range_[i]):
+            if i < len(sum_range) and self._check_criteria(range_[i], criteria):
                 result += sum_range[i] or 0
                 
         return result
