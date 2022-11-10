@@ -14,6 +14,13 @@ class AbstractExcelInPython(ABC):
             **{i['uid']: i['value'] for i in arguments}
         }
 
+    class EmptyCell(int):
+        def __eq__(self, other):
+            empty_cell_equal_values = ['', 0, None, False]
+            if other in empty_cell_equal_values:
+                return True
+            return False
+
     def _flatten_list(self, subject: list) -> list:
         result = []
         for i in subject:

@@ -148,7 +148,7 @@ class LiteralToken(RegexpBaseToken):
                 # TODO in theory, the degree can be calculated using the expression
                 real_value *= 10 ** int(self.value[7])
             real_value = str(real_value)
-        elif self.value[1]:
+        elif self.value[1] or self.value[0] == '""':
             real_value = f'\'{self.value[1]}\''
         elif self.value[8]:
             real_value = 'True'
