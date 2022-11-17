@@ -134,7 +134,7 @@ class AndLambdaToken(RegexpBaseToken):
 
 # TODO добавить условие для локализации
 class LiteralToken(RegexpBaseToken):
-    regexp = r'\"(.*?)\"|(\d+)((\.)(\d+))?(e(-?\d+))?|(TRUE\(\))|(FALSE\(\))'
+    regexp = r'\"(.*?)\"|(\d+)((\.)(\d+))?(e(-?\d+))?|(TRUE(\(\))?)|(FALSE(\(\))?)'
     value_range = [0, -1]
 
     def __init__(self, *args, **kwargs):
@@ -152,7 +152,7 @@ class LiteralToken(RegexpBaseToken):
             real_value = f'\'{self.value[1]}\''
         elif self.value[8]:
             real_value = 'True'
-        elif self.value[9]:
+        elif self.value[10]:
             real_value = 'False'
         else:
             raise E2PyclParserException('Unknown literal value')
