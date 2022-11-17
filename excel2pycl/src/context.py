@@ -65,6 +65,9 @@ class Context:
                 result += sum_range[i] or 0
                 
         return result
+
+    def _or(self, flatten_list: list):
+        return any(flatten_list)
         
     def _cell_preprocessor(self, cell_uid: str):
         return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))
