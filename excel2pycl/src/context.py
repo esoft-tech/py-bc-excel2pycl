@@ -11,6 +11,7 @@ class Context:
     def __init__(self):
         self._cell_translations = {}
         self._sub_cell_translations: Dict[str, list] = {}
+        self._titles: Dict[str, int] = {}
 
     @property
     def __class_template(self) -> str:
@@ -21,12 +22,16 @@ class Context:
             arguments = []
         self._arguments = {{}}
         self.set_arguments(arguments)
+        self._titles = {titles}
         
     def set_arguments(self, arguments: list):
         self._arguments = {{
             **self._arguments,
             **{{i['uid']: i['value'] for i in arguments}}
         }}
+
+    def get_titles(self) -> dict:
+        return self._titles
         
     def _flatten_list(self, subject: list) -> list:
         result = []
@@ -65,6 +70,9 @@ class Context:
                 result += sum_range[i] or 0
                 
         return result
+
+    def _or(self, flatten_list: list):
+        return any(flatten_list)
         
     def _and(self, flatten_list: list):
         return all(flatten_list)
@@ -90,7 +98,7 @@ class Context:
         return '\n\n'.join([self.__build_function(name, code) for name, code in functions.items()])
 
     def __build_class(self, functions: dict) -> str:
-        return self.__class_template.format(functions=self.__build_functions(functions))
+        return self.__class_template.format(functions=self.__build_functions(functions), titles=self._titles)
 
     @staticmethod
     def _get_cell_function_name(cell: Cell) -> str:
