@@ -23,7 +23,7 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             SumControlConstructionToken.__name__: SumControlConstructionTokenTranslator.translate,
             AverageControlConstructionToken.__name__: AverageControlConstructionTokenTranslator.translate,
             VlookupControlConstructionToken.__name__: VlookupControlConstructionTokenTranslator.translate,
-            OrControlConstructionToken.__name__: OrControlConstructionTokenTranslator.translate
+            OrControlConstructionToken.__name__: OrControlConstructionTokenTranslator.translate,
             AndControlConstructionToken.__name__: AndControlConstructionTokenTranslator.translate
         }
 
