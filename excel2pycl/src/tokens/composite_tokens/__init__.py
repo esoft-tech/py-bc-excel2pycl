@@ -7,7 +7,7 @@ from excel2pycl.src.tokens.regexp_tokens import SumKeywordToken, IfKeywordToken,
     CellIdentifierRangeToken, MatrixOfCellIdentifiersToken, EqOperatorToken, NotEqOperatorToken, GtOperatorToken, \
     GtOrEqualOperatorToken, LtOperatorToken, LtOrEqualOperatorToken, PlusOperatorToken, MinusOperatorToken, \
     MultiplicationOperatorToken, DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, \
-    AndLambdaToken, VlookupKeywordToken, AverageKeywordToken, OrKeywordToken
+    AndLambdaToken, VlookupKeywordToken, AverageKeywordToken, OrKeywordToken, AndKeywordToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
@@ -239,14 +239,24 @@ class OrControlConstructionToken(CompositeBaseToken):
         return self.value[2].expressions
 
 
+class AndControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[AndKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]]
+
+    @property
+    def expressions(self):
+        return self.value[2].expressions
+
+
 class ControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[IfControlConstructionToken], [SumControlConstructionToken], [SumIfControlConstructionToken],
-                   [VlookupControlConstructionToken], [AverageControlConstructionToken], [OrControlConstructionToken]]
+                   [VlookupControlConstructionToken], [AverageControlConstructionToken], [OrControlConstructionToken],
+                   [AndControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,
                                             SumIfControlConstructionToken, VlookupControlConstructionToken,
-                                            AverageControlConstructionToken, OrControlConstructionToken]:
+                                            AverageControlConstructionToken, OrControlConstructionToken,
+                                            AndControlConstructionToken]:
         return self.value[0]
 
 

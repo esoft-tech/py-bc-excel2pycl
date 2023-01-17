@@ -74,6 +74,9 @@ class Context:
     def _or(self, flatten_list: list):
         return any(flatten_list)
         
+    def _and(self, flatten_list: list):
+        return all(flatten_list)
+        
     def _cell_preprocessor(self, cell_uid: str):
         return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))
 

@@ -87,6 +87,10 @@ class OrKeywordToken(RegexpBaseToken):
     regexp = r'OR'
 
 
+class AndKeywordToken(RegexpBaseToken):
+    regexp = r'AND'
+
+
 # TODO добавить условие для локализации
 class SeparatorToken(RegexpBaseToken):
     regexp = r';|,'
