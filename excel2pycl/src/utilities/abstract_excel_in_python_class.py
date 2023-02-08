@@ -57,6 +57,9 @@ class AbstractExcelInPython(ABC):
 
         return result
 
+    def _round(self, number: float, num_digits: int):
+        return round(number, int(num_digits))
+
     def _or(self, flatten_list: list):
         return any(flatten_list)
 

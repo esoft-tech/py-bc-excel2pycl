@@ -27,8 +27,9 @@ class CellTranslator(AbstractTranslator):
                 from excel2pycl.src.ast_builder import AstBuilder
                 from excel2pycl.src.lexer import Lexer
 
-                code = EntryPointTokenTranslator.translate(
-                    AstBuilder.parse(Lexer.parse(cell.value, in_cell=cell), in_cell=cell), excel, context)
+                lexer = Lexer.parse(cell.value, in_cell=cell)
+                ast = AstBuilder.parse(lexer, in_cell=cell)
+                code = EntryPointTokenTranslator.translate(ast, excel, context)
             else:
                 code = repr(cell.value)
             context.set_cell(cell, code)
