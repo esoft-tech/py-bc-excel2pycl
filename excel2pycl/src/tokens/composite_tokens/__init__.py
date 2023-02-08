@@ -7,7 +7,7 @@ from excel2pycl.src.tokens.regexp_tokens import SumKeywordToken, IfKeywordToken,
     CellIdentifierRangeToken, MatrixOfCellIdentifiersToken, EqOperatorToken, NotEqOperatorToken, GtOperatorToken, \
     GtOrEqualOperatorToken, LtOperatorToken, LtOrEqualOperatorToken, PlusOperatorToken, MinusOperatorToken, \
     MultiplicationOperatorToken, DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, \
-    AndLambdaToken, VlookupKeywordToken, AverageKeywordToken, RoundKeywordToken
+    AndLambdaToken, VlookupKeywordToken, AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
@@ -244,15 +244,32 @@ class RoundControlConstructionToken(CompositeBaseToken):
         return self.value[4]
 
 
+class OrControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[OrKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]]
+
+    @property
+    def expressions(self):
+        return self.value[2].expressions
+
+
+class AndControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[AndKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]]
+
+    @property
+    def expressions(self):
+        return self.value[2].expressions
+
+
 class ControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[IfControlConstructionToken], [SumControlConstructionToken], [SumIfControlConstructionToken],
                    [VlookupControlConstructionToken], [AverageControlConstructionToken],
-                   [RoundControlConstructionToken]]
+                   [RoundControlConstructionToken], [OrControlConstructionToken], [AndControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,
                                             SumIfControlConstructionToken, VlookupControlConstructionToken,
-                                            AverageControlConstructionToken, RoundControlConstructionToken]:
+                                            AverageControlConstructionToken, RoundControlConstructionToken,
+                                            OrControlConstructionToken, AndControlConstructionToken]:
         return self.value[0]
 
 
