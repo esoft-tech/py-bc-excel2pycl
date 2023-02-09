@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import Dict
 
 
 class AbstractExcelInPython(ABC):
@@ -7,12 +8,16 @@ class AbstractExcelInPython(ABC):
             arguments = []
         self._arguments = {}
         self.set_arguments(arguments)
+        self._titles = {}
 
     def set_arguments(self, arguments: list):
         self._arguments = {
             **self._arguments,
             **{i['uid']: i['value'] for i in arguments}
         }
+
+    def get_titles(self) -> Dict[str, int]:
+        return self._titles
 
     def _flatten_list(self, subject: list) -> list:
         result = []
@@ -52,8 +57,24 @@ class AbstractExcelInPython(ABC):
 
         return result
 
+    def _round(self, number: float, num_digits: int):
+        return round(number, int(num_digits))
+
+    def _or(self, flatten_list: list):
+        return any(flatten_list)
+
+    def _and(self, flatten_list: list):
+        return all(flatten_list)
+
     def _cell_preprocessor(self, cell_uid: str):
         return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))
 
     def exec_function_in(self, cell_uid: str):
         return self._cell_preprocessor(cell_uid)
+
+    class EmptyCell(int):
+        def __eq__(self, other):
+            empty_cell_equal_values = ['', 0, None, False]
+            if other in empty_cell_equal_values:
+                return True
+            return False

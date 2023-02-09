@@ -92,6 +92,7 @@ class Parser:
             excel.is_safe()
 
         context = Context()
+        context._titles = excel.get_titles()
 
         if self._entrypoint_cell:
             CellTranslator.translate(self._entrypoint_cell, excel, context)

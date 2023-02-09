@@ -83,6 +83,18 @@ class AverageKeywordToken(RegexpBaseToken):
     regexp = r'AVERAGE'
 
 
+class RoundKeywordToken(RegexpBaseToken):
+    regexp = r'ROUND'
+
+
+class OrKeywordToken(RegexpBaseToken):
+    regexp = r'OR'
+
+
+class AndKeywordToken(RegexpBaseToken):
+    regexp = r'AND'
+
+
 # TODO добавить условие для локализации
 class SeparatorToken(RegexpBaseToken):
     regexp = r';|,'
@@ -134,7 +146,7 @@ class AmpersandToken(RegexpBaseToken):
 
 # TODO добавить условие для локализации
 class LiteralToken(RegexpBaseToken):
-    regexp = r'\"(.*?)\"|(\d+)((\.)(\d+))?(e(-?\d+))?|(TRUE\(\))|(FALSE\(\))'
+    regexp = r'\"(.*?)\"|(\d+)((\.)(\d+))?(e(-?\d+))?|(TRUE(\(\))?)|(FALSE(\(\))?)'
     value_range = [0, -1]
 
     def __init__(self, *args, **kwargs):
@@ -148,11 +160,11 @@ class LiteralToken(RegexpBaseToken):
                 # TODO in theory, the degree can be calculated using the expression
                 real_value *= 10 ** int(self.value[7])
             real_value = str(real_value)
-        elif self.value[1]:
+        elif self.value[1] or self.value[0] == '""':
             real_value = f'\'{self.value[1]}\''
         elif self.value[8]:
             real_value = 'True'
-        elif self.value[9]:
+        elif self.value[10]:
             real_value = 'False'
         else:
             raise E2PyclParserException('Unknown literal value')

@@ -1,3 +1,5 @@
+from typing import Union
+
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.tokens.composite_base_token import CompositeBaseToken
 from excel2pycl.src.tokens.recursive_composite_base_token import RecursiveCompositeBaseToken, CLS
@@ -5,7 +7,7 @@ from excel2pycl.src.tokens.regexp_tokens import SumKeywordToken, IfKeywordToken,
     CellIdentifierRangeToken, MatrixOfCellIdentifiersToken, EqOperatorToken, NotEqOperatorToken, GtOperatorToken, \
     GtOrEqualOperatorToken, LtOperatorToken, LtOrEqualOperatorToken, PlusOperatorToken, MinusOperatorToken, \
     MultiplicationOperatorToken, DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, \
-    VlookupKeywordToken, AverageKeywordToken, AmpersandToken
+    VlookupKeywordToken, AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
@@ -238,13 +240,45 @@ class AverageControlConstructionToken(CompositeBaseToken):
         return self.value[2].expressions
 
 
-class ControlConstructionToken(CompositeBaseToken):
-    _TOKEN_SETS = [[IfControlConstructionToken], [SumControlConstructionToken], [SumIfControlConstructionToken],
-                   [VlookupControlConstructionToken], [AverageControlConstructionToken]]
+class RoundControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[RoundKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken,
+                    ExpressionToken, BracketFinishToken]]
 
     @property
-    def control_construction(
-            self) -> IfControlConstructionToken or SumControlConstructionToken or SumIfControlConstructionToken or VlookupControlConstructionToken or AverageControlConstructionToken:
+    def number(self) -> ExpressionToken:
+        return self.value[2]
+
+    @property
+    def num_digits(self) -> ExpressionToken:
+        return self.value[4]
+
+
+class OrControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[OrKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]]
+
+    @property
+    def expressions(self):
+        return self.value[2].expressions
+
+
+class AndControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[AndKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]]
+
+    @property
+    def expressions(self):
+        return self.value[2].expressions
+
+
+class ControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[IfControlConstructionToken], [SumControlConstructionToken], [SumIfControlConstructionToken],
+                   [VlookupControlConstructionToken], [AverageControlConstructionToken],
+                   [RoundControlConstructionToken], [OrControlConstructionToken], [AndControlConstructionToken]]
+
+    @property
+    def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,
+                                            SumIfControlConstructionToken, VlookupControlConstructionToken,
+                                            AverageControlConstructionToken, RoundControlConstructionToken,
+                                            OrControlConstructionToken, AndControlConstructionToken]:
         return self.value[0]
 
 
