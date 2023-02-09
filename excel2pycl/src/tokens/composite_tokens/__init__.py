@@ -7,7 +7,7 @@ from excel2pycl.src.tokens.regexp_tokens import SumKeywordToken, IfKeywordToken,
     CellIdentifierRangeToken, MatrixOfCellIdentifiersToken, EqOperatorToken, NotEqOperatorToken, GtOperatorToken, \
     GtOrEqualOperatorToken, LtOperatorToken, LtOrEqualOperatorToken, PlusOperatorToken, MinusOperatorToken, \
     MultiplicationOperatorToken, DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, \
-    AndLambdaToken, VlookupKeywordToken, AverageKeywordToken, OrKeywordToken, AndKeywordToken
+    AndLambdaToken, VlookupKeywordToken, AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
@@ -231,6 +231,19 @@ class AverageControlConstructionToken(CompositeBaseToken):
         return self.value[2].expressions
 
 
+class RoundControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[RoundKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken,
+                    ExpressionToken, BracketFinishToken]]
+
+    @property
+    def number(self) -> ExpressionToken:
+        return self.value[2]
+
+    @property
+    def num_digits(self) -> ExpressionToken:
+        return self.value[4]
+
+
 class OrControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[OrKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]]
 
@@ -249,14 +262,14 @@ class AndControlConstructionToken(CompositeBaseToken):
 
 class ControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[IfControlConstructionToken], [SumControlConstructionToken], [SumIfControlConstructionToken],
-                   [VlookupControlConstructionToken], [AverageControlConstructionToken], [OrControlConstructionToken],
-                   [AndControlConstructionToken]]
+                   [VlookupControlConstructionToken], [AverageControlConstructionToken],
+                   [RoundControlConstructionToken], [OrControlConstructionToken], [AndControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,
                                             SumIfControlConstructionToken, VlookupControlConstructionToken,
-                                            AverageControlConstructionToken, OrControlConstructionToken,
-                                            AndControlConstructionToken]:
+                                            AverageControlConstructionToken, RoundControlConstructionToken,
+                                            OrControlConstructionToken, AndControlConstructionToken]:
         return self.value[0]
 
 

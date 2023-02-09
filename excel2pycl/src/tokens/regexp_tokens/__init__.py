@@ -83,6 +83,10 @@ class AverageKeywordToken(RegexpBaseToken):
     regexp = r'AVERAGE'
 
 
+class RoundKeywordToken(RegexpBaseToken):
+    regexp = r'ROUND'
+
+
 class OrKeywordToken(RegexpBaseToken):
     regexp = r'OR'
 
