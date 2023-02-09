@@ -31,7 +31,7 @@ class CellTranslator(AbstractTranslator):
                 ast = AstBuilder.parse(lexer, in_cell=cell)
                 code = EntryPointTokenTranslator.translate(ast, excel, context)
             else:
-                code = repr(cell.value)
+                code = repr(cell.value) if cell.value is not None else 'self.EmptyCell()'
             context.set_cell(cell, code)
         return cell, excel, context
 
