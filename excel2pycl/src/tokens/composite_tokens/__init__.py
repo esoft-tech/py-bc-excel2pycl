@@ -7,7 +7,7 @@ from excel2pycl.src.tokens.regexp_tokens import SumKeywordToken, IfKeywordToken,
     CellIdentifierRangeToken, MatrixOfCellIdentifiersToken, EqOperatorToken, NotEqOperatorToken, GtOperatorToken, \
     GtOrEqualOperatorToken, LtOperatorToken, LtOrEqualOperatorToken, PlusOperatorToken, MinusOperatorToken, \
     MultiplicationOperatorToken, DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, \
-    AndLambdaToken, VlookupKeywordToken, AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken
+    VlookupKeywordToken, AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
@@ -55,6 +55,14 @@ class ArithmeticOperatorToken(CompositeBaseToken):
         return self.value[0].operator if self.value[0].__class__ is OneOperandArithmeticOperatorToken else self.value[0]
 
 
+class AmpersandOperatorToken(CompositeBaseToken):
+    _TOKEN_SETS = [[AmpersandToken]]
+
+    @property
+    def operator(self):
+        return self.value[0]
+
+
 class OperandToken(CompositeBaseToken):
     _TOKEN_SETS = [[LiteralToken], [CellIdentifierToken], [CellIdentifierRangeToken], [MatrixOfCellIdentifiersToken]]
 
@@ -80,7 +88,7 @@ class OperandToken(CompositeBaseToken):
 
 
 class OperatorToken(CompositeBaseToken):
-    _TOKEN_SETS = [[ArithmeticOperatorToken], [LogicalOperatorToken]]
+    _TOKEN_SETS = [[ArithmeticOperatorToken], [LogicalOperatorToken], [AmpersandOperatorToken]]
 
     @property
     def operator(self):
@@ -103,7 +111,8 @@ class ExpressionToken(RecursiveCompositeBaseToken):
 
     @property
     def operator(self):
-        return self.value[0].operator if self.value[0].__class__ is OperatorToken else self.value[1].operator if len(
+        return self.value[0].operator if self.value[0].__class__ is OperatorToken or self.value[
+            0].__class__ is OneOperandArithmeticOperatorToken else self.value[1].operator if len(
             self.value) == 3 and self.value[1].__class__ is OperatorToken else self.value[3].operator if len(
             self.value) == 5 and self.value[3].__class__ is OperatorToken else None
 
@@ -134,7 +143,7 @@ class IterableExpressionToken(RecursiveCompositeBaseToken):
 
 
 class LambdaToken(CompositeBaseToken):
-    _TOKEN_SETS = [[LiteralToken, AndLambdaToken, ExpressionToken], [LiteralToken], [ExpressionToken]]
+    _TOKEN_SETS = [[LiteralToken, AmpersandToken, ExpressionToken], [LiteralToken], [ExpressionToken]]
 
     @property
     def literal(self) -> int or float or str or bool:

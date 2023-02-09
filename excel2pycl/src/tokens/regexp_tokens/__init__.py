@@ -140,7 +140,7 @@ class DivOperatorToken(RegexpBaseToken):
     regexp = r'/'
 
 
-class AndLambdaToken(RegexpBaseToken):
+class AmpersandToken(RegexpBaseToken):
     regexp = r'&'
 
 
