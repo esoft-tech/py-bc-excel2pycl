@@ -7,7 +7,8 @@ from excel2pycl.src.tokens.regexp_tokens import SumKeywordToken, IfKeywordToken,
     CellIdentifierRangeToken, MatrixOfCellIdentifiersToken, EqOperatorToken, NotEqOperatorToken, GtOperatorToken, \
     GtOrEqualOperatorToken, LtOperatorToken, LtOrEqualOperatorToken, PlusOperatorToken, MinusOperatorToken, \
     MultiplicationOperatorToken, DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, \
-    VlookupKeywordToken, AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken
+    VlookupKeywordToken, AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, \
+    AmpersandToken, MaxKeywordToken, MinKeywordToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
@@ -173,7 +174,26 @@ class IfControlConstructionToken(CompositeBaseToken):
 
 
 class SumControlConstructionToken(CompositeBaseToken):
-    _TOKEN_SETS = [[SumKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]]
+    _TOKEN_SETS = [[SumKeywordToken, BracketStartToken,
+                    IterableExpressionToken, BracketFinishToken]]
+
+    @property
+    def expressions(self):
+        return self.value[2].expressions
+
+
+class MinControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[MinKeywordToken, BracketStartToken,
+                    IterableExpressionToken, BracketFinishToken]]
+
+    @property
+    def expressions(self):
+        return self.value[2].expressions
+
+
+class MaxControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[MaxKeywordToken, BracketStartToken,
+                    IterableExpressionToken, BracketFinishToken]]
 
     @property
     def expressions(self):
@@ -271,14 +291,18 @@ class AndControlConstructionToken(CompositeBaseToken):
 
 class ControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[IfControlConstructionToken], [SumControlConstructionToken], [SumIfControlConstructionToken],
-                   [VlookupControlConstructionToken], [AverageControlConstructionToken],
-                   [RoundControlConstructionToken], [OrControlConstructionToken], [AndControlConstructionToken]]
+                   [VlookupControlConstructionToken], [
+                       MinControlConstructionToken], [MaxControlConstructionToken],
+                   [AverageControlConstructionToken], [
+                       OrControlConstructionToken], [RoundControlConstructionToken],
+                   [AndControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,
+                                            MinControlConstructionToken, MaxControlConstructionToken,
                                             SumIfControlConstructionToken, VlookupControlConstructionToken,
-                                            AverageControlConstructionToken, RoundControlConstructionToken,
-                                            OrControlConstructionToken, AndControlConstructionToken]:
+                                            AverageControlConstructionToken, OrControlConstructionToken,
+                                            AndControlConstructionToken, RoundControlConstructionToken]:
         return self.value[0]
 
 

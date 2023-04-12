@@ -56,6 +56,12 @@ class Context:
 
     def _sum(self, flatten_list: list):
         return sum(self._only_numeric_list(flatten_list))
+        
+    def _min(self, flatten_list: list):
+        return min(self._only_numeric_list(flatten_list))
+        
+    def _max(self, flatten_list: list):
+        return max(self._only_numeric_list(flatten_list))
 
     def _average(self, flatten_list: list):
         return self._sum(flatten_list)/len(self._only_numeric_list(flatten_list))

@@ -75,6 +75,14 @@ class SumKeywordToken(RegexpBaseToken):
     regexp = r'SUM'
 
 
+class MinKeywordToken(RegexpBaseToken):
+    regexp = r'MIN'
+
+
+class MaxKeywordToken(RegexpBaseToken):
+    regexp = r'MAX'
+
+
 class VlookupKeywordToken(RegexpBaseToken):
     regexp = r'VLOOKUP'
 
@@ -167,7 +175,7 @@ class LiteralToken(RegexpBaseToken):
         elif self.value[10]:
             real_value = 'False'
         else:
-            raise E2PyclParserException('Unknown literal value')
+            raise E2PyclParserException(f'Unknown literal value: {self.value}')
 
         self.value = real_value
 
