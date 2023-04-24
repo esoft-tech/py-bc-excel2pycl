@@ -6,9 +6,9 @@ from excel2pycl.src.tokens.recursive_composite_base_token import RecursiveCompos
 from excel2pycl.src.tokens.regexp_tokens import SumKeywordToken, IfKeywordToken, CellIdentifierToken, \
     CellIdentifierRangeToken, MatrixOfCellIdentifiersToken, EqOperatorToken, NotEqOperatorToken, GtOperatorToken, \
     GtOrEqualOperatorToken, LtOperatorToken, LtOrEqualOperatorToken, PlusOperatorToken, MinusOperatorToken, \
-    MultiplicationOperatorToken, DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, \
-    VlookupKeywordToken, AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, \
-    AmpersandToken, MaxKeywordToken, MinKeywordToken
+    MultiplicationOperatorToken, DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, \
+    SeparatorToken, VlookupKeywordToken, AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, \
+    AmpersandToken, MaxKeywordToken, MinKeywordToken, IfErrorKeywordToken, MatchKeywordToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
@@ -16,7 +16,8 @@ class SumIfKeywordToken(CompositeBaseToken):
 
 
 class SimilarCellToken(CompositeBaseToken):
-    _TOKEN_SETS = [[CellIdentifierToken], [CellIdentifierRangeToken], [MatrixOfCellIdentifiersToken]]
+    _TOKEN_SETS = [[CellIdentifierToken], [
+        CellIdentifierRangeToken], [MatrixOfCellIdentifiersToken]]
 
     @property
     def cell(self) -> Cell:
@@ -49,7 +50,8 @@ class OneOperandArithmeticOperatorToken(CompositeBaseToken):
 
 
 class ArithmeticOperatorToken(CompositeBaseToken):
-    _TOKEN_SETS = [[OneOperandArithmeticOperatorToken], [MultiplicationOperatorToken], [DivOperatorToken]]
+    _TOKEN_SETS = [[OneOperandArithmeticOperatorToken], [
+        MultiplicationOperatorToken], [DivOperatorToken]]
 
     @property
     def operator(self):
@@ -65,7 +67,8 @@ class AmpersandOperatorToken(CompositeBaseToken):
 
 
 class OperandToken(CompositeBaseToken):
-    _TOKEN_SETS = [[LiteralToken], [CellIdentifierToken], [CellIdentifierRangeToken], [MatrixOfCellIdentifiersToken]]
+    _TOKEN_SETS = [[LiteralToken], [CellIdentifierToken], [
+        CellIdentifierRangeToken], [MatrixOfCellIdentifiersToken]]
 
     @property
     def cell(self) -> Cell:
@@ -89,7 +92,8 @@ class OperandToken(CompositeBaseToken):
 
 
 class OperatorToken(CompositeBaseToken):
-    _TOKEN_SETS = [[ArithmeticOperatorToken], [LogicalOperatorToken], [AmpersandOperatorToken]]
+    _TOKEN_SETS = [[ArithmeticOperatorToken], [
+        LogicalOperatorToken], [AmpersandOperatorToken]]
 
     @property
     def operator(self):
@@ -139,12 +143,14 @@ class IterableExpressionToken(RecursiveCompositeBaseToken):
     @property
     def expressions(self):
         if not self._expressions:
-            self._expressions = [self.value[0]] + self.value[2].expressions if len(self.value) == 3 else [self.value[0]]
+            self._expressions = [
+                self.value[0]] + self.value[2].expressions if len(self.value) == 3 else [self.value[0]]
         return self._expressions
 
 
 class LambdaToken(CompositeBaseToken):
-    _TOKEN_SETS = [[LiteralToken, AmpersandToken, ExpressionToken], [LiteralToken], [ExpressionToken]]
+    _TOKEN_SETS = [[LiteralToken, AmpersandToken, ExpressionToken], [
+        LiteralToken], [ExpressionToken]]
 
     @property
     def literal(self) -> int or float or str or bool:
@@ -170,6 +176,46 @@ class IfControlConstructionToken(CompositeBaseToken):
 
     @property
     def when_false(self) -> ExpressionToken:
+        return self.value[6]
+
+
+class IfErrorControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[IfErrorKeywordToken,
+                    BracketStartToken,
+                    ExpressionToken,
+                    SeparatorToken,
+                    ExpressionToken,
+                    BracketFinishToken]]
+
+    @property
+    def condition(self) -> ExpressionToken:
+        return self.value[2]
+
+    @property
+    def when_error(self) -> ExpressionToken:
+        return self.value[4]
+
+
+class MatchControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[MatchKeywordToken,
+                    BracketStartToken,
+                    ExpressionToken,
+                    SeparatorToken,
+                    ExpressionToken,
+                    SeparatorToken,
+                    ExpressionToken,
+                    BracketFinishToken]]
+
+    @property
+    def lookup_value(self) -> ExpressionToken:
+        return self.value[2]
+
+    @property
+    def lookup_array(self) -> ExpressionToken:
+        return self.value[4]
+
+    @property
+    def match_type(self) -> ExpressionToken:
         return self.value[6]
 
 
@@ -225,7 +271,7 @@ class SumIfControlConstructionToken(CompositeBaseToken):
     @property
     def first_cell_of_needed(self) -> Cell:
         return (self.value[6].cell if self.value[6].cell else self.value[6].range.range[0] if self.value[6].range else
-        self.value[6].matrix.matrix[0] if self.value[6].matrix else None) if len(self.value) == 8 else None
+                self.value[6].matrix.matrix[0] if self.value[6].matrix else None) if len(self.value) == 8 else None
 
 
 class VlookupControlConstructionToken(CompositeBaseToken):
@@ -253,7 +299,8 @@ class VlookupControlConstructionToken(CompositeBaseToken):
 
 
 class AverageControlConstructionToken(CompositeBaseToken):
-    _TOKEN_SETS = [[AverageKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]]
+    _TOKEN_SETS = [[AverageKeywordToken, BracketStartToken,
+                    IterableExpressionToken, BracketFinishToken]]
 
     @property
     def expressions(self):
@@ -274,7 +321,8 @@ class RoundControlConstructionToken(CompositeBaseToken):
 
 
 class OrControlConstructionToken(CompositeBaseToken):
-    _TOKEN_SETS = [[OrKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]]
+    _TOKEN_SETS = [[OrKeywordToken, BracketStartToken,
+                    IterableExpressionToken, BracketFinishToken]]
 
     @property
     def expressions(self):
@@ -282,7 +330,8 @@ class OrControlConstructionToken(CompositeBaseToken):
 
 
 class AndControlConstructionToken(CompositeBaseToken):
-    _TOKEN_SETS = [[AndKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]]
+    _TOKEN_SETS = [[AndKeywordToken, BracketStartToken,
+                    IterableExpressionToken, BracketFinishToken]]
 
     @property
     def expressions(self):

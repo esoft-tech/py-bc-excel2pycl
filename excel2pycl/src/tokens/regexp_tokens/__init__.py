@@ -71,6 +71,14 @@ class IfKeywordToken(RegexpBaseToken):
     regexp = r'IF'
 
 
+class IfErrorKeywordToken(RegexpBaseToken):
+    regexp = r'IFERROR'
+
+
+class MatchKeywordToken(RegexpBaseToken):
+    regexp = r'MATCH'
+
+
 class SumKeywordToken(RegexpBaseToken):
     regexp = r'SUM'
 

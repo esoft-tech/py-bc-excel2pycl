@@ -75,6 +75,10 @@ class Context:
 
         return 1  # When the vlookup has not found anything similar to lookup_value, it returns 1 in the excel implementation for this function
 
+    def _match(self, lookup_value, lookup_array, match_type = 0):
+        
+        pass
+
     def _sum_if(self, range_: list, criteria: callable, sum_range: list = None):
         result = 0
         range_, sum_range = self._flatten_list(range_), self._flatten_list(sum_range)

@@ -10,6 +10,6 @@ class RoundControlConstructionTokenTranslator(AbstractTranslator):
         from excel2pycl.src.translators.expression_token_translator import ExpressionTokenTranslator
 
         number, num_digits = ExpressionTokenTranslator.translate(token.number, excel, context), \
-                             ExpressionTokenTranslator.translate(token.num_digits, excel, context)
+            ExpressionTokenTranslator.translate(token.num_digits, excel, context)
 
         return f'self._round({number}, {num_digits})'
