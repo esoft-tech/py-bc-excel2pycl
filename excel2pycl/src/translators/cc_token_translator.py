@@ -3,7 +3,9 @@ from excel2pycl.src.excel import Excel
 from excel2pycl.src.tokens import IfControlConstructionToken, ControlConstructionToken, SumIfControlConstructionToken, \
     SumControlConstructionToken, AverageControlConstructionToken, VlookupControlConstructionToken, \
     RoundControlConstructionToken, OrControlConstructionToken, AndControlConstructionToken, \
-    MinControlConstructionToken, MaxControlConstructionToken
+    MinControlConstructionToken, MaxControlConstructionToken, IfErrorControlConstructionToken, \
+    DayControlConstructionToken, MonthControlConstructionToken, YearControlConstructionToken, \
+    DateDiffControlConstructionToken, DateControlConstructionToken, MatchControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
@@ -20,8 +22,15 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
         from excel2pycl.src.translators.and_cc_token_translator import AndControlConstructionTokenTranslator
         from excel2pycl.src.translators.min_cc_token_translator import MinControlConstructionTokenTranslator
         from excel2pycl.src.translators.max_cc_token_translator import MaxControlConstructionTokenTranslator
-
+        from excel2pycl.src.translators.iferror_cc_token_translator import IfErrorControlConstructionTokenTranslator
+        from excel2pycl.src.translators.day_cc_token_translator import DayControlConstructionTokenTranslator
+        from excel2pycl.src.translators.month_cc_token_translator import MonthControlConstructionTokenTranslator
+        from excel2pycl.src.translators.year_cc_token_translator import YearControlConstructionTokenTranslator
+        from excel2pycl.src.translators.date_diff_cc_translator import DateDiffControlConstructionTokenTranslator
+        from excel2pycl.src.translators.date_cc_token_translator import DateControlConstructionTokenTranslator
+        from excel2pycl.src.translators.match_cc_token_translator import MatchControlConstructionTokenTranslator
         translate_functions = {
+            IfErrorControlConstructionToken.__name__: IfErrorControlConstructionTokenTranslator.translate,
             IfControlConstructionToken.__name__: IfControlConstructionTokenTranslator.translate,
             SumIfControlConstructionToken.__name__: SumIfControlConstructionTokenTranslator.translate,
             SumControlConstructionToken.__name__: SumControlConstructionTokenTranslator.translate,
@@ -32,6 +41,12 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             AndControlConstructionToken.__name__: AndControlConstructionTokenTranslator.translate,
             MinControlConstructionToken.__name__: MinControlConstructionTokenTranslator.translate,
             MaxControlConstructionToken.__name__: MaxControlConstructionTokenTranslator.translate,
+            DayControlConstructionToken.__name__: DayControlConstructionTokenTranslator.translate,
+            MonthControlConstructionToken.__name__: MonthControlConstructionTokenTranslator.translate,
+            YearControlConstructionToken.__name__: YearControlConstructionTokenTranslator.translate,
+            DateDiffControlConstructionToken.__name__: DateDiffControlConstructionTokenTranslator.translate,
+            DateControlConstructionToken.__name__: DateControlConstructionTokenTranslator.translate,
+            MatchControlConstructionToken.__name__: MatchControlConstructionTokenTranslator.translate
         }
 
         sub_token = token.control_construction

@@ -9,4 +9,6 @@ class EntryPointTokenTranslator(AbstractTranslator):
     def translate(cls, token: EntryPointToken, excel: Excel, context: Context) -> str:
         from excel2pycl.src.translators.expression_token_translator import ExpressionTokenTranslator
 
+        if token is None:
+            return 0
         return ExpressionTokenTranslator.translate(token.expression, excel, context)

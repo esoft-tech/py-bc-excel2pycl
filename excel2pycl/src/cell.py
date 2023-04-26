@@ -1,7 +1,4 @@
 from dataclasses import dataclass
-from typing import Dict
-
-from openpyxl.utils import column_index_from_string
 
 from excel2pycl.src.exceptions import E2PyclCellException
 

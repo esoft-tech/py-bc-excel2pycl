@@ -9,9 +9,9 @@ class IfErrorControlConstructionTokenTranslator(AbstractTranslator):
     def translate(cls, token: IfErrorControlConstructionToken, excel: Excel, context: Context) -> str:
         from excel2pycl.src.translators.expression_token_translator import ExpressionTokenTranslator
         # Если ошибка в ячейке, будет ли Exception, или же в ячейке будет N/A?
-        try:
-            return ExpressionTokenTranslator.translate(token.condition,
-                                                       excel,
-                                                       context)
-        except Exception:
-            return ExpressionTokenTranslator.translate(token.when_error, excel, context)
+        condition = ExpressionTokenTranslator.translate(token.condition,
+                                                        excel,
+                                                        context)
+        when_error = ExpressionTokenTranslator.translate(token.when_error, excel, context)
+
+        return f'self._iferror({condition}, {when_error})'

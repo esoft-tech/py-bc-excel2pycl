@@ -4,7 +4,7 @@ from excel2pycl.src.tokens import MatchControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
-class IfErrorControlConstructionTokenTranslator(AbstractTranslator):
+class MatchControlConstructionTokenTranslator(AbstractTranslator):
     @classmethod
     def translate(cls, token: MatchControlConstructionToken, excel: Excel, context: Context) -> str:
         from excel2pycl.src.translators.expression_token_translator import ExpressionTokenTranslator
@@ -18,3 +18,5 @@ class IfErrorControlConstructionTokenTranslator(AbstractTranslator):
         ExpressionTokenTranslator.translate(token.match_type,
                                             excel,
                                             context)
+
+        return f'self._match({lookup_value}, {lookup_array}, {match_type})'

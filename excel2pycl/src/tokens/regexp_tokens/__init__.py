@@ -67,12 +67,12 @@ class CellIdentifierToken(RegexpBaseToken):
         return self._cell
 
 
-class IfKeywordToken(RegexpBaseToken):
-    regexp = r'IF'
-
-
 class IfErrorKeywordToken(RegexpBaseToken):
     regexp = r'IFERROR'
+
+
+class IfKeywordToken(RegexpBaseToken):
+    regexp = r'IF[^E]'
 
 
 class MatchKeywordToken(RegexpBaseToken):
@@ -89,6 +89,26 @@ class MinKeywordToken(RegexpBaseToken):
 
 class MaxKeywordToken(RegexpBaseToken):
     regexp = r'MAX'
+
+
+class DayKeywordToken(RegexpBaseToken):
+    regexp = r'DAY'
+
+
+class MonthKeywordToken(RegexpBaseToken):
+    regexp = r'MONTH'
+
+
+class YearKeywordToken(RegexpBaseToken):
+    regexp = r'YEAR'
+
+
+class DateDiffKeywordToken(RegexpBaseToken):
+    regexp = r'DATEDIF'
+
+
+class DateKeywordToken(RegexpBaseToken):
+    regexp = r'DATE[^D]'
 
 
 class VlookupKeywordToken(RegexpBaseToken):
