@@ -1,3 +1,4 @@
+import re
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.exceptions import E2PyclParserException
 from excel2pycl.src.tokens.regexp_base_token import RegexpBaseToken
@@ -72,7 +73,17 @@ class IfErrorKeywordToken(RegexpBaseToken):
 
 
 class IfKeywordToken(RegexpBaseToken):
-    regexp = r'IF[^E]'
+    regexp = r'(IF)\W'
+    value_range = [1, 2]
+
+    @classmethod
+    def get(cls, expression: str, in_cell: Cell):
+        result = re.findall(rf'^({cls.regexp})({cls.last_match_regexp})$', expression)
+
+        if result:
+            return cls(result[0][cls.value_range[0]:cls.value_range[1]], in_cell), result[0][-1]
+
+        return None, expression
 
 
 class MatchKeywordToken(RegexpBaseToken):
@@ -108,7 +119,17 @@ class DateDiffKeywordToken(RegexpBaseToken):
 
 
 class DateKeywordToken(RegexpBaseToken):
-    regexp = r'DATE[^D]'
+    regexp = r'(DATE)\W'
+    value_range = [1, 2]
+
+    @classmethod
+    def get(cls, expression: str, in_cell: Cell):
+        result = re.findall(rf'^({cls.regexp})({cls.last_match_regexp})$', expression)
+
+        if result:
+            return cls(result[0][cls.value_range[0]:cls.value_range[1]], in_cell), result[0][-1]
+
+        return None, expression
 
 
 class VlookupKeywordToken(RegexpBaseToken):
