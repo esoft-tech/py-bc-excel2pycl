@@ -61,13 +61,25 @@ class Context:
         return self._sum(flatten_list)/len(self._only_numeric_list(flatten_list))
         
     def _vlookup(self, lookup_value, table_array: list, col_index_num: int, range_lookup: bool = False):
-        # TODO add Range Lookup (https://support.microsoft.com/en-us/office/vlookup-function-0bbc8083-26fe-4963-8ab8-93a18ad188a1)
         # TODO search optimization needed
-        for row in table_array:
-            if row[0] == lookup_value:
-                return row[col_index_num - 1]
+        if not isinstance(range_lookup, (bool, int)):
+            return '#ERROR!'
 
-        return 1  # When the vlookup has not found anything similar to lookup_value, it returns 1 in the excel implementation for this function
+        if range_lookup:
+            minimum = '#N/A'
+            for row in table_array:
+                if isinstance(row[0], self.EmptyCell):
+                    continue
+                if row[0] <= lookup_value:
+                    minimum = row[col_index_num - 1]
+                else:
+                    return minimum
+        else:
+            for row in table_array:
+                if row[0] == lookup_value and not isinstance(row[0], self.EmptyCell):
+                    return row[col_index_num - 1]
+
+        return '#N/A'
 
     def _sum_if(self, range_: list, criteria: callable, sum_range: list = None):
         result = 0
