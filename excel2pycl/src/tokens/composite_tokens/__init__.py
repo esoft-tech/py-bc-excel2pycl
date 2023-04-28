@@ -3,7 +3,8 @@ from typing import Union
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.tokens.composite_base_token import CompositeBaseToken
 from excel2pycl.src.tokens.recursive_composite_base_token import RecursiveCompositeBaseToken, CLS
-from excel2pycl.src.tokens.regexp_tokens import DateDiffKeywordToken, DateKeywordToken, DayKeywordToken, MonthKeywordToken, SumKeywordToken, IfErrorKeywordToken, IfKeywordToken, \
+from excel2pycl.src.tokens.regexp_tokens import DateDiffKeywordToken, DateKeywordToken, DayKeywordToken, \
+    MonthKeywordToken, SumKeywordToken, IfErrorKeywordToken, IfKeywordToken, \
     CellIdentifierToken, CellIdentifierRangeToken, MatrixOfCellIdentifiersToken, EqOperatorToken,  \
     NotEqOperatorToken, GtOperatorToken, GtOrEqualOperatorToken, LtOperatorToken, LtOrEqualOperatorToken, \
     PlusOperatorToken, MinusOperatorToken, MultiplicationOperatorToken, DivOperatorToken, LiteralToken, \
