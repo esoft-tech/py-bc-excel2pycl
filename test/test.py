@@ -7,9 +7,9 @@ from excel2pycl import Parser, Executor, Cell
 class TestTokens(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.translation_file_path = f'tests/{uuid.uuid4()}.py'
+        cls.translation_file_path = f'test/{uuid.uuid4()}.py'
         cls.parser = Parser() \
-            .set_excel_file_path('tests/tokens.xlsx') \
+            .set_excel_file_path('test/tokens.xlsx') \
             .enable_safety_check() \
             .write_translation(cls.translation_file_path)
 
