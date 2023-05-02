@@ -95,6 +95,14 @@ class AndKeywordToken(RegexpBaseToken):
     regexp = r'AND'
 
 
+class MinKeywordToken(RegexpBaseToken):
+    regexp = r'MIN'
+
+
+class MaxKeywordToken(RegexpBaseToken):
+    regexp = r'MAX'
+
+
 # TODO добавить условие для локализации
 class SeparatorToken(RegexpBaseToken):
     regexp = r';|,'
