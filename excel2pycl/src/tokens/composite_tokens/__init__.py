@@ -3,11 +3,11 @@ from typing import Union
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.tokens.composite_base_token import CompositeBaseToken
 from excel2pycl.src.tokens.recursive_composite_base_token import RecursiveCompositeBaseToken, CLS
-from excel2pycl.src.tokens.regexp_tokens import SumKeywordToken, IfKeywordToken, CellIdentifierToken, \
+from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, MonthKeywordToken, SumKeywordToken, IfKeywordToken, CellIdentifierToken, \
     CellIdentifierRangeToken, MatrixOfCellIdentifiersToken, EqOperatorToken, NotEqOperatorToken, GtOperatorToken, \
     GtOrEqualOperatorToken, LtOperatorToken, LtOrEqualOperatorToken, PlusOperatorToken, MinusOperatorToken, \
     MultiplicationOperatorToken, DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, \
-    VlookupKeywordToken, AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken
+    VlookupKeywordToken, AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken, YearKeywordToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
@@ -205,7 +205,7 @@ class SumIfControlConstructionToken(CompositeBaseToken):
     @property
     def first_cell_of_needed(self) -> Cell:
         return (self.value[6].cell if self.value[6].cell else self.value[6].range.range[0] if self.value[6].range else
-        self.value[6].matrix.matrix[0] if self.value[6].matrix else None) if len(self.value) == 8 else None
+                self.value[6].matrix.matrix[0] if self.value[6].matrix else None) if len(self.value) == 8 else None
 
 
 class VlookupControlConstructionToken(CompositeBaseToken):
@@ -269,16 +269,43 @@ class AndControlConstructionToken(CompositeBaseToken):
         return self.value[2].expressions
 
 
+class DayControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[DayKeywordToken, BracketStartToken, ExpressionToken, BracketFinishToken]]
+
+    @property
+    def date(self):
+        return self.value[2]
+
+
+class MonthControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[MonthKeywordToken, BracketStartToken, ExpressionToken, BracketFinishToken]]
+
+    @property
+    def date(self):
+        return self.value[2]
+
+
+class YearControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[YearKeywordToken, BracketStartToken, ExpressionToken, BracketFinishToken]]
+
+    @property
+    def date(self):
+        return self.value[2]
+
+
 class ControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[IfControlConstructionToken], [SumControlConstructionToken], [SumIfControlConstructionToken],
                    [VlookupControlConstructionToken], [AverageControlConstructionToken],
-                   [RoundControlConstructionToken], [OrControlConstructionToken], [AndControlConstructionToken]]
+                   [RoundControlConstructionToken], [OrControlConstructionToken], [AndControlConstructionToken],
+                   [YearControlConstructionToken], [MonthControlConstructionToken], [DayControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,
                                             SumIfControlConstructionToken, VlookupControlConstructionToken,
                                             AverageControlConstructionToken, RoundControlConstructionToken,
-                                            OrControlConstructionToken, AndControlConstructionToken]:
+                                            OrControlConstructionToken, AndControlConstructionToken,
+                                            YearControlConstructionToken, MonthControlConstructionToken,
+                                            DayControlConstructionToken]:
         return self.value[0]
 
 

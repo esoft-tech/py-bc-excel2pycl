@@ -1,4 +1,5 @@
 from abc import ABC
+from datetime import datetime
 from typing import Dict
 
 
@@ -65,6 +66,15 @@ class AbstractExcelInPython(ABC):
 
     def _and(self, flatten_list: list):
         return all(flatten_list)
+
+    def _day(self, date: datetime):
+        return date.day
+
+    def _month(self, date: datetime):
+        return date.month
+
+    def _year(self, date: datetime):
+        return date.year
 
     def _cell_preprocessor(self, cell_uid: str):
         return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))
