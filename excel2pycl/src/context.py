@@ -90,7 +90,7 @@ class Context:
 
     def _iferror(self, condition_function, when_error):
         try:
-            return condition_function(None)
+            return condition_function()
         except Exception as ex:
             return when_error
 

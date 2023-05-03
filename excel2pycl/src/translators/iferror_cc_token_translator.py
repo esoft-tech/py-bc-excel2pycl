@@ -12,5 +12,4 @@ class IfErrorControlConstructionTokenTranslator(AbstractTranslator):
         condition = ExpressionTokenTranslator.translate(token.condition, excel, context)
         when_error = ExpressionTokenTranslator.translate(token.when_error, excel, context)
 
-        # return context.set_sub_cell(token.in_cell, f'lambda x:x{condition}{when_error}')
-        return f'self._iferror(lambda x: {condition}, {when_error})'
+        return f'self._iferror(lambda: {condition}, {when_error})'
