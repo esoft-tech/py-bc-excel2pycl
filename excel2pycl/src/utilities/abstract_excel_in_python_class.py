@@ -66,6 +66,12 @@ class AbstractExcelInPython(ABC):
     def _and(self, flatten_list: list):
         return all(flatten_list)
 
+    def _iferror(self, condition_function, when_error):
+        try:
+            return condition_function()
+        except Exception as ex:
+            return when_error
+
     def _cell_preprocessor(self, cell_uid: str):
         return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))
 
