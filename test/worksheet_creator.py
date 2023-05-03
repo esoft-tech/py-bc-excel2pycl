@@ -24,7 +24,8 @@ def create_test_table(file_name):
     ]
 
     # add column headings. NB. these must be strings
-    ws.append(['ROUND', 'OR', 'AND', 'VLOOKUP', 'IF', 'SUM', 'SUMIF', 'AVERAGE', 'IFERROR'])
+    ws.append(['ROUND', 'OR', 'AND', 'VLOOKUP', 'IF', 'SUM', 'SUMIF', 'AVERAGE', 'IFERROR when_error',
+               'IFERROR condition'])
     for row in data:
         ws.append(row)
 
