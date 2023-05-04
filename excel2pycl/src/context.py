@@ -16,7 +16,8 @@ class Context:
     @property
     def __class_template(self) -> str:
         # TODO можно сделать кэш ячеек просчитанных
-        return '''class ExcelInPython:
+        return '''import datetime
+class ExcelInPython:
     def __init__(self, arguments: list = None):
         if arguments is None:
             arguments = []
@@ -80,6 +81,9 @@ class Context:
 
     def _round(self, number: float, num_digits: int):
         return round(number, int(num_digits))
+
+    def _date(self, year: int, month: int, day: int):
+        return datetime.datetime(year, month, day)
 
     def _or(self, flatten_list: list):
         return any(flatten_list)

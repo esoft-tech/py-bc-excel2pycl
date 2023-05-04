@@ -1,4 +1,5 @@
 from abc import ABC
+import datetime
 from typing import Dict
 
 
@@ -59,6 +60,9 @@ class AbstractExcelInPython(ABC):
 
     def _round(self, number: float, num_digits: int):
         return round(number, int(num_digits))
+
+    def _date(self, year: int, month: int, day: int):
+        return datetime.datetime(year, month, day)
 
     def _or(self, flatten_list: list):
         return any(flatten_list)

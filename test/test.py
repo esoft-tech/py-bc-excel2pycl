@@ -2,7 +2,7 @@ import unittest
 import uuid
 import os
 from excel2pycl import Parser, Executor, Cell
-from worksheet_creator import create_test_table
+from .worksheet_creator import create_test_table
 
 
 class TestTokens(unittest.TestCase):
@@ -76,6 +76,13 @@ class TestTokens(unittest.TestCase):
             .get_cells([Cell(0, 7, 1), Cell(0, 7, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='AVERAGE token are OK')
+
+    def test_date_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell(0, 8, 1), Cell(0, 8, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATE token are OK')
 
 
 if __name__ == '__main__':
