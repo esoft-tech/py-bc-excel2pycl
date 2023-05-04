@@ -2,7 +2,8 @@ from excel2pycl.src.context import Context
 from excel2pycl.src.excel import Excel
 from excel2pycl.src.tokens import IfControlConstructionToken, ControlConstructionToken, SumIfControlConstructionToken, \
     SumControlConstructionToken, AverageControlConstructionToken, VlookupControlConstructionToken, \
-    RoundControlConstructionToken, OrControlConstructionToken, AndControlConstructionToken
+    RoundControlConstructionToken, OrControlConstructionToken, AndControlConstructionToken, \
+    EoMonthControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
@@ -17,6 +18,7 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
         from excel2pycl.src.translators.round_cc_token_translator import RoundControlConstructionTokenTranslator
         from excel2pycl.src.translators.or_cc_token_translator import OrControlConstructionTokenTranslator
         from excel2pycl.src.translators.and_cc_token_translator import AndControlConstructionTokenTranslator
+        from excel2pycl.src.translators.eo_month_cc_token_translator import EoMonthControlConstructionTokenTranslator
 
         translate_functions = {
             IfControlConstructionToken.__name__: IfControlConstructionTokenTranslator.translate,
@@ -26,7 +28,8 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             VlookupControlConstructionToken.__name__: VlookupControlConstructionTokenTranslator.translate,
             RoundControlConstructionToken.__name__: RoundControlConstructionTokenTranslator.translate,
             OrControlConstructionToken.__name__: OrControlConstructionTokenTranslator.translate,
-            AndControlConstructionToken.__name__: AndControlConstructionTokenTranslator.translate
+            AndControlConstructionToken.__name__: AndControlConstructionTokenTranslator.translate,
+            EoMonthControlConstructionToken.__name__: EoMonthControlConstructionTokenTranslator.translate
         }
 
         sub_token = token.control_construction

@@ -95,6 +95,14 @@ class AndKeywordToken(RegexpBaseToken):
     regexp = r'AND'
 
 
+class MonthKeywordToken(RegexpBaseToken):
+    regexp = r'MONTH'
+
+
+class EoKeywordToken(RegexpBaseToken):
+    regexp = r'EO'
+
+
 # TODO добавить условие для локализации
 class SeparatorToken(RegexpBaseToken):
     regexp = r';|,'

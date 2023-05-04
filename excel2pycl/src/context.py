@@ -16,7 +16,12 @@ class Context:
     @property
     def __class_template(self) -> str:
         # TODO можно сделать кэш ячеек просчитанных
-        return '''class ExcelInPython:
+        return '''from calendar import monthrange
+from math import trunc
+import datetime
+from dateutil.relativedelta import relativedelta
+
+class ExcelInPython:
     def __init__(self, arguments: list = None):
         if arguments is None:
             arguments = []
@@ -80,6 +85,12 @@ class Context:
 
     def _round(self, number: float, num_digits: int):
         return round(number, int(num_digits))
+
+    def _eomonth(self, start_date: datetime.datetime, months: float):
+        # Note: If months is not an integer, it is truncated.
+        result_date = start_date + relativedelta(months=trunc(months))
+        last_day_num = monthrange(result_date.year, result_date.month)[1]
+        return datetime.datetime(result_date.year, result_date.month, last_day_num)
 
     def _or(self, flatten_list: list):
         return any(flatten_list)

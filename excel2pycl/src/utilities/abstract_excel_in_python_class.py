@@ -1,5 +1,9 @@
 from abc import ABC
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from typing import Dict
+from calendar import monthrange
+from math import trunc
 
 
 class AbstractExcelInPython(ABC):
@@ -59,6 +63,12 @@ class AbstractExcelInPython(ABC):
 
     def _round(self, number: float, num_digits: int):
         return round(number, int(num_digits))
+
+    def _eomonth(self, start_date: datetime, months: float):
+        # Note: If months is not an integer, it is truncated.
+        result_date = start_date + relativedelta(months=trunc(months))
+        last_day_num = monthrange(result_date.year, result_date.month)[1]
+        return datetime(result_date.year, result_date.month, last_day_num)
 
     def _or(self, flatten_list: list):
         return any(flatten_list)
