@@ -7,11 +7,16 @@ from excel2pycl.src.tokens.regexp_tokens import SumKeywordToken, IfKeywordToken,
     CellIdentifierRangeToken, MatrixOfCellIdentifiersToken, EqOperatorToken, NotEqOperatorToken, GtOperatorToken, \
     GtOrEqualOperatorToken, LtOperatorToken, LtOrEqualOperatorToken, PlusOperatorToken, MinusOperatorToken, \
     MultiplicationOperatorToken, DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, \
-    VlookupKeywordToken, AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken
+    VlookupKeywordToken, AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken, \
+    DateKeywordToken, DifKeywordToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
     _TOKEN_SETS = [[SumKeywordToken, IfKeywordToken]]
+
+
+class DateDifKeywordToken(CompositeBaseToken):
+    _TOKEN_SETS = [[DateKeywordToken, DifKeywordToken]]
 
 
 class SimilarCellToken(CompositeBaseToken):
@@ -205,7 +210,7 @@ class SumIfControlConstructionToken(CompositeBaseToken):
     @property
     def first_cell_of_needed(self) -> Cell:
         return (self.value[6].cell if self.value[6].cell else self.value[6].range.range[0] if self.value[6].range else
-        self.value[6].matrix.matrix[0] if self.value[6].matrix else None) if len(self.value) == 8 else None
+                self.value[6].matrix.matrix[0] if self.value[6].matrix else None) if len(self.value) == 8 else None
 
 
 class VlookupControlConstructionToken(CompositeBaseToken):
@@ -253,6 +258,23 @@ class RoundControlConstructionToken(CompositeBaseToken):
         return self.value[4]
 
 
+class DateDifControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[DateDifKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken,
+                    ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken]]
+
+    @property
+    def date_start(self):
+        return self.value[2]
+
+    @property
+    def date_end(self):
+        return self.value[4]
+
+    @property
+    def mode(self):
+        return self.value[6]
+
+
 class OrControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[OrKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]]
 
@@ -272,13 +294,15 @@ class AndControlConstructionToken(CompositeBaseToken):
 class ControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[IfControlConstructionToken], [SumControlConstructionToken], [SumIfControlConstructionToken],
                    [VlookupControlConstructionToken], [AverageControlConstructionToken],
-                   [RoundControlConstructionToken], [OrControlConstructionToken], [AndControlConstructionToken]]
+                   [RoundControlConstructionToken], [OrControlConstructionToken], [AndControlConstructionToken],
+                   [DateDifControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,
                                             SumIfControlConstructionToken, VlookupControlConstructionToken,
                                             AverageControlConstructionToken, RoundControlConstructionToken,
-                                            OrControlConstructionToken, AndControlConstructionToken]:
+                                            OrControlConstructionToken, AndControlConstructionToken,
+                                            DateDifControlConstructionToken]:
         return self.value[0]
 
 

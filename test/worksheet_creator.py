@@ -1,5 +1,6 @@
 from openpyxl import Workbook
 from openpyxl.worksheet.table import Table, TableStyleInfo
+from datetime import datetime
 
 
 def create_test_table(file_name):
@@ -36,4 +37,22 @@ def create_test_table(file_name):
     tab.tableStyleInfo = style
 
     ws.add_table(tab)
+
+    ws_datedif = wb.create_sheet('datedif')
+
+    data = [
+        ['=DATEDIF(A4, A5, "D")', '=DATEDIF(A4, A5, "M")', '=DATEDIF(A4, A5, "Y")', '=DATEDIF(A4, A5, "MD")',
+         '=DATEDIF(A4, A5, "YM")', '=DATEDIF(A4, A5, "YD")'],
+        [145, 4, 0, 22, 4, 145],
+        [datetime(2022, 10, 10), datetime(2022, 10, 10), datetime(2022, 10, 10),
+         datetime(2022, 10, 10), datetime(2022, 10, 10), datetime(2022, 10, 10)],
+        [datetime(2023, 3, 4), datetime(2023, 3, 4), datetime(2023, 3, 4),
+         datetime(2023, 3, 4), datetime(2023, 3, 4), datetime(2023, 3, 4)],
+    ]
+
+    # add column headings. NB. these must be strings
+    ws_datedif.append(["DATEDIF D", "DATEDIF M", "DATEDIF Y", "DATEDIF MD", "DATEDIF YM", "DATEDIF YD"])
+    for row in data:
+        ws_datedif.append(row)
+
     wb.save(file_name)

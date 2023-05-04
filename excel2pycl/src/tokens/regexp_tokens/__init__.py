@@ -87,6 +87,14 @@ class RoundKeywordToken(RegexpBaseToken):
     regexp = r'ROUND'
 
 
+class DateKeywordToken(RegexpBaseToken):
+    regexp = r'DATE'
+
+
+class DifKeywordToken(RegexpBaseToken):
+    regexp = r'DIF'
+
+
 class OrKeywordToken(RegexpBaseToken):
     regexp = r'OR'
 

@@ -77,6 +77,48 @@ class TestTokens(unittest.TestCase):
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='AVERAGE token are OK')
 
+    def test_datedif_d_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('datedif', 0, 1), Cell('datedif', 0, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATEDIF D token are OK')
+
+    def test_datedif_m_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('datedif', 1, 1), Cell('datedif', 1, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATEDIF M token are OK')
+
+    def test_datedif_y_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('datedif', 2, 1), Cell('datedif', 2, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATEDIF Y token are OK')
+
+    def test_datedif_md_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('datedif', 0, 1), Cell('datedif', 0, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATEDIF MD token are OK')
+
+    def test_datedif_ym_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('datedif', 3, 1), Cell('datedif', 3, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATEDIF YM token are OK')
+
+    def test_datedif_yd_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('datedif', 4, 1), Cell('datedif', 4, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATEDIF YD token are OK')
+
 
 if __name__ == '__main__':
     unittest.main()
