@@ -101,21 +101,21 @@ class TestTokens(unittest.TestCase):
     def test_datedif_md_token(self):
         cell_values = Executor() \
             .set_executed_class(class_file=self.translation_file_path) \
-            .get_cells([Cell('datedif', 0, 1), Cell('datedif', 0, 2)])
+            .get_cells([Cell('datedif', 3, 1), Cell('datedif', 3, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATEDIF MD token are OK')
 
     def test_datedif_ym_token(self):
         cell_values = Executor() \
             .set_executed_class(class_file=self.translation_file_path) \
-            .get_cells([Cell('datedif', 3, 1), Cell('datedif', 3, 2)])
+            .get_cells([Cell('datedif', 4, 1), Cell('datedif', 4, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATEDIF YM token are OK')
 
     def test_datedif_yd_token(self):
         cell_values = Executor() \
             .set_executed_class(class_file=self.translation_file_path) \
-            .get_cells([Cell('datedif', 4, 1), Cell('datedif', 4, 2)])
+            .get_cells([Cell('datedif', 5, 1), Cell('datedif', 5, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATEDIF YD token are OK')
 

@@ -41,8 +41,8 @@ def create_test_table(file_name):
     ws_datedif = wb.create_sheet('datedif')
 
     data = [
-        ['=DATEDIF(A4, A5, "D")', '=DATEDIF(A4, A5, "M")', '=DATEDIF(A4, A5, "Y")', '=DATEDIF(A4, A5, "MD")',
-         '=DATEDIF(A4, A5, "YM")', '=DATEDIF(A4, A5, "YD")'],
+        ['=DATEDIF(A4, A5, "D")', '=DATEDIF(B4, B5, "M")', '=DATEDIF(C4, C5, "Y")', '=DATEDIF(D4, D5, "MD")',
+         '=DATEDIF(E4, E5, "YM")', '=DATEDIF(F4, F5, "YD")'],
         [145, 4, 0, 22, 4, 145],
         [datetime(2022, 10, 10), datetime(2022, 10, 10), datetime(2022, 10, 10),
          datetime(2022, 10, 10), datetime(2022, 10, 10), datetime(2022, 10, 10)],

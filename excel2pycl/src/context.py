@@ -18,6 +18,7 @@ class Context:
         # TODO можно сделать кэш ячеек просчитанных
         return '''import datetime
 from typing import Dict, Literal
+from calendar import monthrange
 
 class ExcelInPython:
     def __init__(self, arguments: list = None):
@@ -83,22 +84,31 @@ class ExcelInPython:
 
     def _round(self, number: float, num_digits: int):
         return round(number, int(num_digits))
-        
+
     def _datedif(self, date_start: datetime.datetime, date_end: datetime.datetime,
                  mode: Literal['Y', 'M', 'D', 'MD', 'YM', 'YD']):
         match mode:
             case 'Y':
-                return (date_end - date_start).days / 365
+                return (date_end - date_start).days // 365
             case 'M':
-                return 12 * (date_end.year - date_start.year) + (date_end.month - date_start.month)
+                result = 12 * (date_end.year - date_start.year) + (date_end.month - date_start.month)
+                if date_start.day > date_end.day:
+                    return result - 1
+                return result
             case 'D':
                 return (date_end - date_start).days
             case 'MD':
-                return date_end.day - date_start.day
+                if (date_end.day >= date_start.day):
+                    return date_end.day - date_start.day
+                else:
+                    return monthrange(date_start.year, date_start.month)[1] - date_start.day + 1
             case 'YM':
-                return date_end.month - date_start.month
+                result = 12 + (date_end.month - date_start.month)
+                if date_start.day > date_end.day:
+                    return result - 1
+                return result
             case 'YD':
-                end = datetime.datetime(date_start.year, date_end.month, date_end.day)
+                end = datetime.datetime(date_start.year + 1, date_end.month, date_end.day)
                 return (end - date_start).days
             case _:
                 raise Exception('Invalid mode value for DATEDIF')
