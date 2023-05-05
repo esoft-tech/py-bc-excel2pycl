@@ -1,3 +1,4 @@
+from datetime import datetime
 from openpyxl import Workbook
 from openpyxl.worksheet.table import Table, TableStyleInfo
 
@@ -9,22 +10,22 @@ def create_test_table(file_name):
     data = [
         # ROUND - 2 строка
         ['=ROUND(A4, 2)', '=OR(B4, B5)', '=AND(C4, C5)', '=VLOOKUP(5, D4:D13, 1, FALSE())', '=IF(E6>E5, 44, 11)',
-         '=SUM(F4:F13)', '=SUMIF(G4:G13, ">6")', '=AVERAGE(H4:H13)'],
-        [10.24, '=TRUE()', '=FALSE()', 5, 44, 55, 34, 5.5],
-        [10.239584, '', 0, 1, 1, 1, 1, 1],
-        ['', 100, 1, 2, 2, 2, 2, 2],
-        ['', '', '', 3, 3, 3, 3, 3],
-        ['', '', '', 4, 4, 4, 4, 4],
-        ['', '', '', 5, 5, 5, 5, 5],
-        ['', '', '', 6, 6, 6, 6, 6],
-        ['', '', '', 7, 7, 7, 7, 7],
-        ['', '', '', 8, 8, 8, 8, 8],
-        ['', '', '', 9, 9, 9, 9, 9],
-        ['', '', '', 10, 10, 10, 10, 10],
+         '=SUM(F4:F13)', '=SUMIF(G4:G13, ">6")', '=AVERAGE(H4:H13)', '=EDATE(I4, 2)', '=EDATE(J4, -1)'],
+        [10.24, '=TRUE()', '=FALSE()', 5, 44, 55, 34, 5.5, datetime(2011, 3, 15), datetime(2010, 12, 15)],
+        [10.239584, '', 0, 1, 1, 1, 1, 1, datetime(2011, 1, 15), datetime(2011, 1, 15)],
+        ['', 100, 1, 2, 2, 2, 2, 2, '', ''],
+        ['', '', '', 3, 3, 3, 3, 3, '', ''],
+        ['', '', '', 4, 4, 4, 4, 4, '', ''],
+        ['', '', '', 5, 5, 5, 5, 5, '', ''],
+        ['', '', '', 6, 6, 6, 6, 6, '', ''],
+        ['', '', '', 7, 7, 7, 7, 7, '', ''],
+        ['', '', '', 8, 8, 8, 8, 8, '', ''],
+        ['', '', '', 9, 9, 9, 9, 9, '', ''],
+        ['', '', '', 10, 10, 10, 10, 10, '', ''],
     ]
 
     # add column headings. NB. these must be strings
-    ws.append(["ROUND", "OR", "AND", "VLOOKUP", "IF", "SUM", "SUMIF", "AVERAGE"])
+    ws.append(["ROUND", "OR", "AND", "VLOOKUP", "IF", "SUM", "SUMIF", "AVERAGE", "EDATE plus", "EDATE minus"])
     for row in data:
         ws.append(row)
 

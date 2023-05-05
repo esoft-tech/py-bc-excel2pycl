@@ -16,7 +16,10 @@ class Context:
     @property
     def __class_template(self) -> str:
         # TODO можно сделать кэш ячеек просчитанных
-        return '''class ExcelInPython:
+        return '''import datetime
+from dateutil.relativedelta import relativedelta
+
+class ExcelInPython:
     def __init__(self, arguments: list = None):
         if arguments is None:
             arguments = []
@@ -80,6 +83,9 @@ class Context:
 
     def _round(self, number: float, num_digits: int):
         return round(number, int(num_digits))
+        
+    def _edate(self, start_date: datetime.datetime, months: int):
+        return start_date + relativedelta(months=months)
 
     def _or(self, flatten_list: list):
         return any(flatten_list)
