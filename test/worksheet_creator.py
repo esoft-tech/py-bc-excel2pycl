@@ -43,11 +43,11 @@ def create_test_table(file_name):
     data = [
         ['=DATEDIF(A4, A5, "D")', '=DATEDIF(B4, B5, "M")', '=DATEDIF(C4, C5, "Y")', '=DATEDIF(D4, D5, "MD")',
          '=DATEDIF(E4, E5, "YM")', '=DATEDIF(F4, F5, "YD")'],
-        [145, 4, 0, 30, 2, 145],
+        [145, 4, 0, 30, 6, 145],
         [datetime(2022, 10, 10), datetime(2022, 10, 10), datetime(2022, 10, 10),
-         datetime(2022, 10, 10), datetime(2022, 1, 31), datetime(2022, 10, 10)],
+         datetime(2022, 10, 10), datetime(2022, 3, 14), datetime(2022, 10, 10)],
         [datetime(2023, 3, 4), datetime(2023, 3, 4), datetime(2023, 3, 4),
-         datetime(2023, 2, 9), datetime(2022, 2, 28), datetime(2023, 3, 4)],
+         datetime(2023, 2, 9), datetime(2023, 10, 5), datetime(2023, 3, 4)],
     ]
 
     # add column headings. NB. these must be strings
