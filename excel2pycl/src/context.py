@@ -91,7 +91,7 @@ class Context:
     def _iferror(self, condition_function, when_error):
         try:
             return condition_function()
-        except Exception as ex:
+        except:
             return when_error
 
     def _cell_preprocessor(self, cell_uid: str):
