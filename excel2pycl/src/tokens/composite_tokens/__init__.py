@@ -7,11 +7,16 @@ from excel2pycl.src.tokens.regexp_tokens import SumKeywordToken, IfKeywordToken,
     CellIdentifierRangeToken, MatrixOfCellIdentifiersToken, EqOperatorToken, NotEqOperatorToken, GtOperatorToken, \
     GtOrEqualOperatorToken, LtOperatorToken, LtOrEqualOperatorToken, PlusOperatorToken, MinusOperatorToken, \
     MultiplicationOperatorToken, DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, \
-    VlookupKeywordToken, AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken
+    VlookupKeywordToken, AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken, \
+    XKeywordToken, MatchKeywordToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
     _TOKEN_SETS = [[SumKeywordToken, IfKeywordToken]]
+
+
+class XMatchKeywordToken(CompositeBaseToken):
+    _TOKEN_SETS = [[XKeywordToken, MatchKeywordToken]]
 
 
 class SimilarCellToken(CompositeBaseToken):
@@ -269,16 +274,64 @@ class AndControlConstructionToken(CompositeBaseToken):
         return self.value[2].expressions
 
 
+class MatchControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [
+        [MatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, CellIdentifierRangeToken,
+         SeparatorToken, ExpressionToken, BracketFinishToken],
+        [MatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, CellIdentifierRangeToken,
+         BracketFinishToken]]
+
+    @property
+    def lookup_value(self) -> ExpressionToken:
+        return self.value[2]
+
+    @property
+    def lookup_array(self) -> CellIdentifierRangeToken:
+        return self.value[4]
+
+    @property
+    def match_type(self) -> ExpressionToken:
+        return self.value[6]
+
+
+class XMatchControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [
+        [XMatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken,
+         SeparatorToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken],
+        [XMatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken,
+         SeparatorToken, ExpressionToken, BracketFinishToken],
+        [XMatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken,
+         BracketFinishToken]]
+
+    @property
+    def lookup_value(self) -> ExpressionToken:
+        return self.value[2]
+
+    @property
+    def lookup_array(self) -> MatrixOfCellIdentifiersToken:
+        return self.value[4]
+
+    @property
+    def match_mode(self) -> ExpressionToken:
+        return self.value[6] if len(self.value) >= 8 else None
+
+    @property
+    def search_mode(self) -> ExpressionToken:
+        return self.value[8] if len(self.value) == 10 else None
+
+
 class ControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[IfControlConstructionToken], [SumControlConstructionToken], [SumIfControlConstructionToken],
                    [VlookupControlConstructionToken], [AverageControlConstructionToken],
-                   [RoundControlConstructionToken], [OrControlConstructionToken], [AndControlConstructionToken]]
+                   [RoundControlConstructionToken], [OrControlConstructionToken], [AndControlConstructionToken],
+                   [MatchControlConstructionToken], [XMatchControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,
                                             SumIfControlConstructionToken, VlookupControlConstructionToken,
                                             AverageControlConstructionToken, RoundControlConstructionToken,
-                                            OrControlConstructionToken, AndControlConstructionToken]:
+                                            OrControlConstructionToken, AndControlConstructionToken,
+                                            MatchControlConstructionToken, XMatchControlConstructionToken]:
         return self.value[0]
 
 

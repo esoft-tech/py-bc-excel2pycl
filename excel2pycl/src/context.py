@@ -53,6 +53,50 @@ class Context:
     @staticmethod
     def _only_numeric_list(flatten_list: list):
         return [i for i in flatten_list if type(i) in [float, int]]
+        
+    @staticmethod
+    def _binary_search(arr: list, x: any, reverse: bool = False):
+        first = 0
+        last = len(arr) - 1
+        value = {
+            'next_smallest': last if reverse else first,
+            'next_largest': first if reverse else last,
+            'exact': -1
+        }
+    
+        while first <= last:
+    
+            mid = (last + first) // 2
+            left = arr[mid] > x if reverse else arr[mid] < x
+            right = arr[mid] < x if reverse else arr[mid] > x
+    
+            if left:
+                if reverse:
+                    value['next_largest'] = mid
+                else:
+                    value['next_smallest'] = mid
+    
+                first = mid + 1
+    
+            elif right:
+                if reverse:
+                    value['next_smallest'] = mid
+                else:
+                    value['next_largest'] = mid
+    
+                last = mid - 1
+    
+            else:
+                value['exact'] = mid
+                break
+    
+        if arr[value['next_smallest']] > x:
+            value['next_smallest'] = -1
+    
+        if arr[value['next_largest']] < x:
+            value['next_largest'] = -1
+    
+        return value
 
     def _sum(self, flatten_list: list):
         return sum(self._only_numeric_list(flatten_list))
