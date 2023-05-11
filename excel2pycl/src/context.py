@@ -110,9 +110,14 @@ class Context:
             return '#ERROR!'
 
         if range_lookup:
+            table_array.sort(key=lambda row: row[0])
+        
+        lookup_value_type = int if isinstance(lookup_value, self.EmptyCell) else type(lookup_value)
+
+        if range_lookup:
             minimum = '#N/A'
             for row in table_array:
-                if isinstance(row[0], self.EmptyCell):
+                if isinstance(row[0], self.EmptyCell) or not isinstance(row[0], lookup_value_type):
                     continue
                 if row[0] <= lookup_value:
                     minimum = row[col_index_num - 1]
@@ -120,7 +125,9 @@ class Context:
                     return minimum
         else:
             for row in table_array:
-                if row[0] == lookup_value and not isinstance(row[0], self.EmptyCell):
+                if isinstance(row[0], self.EmptyCell) or not isinstance(row[0], lookup_value_type):
+                    continue
+                if row[0] == lookup_value:
                     return row[col_index_num - 1]
 
         return '#N/A'
