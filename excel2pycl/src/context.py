@@ -27,7 +27,7 @@ class ExcelInPython:
         self._arguments = {{}}
         self.set_arguments(arguments)
         self._titles = {titles}
-        
+
     def set_arguments(self, arguments: list):
         self._arguments = {{
             **self._arguments,
@@ -36,14 +36,14 @@ class ExcelInPython:
 
     def get_titles(self) -> dict:
         return self._titles
-        
+
     class EmptyCell(int):
         def __eq__(self, other):
             empty_cell_equal_values = ['', 0, None, False]
             if other in empty_cell_equal_values:
                 return True
             return False
-        
+
     def _flatten_list(self, subject: list) -> list:
         result = []
         for i in subject:
@@ -51,9 +51,9 @@ class ExcelInPython:
                 result = result + self._flatten_list(i)
             else:
                 result.append(i)
-        
+
         return result
-        
+
     @staticmethod
     def _only_numeric_list(flatten_list: list):
         return [i for i in flatten_list if type(i) in [float, int]]
@@ -63,7 +63,7 @@ class ExcelInPython:
 
     def _average(self, flatten_list: list):
         return self._sum(flatten_list)/len(self._only_numeric_list(flatten_list))
-        
+
     def _vlookup(self, lookup_value, table_array: list, col_index_num: int, range_lookup: bool = False):
         # TODO add Range Lookup (https://support.microsoft.com/en-us/office/vlookup-function-0bbc8083-26fe-4963-8ab8-93a18ad188a1)
         # TODO search optimization needed
@@ -79,7 +79,7 @@ class ExcelInPython:
         for i in range(len(range_)):
             if i < len(sum_range) and criteria(range_[i]):
                 result += sum_range[i] or 0
-                
+
         return result
 
     def _round(self, number: float, num_digits: int):
@@ -87,6 +87,8 @@ class ExcelInPython:
 
     def _datedif(self, date_start: datetime.datetime, date_end: datetime.datetime,
                  mode: Literal['Y', 'M', 'D', 'MD', 'YM', 'YD']):
+        if (not isinstance(date_start, datetime.datetime) or not isinstance(date_end, datetime.datetime)):
+            raise Exception('Неверный тип аргумента функции DATEDIF, ожидается дата')
         match mode:
             case 'Y':
                 return (date_end - date_start).days // (366 if calendar.isleap(date_start.year) and
@@ -113,7 +115,7 @@ class ExcelInPython:
                 end = datetime.datetime(date_start.year + 1, date_end.month, date_end.day)
                 return (end - date_start).days
             case _:
-                raise Exception('Invalid mode value for DATEDIF')
+                raise Exception('Неизвестное значение третьего аргумента DATEDIF')
 
     def _or(self, flatten_list: list):
         return any(flatten_list)
