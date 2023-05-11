@@ -1,5 +1,5 @@
 from abc import ABC
-from calendar import monthrange
+import calendar
 import datetime
 from typing import Dict, Literal
 
@@ -66,7 +66,8 @@ class AbstractExcelInPython(ABC):
                  mode: Literal['Y', 'M', 'D', 'MD', 'YM', 'YD']):
         match mode:
             case 'Y':
-                return (date_end - date_start).days // 365
+                return (date_end - date_start).days // (366 if calendar.isleap(date_start.year) and
+                                                        date_start.month <= 2 else 365)
             case 'M':
                 result = 12 * (date_end.year - date_start.year) + (date_end.month - date_start.month)
                 if date_start.day > date_end.day:
@@ -78,12 +79,13 @@ class AbstractExcelInPython(ABC):
                 if (date_end.day >= date_start.day):
                     return date_end.day - date_start.day
                 else:
-                    return monthrange(date_start.year, date_start.month)[1] - date_start.day + 1
+                    prev_month_date = datetime.datetime(date_end.year, date_end.month, 1) - datetime.timedelta(days=1)
+                    return calendar.monthrange(prev_month_date.year, prev_month_date.month)[1] - (
+                        date_start.day - date_end.day)
             case 'YM':
-                result = 12 + (date_end.month - date_start.month)
-                if date_start.day > date_end.day:
-                    return result - 1
-                return result
+                return (12 if date_start.month > date_end.month and date_end.year > date_start.year else 0) \
+                    + (date_end.month - date_start.month) \
+                    + (-1 if date_start.day > date_end.day else 0)
             case 'YD':
                 end = datetime.datetime(date_start.year + 1, date_end.month, date_end.day)
                 return (end - date_start).days

@@ -2,7 +2,7 @@ import unittest
 import uuid
 import os
 from excel2pycl import Parser, Executor, Cell
-from .worksheet_creator import create_test_table
+from worksheet_creator import create_test_table
 
 
 class TestTokens(unittest.TestCase):
