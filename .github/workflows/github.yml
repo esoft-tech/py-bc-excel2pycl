@@ -4,11 +4,7 @@
 name: py-excel-to-func
 
 on:
-  pull_request:
-    types:
-      - opened
-    branches:
-      - 'main'
+  push
 
 
 jobs:
