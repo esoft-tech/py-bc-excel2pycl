@@ -88,7 +88,9 @@ class ExcelInPython:
     def _datedif(self, date_start: datetime.datetime, date_end: datetime.datetime,
                  mode: Literal['Y', 'M', 'D', 'MD', 'YM', 'YD']):
         if (not isinstance(date_start, datetime.datetime) or not isinstance(date_end, datetime.datetime)):
-            raise Exception('Неверный тип аргумента функции DATEDIF, ожидается дата')
+            return "#VALUE!"
+        if date_start > date_end:
+            return "#NUM!"
         match mode:
             case 'Y':
                 return (date_end - date_start).days // (366 if calendar.isleap(date_start.year) and
@@ -115,7 +117,7 @@ class ExcelInPython:
                 return (date_end - date_start).days % (366 if calendar.isleap(date_start.year) and
                                                        date_start.month <= 2 else 365)
             case _:
-                raise Exception('Неизвестное значение третьего аргумента DATEDIF')
+                return "#NUM!"
 
     def _or(self, flatten_list: list):
         return any(flatten_list)
