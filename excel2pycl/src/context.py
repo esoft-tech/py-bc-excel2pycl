@@ -112,8 +112,8 @@ class ExcelInPython:
                     + (date_end.month - date_start.month) \
                     + (-1 if date_start.day > date_end.day else 0)
             case 'YD':
-                end = datetime.datetime(date_start.year + 1, date_end.month, date_end.day)
-                return (end - date_start).days
+                return (date_end - date_start).days % (366 if calendar.isleap(date_start.year) and
+                                                       date_start.month <= 2 else 365)
             case _:
                 raise Exception('Неизвестное значение третьего аргумента DATEDIF')
 

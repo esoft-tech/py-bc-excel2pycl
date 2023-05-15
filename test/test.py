@@ -119,6 +119,20 @@ class TestTokens(unittest.TestCase):
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATEDIF YD token are OK')
 
+    def test_datedif_yd_month_lt_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('datedif', 6, 1), Cell('datedif', 6, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATEDIF YD token are OK')
+
+    def test_datedif_yd_month_bt_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('datedif', 7, 1), Cell('datedif', 7, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATEDIF YD token are OK')
+
 
 if __name__ == '__main__':
     unittest.main()
