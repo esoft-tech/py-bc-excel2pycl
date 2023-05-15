@@ -86,11 +86,11 @@ class ExcelInPython:
     def _round(self, number: float, num_digits: int):
         return round(number, int(num_digits))
 
-    def _eomonth(self, start_date: datetime.datetime, months: float):
+    def _eomonth(self, start_date: datetime, months: float | int):
         # Note: If months is not an integer, it is truncated.
         result_date = start_date + relativedelta(months=trunc(months))
         last_day_num = monthrange(result_date.year, result_date.month)[1]
-        return datetime.datetime(result_date.year, result_date.month, last_day_num)
+        return datetime(result_date.year, result_date.month, last_day_num)
 
     def _or(self, flatten_list: list):
         return any(flatten_list)
