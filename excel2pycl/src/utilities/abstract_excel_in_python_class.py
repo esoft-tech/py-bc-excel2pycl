@@ -66,6 +66,8 @@ class AbstractExcelInPython(ABC):
 
     def _eomonth(self, start_date: datetime, months: float | int):
         # Note: If months is not an integer, it is truncated.
+        if not isinstance(start_date, datetime):
+            return '#NUM!'
         result_date = start_date + relativedelta(months=trunc(months))
         last_day_num = monthrange(result_date.year, result_date.month)[1]
         return datetime(result_date.year, result_date.month, last_day_num)
