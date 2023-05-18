@@ -88,9 +88,17 @@ class Context:
         return all(flatten_list)
 
     def _min(self, flatten_list: list):
+        for err_value in filter(lambda cell: cell in ['#NUM!', '#DIV/0!',
+                                                      '#N/A', '#NAME?', ' #NULL!',
+                                                      '#REF!', '#VALUE!'], flatten_list):
+            return err_value
         return min(self._only_numeric_list(flatten_list))
 
     def _max(self, flatten_list: list):
+        for err_value in filter(lambda cell: cell in ['#NUM!', '#DIV/0!',
+                                                      '#N/A', '#NAME?', ' #NULL!',
+                                                      '#REF!', '#VALUE!'], flatten_list):
+            return err_value
         return max(self._only_numeric_list(flatten_list))
 
     def _cell_preprocessor(self, cell_uid: str):
