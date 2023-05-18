@@ -2,7 +2,7 @@ from abc import ABC
 from datetime import datetime
 from typing import Dict
 from dateutil.relativedelta import relativedelta
-
+from math import trunc
 
 class AbstractExcelInPython(ABC):
     def __init__(self, arguments: list = None):
@@ -62,8 +62,12 @@ class AbstractExcelInPython(ABC):
     def _round(self, number: float, num_digits: int):
         return round(number, int(num_digits))
 
-    def _edate(self, start_date: datetime, months: int):
-        return start_date + relativedelta(months=months)
+    def _edate(self, start_date: datetime, months: float):
+        if not isinstance(start_date, datetime):
+            return '#VALUE!'
+        if not isinstance(months, (int, float)):
+            return '#VALUE!'
+        return start_date + relativedelta(months=trunc(months))
 
     def _or(self, flatten_list: list):
         return any(flatten_list)
