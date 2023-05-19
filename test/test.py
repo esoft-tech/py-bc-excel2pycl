@@ -80,9 +80,72 @@ class TestTokens(unittest.TestCase):
     def test_date_token(self):
         cell_values = Executor() \
             .set_executed_class(class_file=self.translation_file_path) \
-            .get_cells([Cell(0, 8, 1), Cell(0, 8, 2)])
+            .get_cells([Cell('date', 0, 1), Cell('date', 0, 2)])
 
-        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATE token are OK')
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATE (normal) token are OK')
+
+    def test_date_lt_1900_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('date', 1, 1), Cell('date', 1, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATE (year < 1900) token are OK')
+
+    def test_date_bt_9999_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('date', 2, 1), Cell('date', 2, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATE (year > 9999) token are OK')
+
+    def test_date_month_bt_12_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('date', 3, 1), Cell('date', 3, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATE (month > 12) token are OK')
+
+    def test_date_month_bt_24_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('date', 4, 1), Cell('date', 4, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATE (month > 24) token are OK')
+
+    def test_date_month_lt_1_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('date', 5, 1), Cell('date', 5, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATE (month < 1) token are OK')
+
+    def test_date_month_lt_24_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('date', 6, 1), Cell('date', 6, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATE (month < 24) token are OK')
+
+    def test_date_day_120_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('date', 7, 1), Cell('date', 7, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATE (days = 120) token are OK')
+
+    def test_date_day_m_44_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('date', 8, 1), Cell('date', 8, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATE (days = -44) token are OK')
+
+    def test_date_day_eq_m1_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('date', 9, 1), Cell('date', 9, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DATE (days = -1) token are OK')
 
 
 if __name__ == '__main__':
