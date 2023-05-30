@@ -16,7 +16,10 @@ class Context:
     @property
     def __class_template(self) -> str:
         # TODO можно сделать кэш ячеек просчитанных
-        return '''class ExcelInPython:
+        return '''import datetime
+
+
+class ExcelInPython:
     def __init__(self, arguments: list = None):
         if arguments is None:
             arguments = []
@@ -94,6 +97,31 @@ class Context:
 
     def _and(self, flatten_list: list):
         return all(flatten_list)
+
+    def _day(self, date: datetime):
+        return date.day
+
+    def _month(self, date: datetime):
+        return date.month
+
+    def _year(self, date: datetime):
+        return date.year
+
+
+    def _min(self, flatten_list: list):
+        err_value = self._find_error_in_list(flatten_list)
+        if err_value:
+            return err_value
+
+        return min(self._only_numeric_list(flatten_list))
+
+    def _max(self, flatten_list: list):
+        err_value = self._find_error_in_list(flatten_list)
+        if err_value:
+            return err_value
+
+        return max(self._only_numeric_list(flatten_list))
+
 
 
     def _iferror(self, condition_function, when_error):

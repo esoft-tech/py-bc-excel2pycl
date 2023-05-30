@@ -77,17 +77,52 @@ class TestTokens(unittest.TestCase):
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='AVERAGE token are OK')
 
-    def test_iferror_when_error_token(self):
+    def test_min_token(self):
         cell_values = Executor() \
             .set_executed_class(class_file=self.translation_file_path) \
             .get_cells([Cell(0, 8, 1), Cell(0, 8, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='MIN token are OK')
+
+    def test_max_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell(0, 9, 1), Cell(0, 9, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='MAX token are OK')
+
+    def test_year_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell(0, 10, 1), Cell(0, 10, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='YEAR token are OK')
+
+    def test_month_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell(0, 11, 1), Cell(0, 11, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='MONTH token are OK')
+
+    def test_day_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell(0, 12, 1), Cell(0, 12, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DAY token are OK')
+
+    def test_iferror_when_error_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell(0, 13, 1), Cell(0, 13, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='IFERROR (when_error) token are OK')
 
     def test_iferror_condition_token(self):
         cell_values = Executor() \
             .set_executed_class(class_file=self.translation_file_path) \
-            .get_cells([Cell(0, 9, 1), Cell(0, 9, 2)])
+            .get_cells([Cell(0, 14, 1), Cell(0, 14, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='IFERROR (condition) token are OK')
 
