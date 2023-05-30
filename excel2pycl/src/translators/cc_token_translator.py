@@ -3,7 +3,8 @@ from excel2pycl.src.excel import Excel
 from excel2pycl.src.tokens import IfControlConstructionToken, ControlConstructionToken, SumIfControlConstructionToken, \
     SumControlConstructionToken, AverageControlConstructionToken, VlookupControlConstructionToken, \
     RoundControlConstructionToken, OrControlConstructionToken, AndControlConstructionToken, \
-        MinControlConstructionToken, MaxControlConstructionToken
+        MinControlConstructionToken, MaxControlConstructionToken, \
+    YearControlConstructionToken, MonthControlConstructionToken, DayControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
@@ -20,6 +21,9 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
         from excel2pycl.src.translators.and_cc_token_translator import AndControlConstructionTokenTranslator
         from excel2pycl.src.translators.min_cc_token_translator import MinControlConstructionTokenTranslator
         from excel2pycl.src.translators.max_cc_token_translator import MaxControlConstructionTokenTranslator
+        from excel2pycl.src.translators.year_cc_token_translator import YearControlConstructionTokenTranslator
+        from excel2pycl.src.translators.month_cc_token_translator import MonthControlConstructionTokenTranslator
+        from excel2pycl.src.translators.day_cc_token_translator import DayControlConstructionTokenTranslator
 
         translate_functions = {
             IfControlConstructionToken.__name__: IfControlConstructionTokenTranslator.translate,
@@ -31,7 +35,10 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             OrControlConstructionToken.__name__: OrControlConstructionTokenTranslator.translate,
             AndControlConstructionToken.__name__: AndControlConstructionTokenTranslator.translate,
             MinControlConstructionToken.__name__: MinControlConstructionTokenTranslator.translate,
-            MaxControlConstructionToken.__name__: MaxControlConstructionTokenTranslator.translate
+            MaxControlConstructionToken.__name__: MaxControlConstructionTokenTranslator.translate,
+            YearControlConstructionToken.__name__: YearControlConstructionTokenTranslator.translate,
+            MonthControlConstructionToken.__name__: MonthControlConstructionTokenTranslator.translate,
+            DayControlConstructionToken.__name__: DayControlConstructionTokenTranslator.translate
         }
 
         sub_token = token.control_construction
