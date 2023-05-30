@@ -8,7 +8,8 @@ from excel2pycl.src.tokens import IfControlConstructionToken, ControlConstructio
     IfErrorControlConstructionToken, \
     DateControlConstructionToken, \
     DateDifControlConstructionToken, \
-    EoMonthControlConstructionToken
+    EoMonthControlConstructionToken, \
+    EDateControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
@@ -32,6 +33,7 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
         from excel2pycl.src.translators.date_cc_token_translator import DateControlConstructionTokenTranslator
         from excel2pycl.src.translators.date_dif_cc_token_translator import DateDifControlConstructionTokenTranslator
         from excel2pycl.src.translators.eo_month_cc_token_translator import EoMonthControlConstructionTokenTranslator
+        from excel2pycl.src.translators.e_date_cc_token_translator import EDateControlConstructionTokenTranslator
 
         translate_functions = {
             IfControlConstructionToken.__name__: IfControlConstructionTokenTranslator.translate,
@@ -50,7 +52,8 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             IfErrorControlConstructionToken.__name__: IfErrorControlConstructionTokenTranslator.translate,
             DateControlConstructionToken.__name__: DateControlConstructionTokenTranslator.translate,
             DateDifControlConstructionToken.__name__: DateDifControlConstructionTokenTranslator.translate,
-            EoMonthControlConstructionToken.__name__: EoMonthControlConstructionTokenTranslator.translate
+            EoMonthControlConstructionToken.__name__: EoMonthControlConstructionTokenTranslator.translate,
+            EDateControlConstructionToken.__name__: EDateControlConstructionTokenTranslator.translate
         }
 
         sub_token = token.control_construction

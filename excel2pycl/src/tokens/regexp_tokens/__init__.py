@@ -135,6 +135,14 @@ class EoKeywordToken(RegexpBaseToken):
     regexp = r'EO'
 
 
+class DateKeywordToken(RegexpBaseToken):
+    regexp = r'DATE'
+
+
+class EKeywordToken(RegexpBaseToken):
+    regexp = r'E'
+
+
 # TODO добавить условие для локализации
 class SeparatorToken(RegexpBaseToken):
     regexp = r';|,'

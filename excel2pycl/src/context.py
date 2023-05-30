@@ -18,11 +18,9 @@ class Context:
         # TODO можно сделать кэш ячеек просчитанных
         return '''import datetime
 from dateutil.relativedelta import relativedelta
-
+from math import trunc
 from typing import Dict, Literal
 import calendar
-
-from math import trunc
 
 class ExcelInPython:
     def __init__(self, arguments: list = None):
@@ -94,7 +92,7 @@ class ExcelInPython:
 
     def _round(self, number: float, num_digits: int):
         return round(number, int(num_digits))
-
+        
     def _date(self, year: int, month: int, day: int):
         match year:
             case year if 0 <= year <= 1899:
@@ -158,6 +156,13 @@ class ExcelInPython:
         result_date = start_date + relativedelta(months=trunc(months))
         last_day_num = calendar.monthrange(result_date.year, result_date.month)[1]
         return datetime.datetime(result_date.year, result_date.month, last_day_num)
+
+    def _edate(self, start_date: datetime.datetime, months: float):
+        if not isinstance(start_date, datetime.datetime):
+            return '#VALUE!'
+        if not isinstance(months, (int, float)):
+            return '#VALUE!'
+        return start_date + relativedelta(months=trunc(months))
 
     def _or(self, flatten_list: list):
         return any(flatten_list)

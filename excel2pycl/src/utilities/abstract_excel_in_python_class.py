@@ -5,7 +5,6 @@ from dateutil.relativedelta import relativedelta
 from typing import Dict, Literal
 from math import trunc
 
-
 class AbstractExcelInPython(ABC):
     def __init__(self, arguments: list = None):
         if arguments is None:
@@ -133,6 +132,13 @@ class AbstractExcelInPython(ABC):
         result_date = start_date + relativedelta(months=trunc(months))
         last_day_num = calendar.monthrange(result_date.year, result_date.month)[1]
         return datetime.datetime(result_date.year, result_date.month, last_day_num)
+
+    def _edate(self, start_date: datetime, months: float):
+        if not isinstance(start_date, datetime):
+            return '#VALUE!'
+        if not isinstance(months, (int, float)):
+            return '#VALUE!'
+        return start_date + relativedelta(months=trunc(months))
 
     def _or(self, flatten_list: list):
         return any(flatten_list)

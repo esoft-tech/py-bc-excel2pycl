@@ -266,6 +266,20 @@ class TestTokens(unittest.TestCase):
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='EOMONTH (N) token are OK')
 
+    def test_edate_months_plus_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell(0, 17, 1), Cell(0, 17, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='EDATE plus token are OK')
+
+    def test_edate_months_minus_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell(0, 18, 1), Cell(0, 18, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='EDATE minus token are OK')
+
 
 if __name__ == '__main__':
     unittest.main()
