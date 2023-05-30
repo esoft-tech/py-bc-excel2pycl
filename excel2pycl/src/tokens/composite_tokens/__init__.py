@@ -413,9 +413,9 @@ class MaxControlConstructionToken(CompositeBaseToken):
 
 class MatchControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
-        [MatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, CellIdentifierRangeToken,
+        [MatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken,
          SeparatorToken, ExpressionToken, BracketFinishToken],
-        [MatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, CellIdentifierRangeToken,
+        [MatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken,
          BracketFinishToken]]
 
     @property
@@ -423,7 +423,7 @@ class MatchControlConstructionToken(CompositeBaseToken):
         return self.value[2]
 
     @property
-    def lookup_array(self) -> CellIdentifierRangeToken:
+    def lookup_array(self) -> MatrixOfCellIdentifiersToken:
         return self.value[4]
 
     @property

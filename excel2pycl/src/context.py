@@ -77,8 +77,8 @@ class ExcelInPython:
         while first <= last:
 
             mid = (last + first) // 2
-            left = arr[mid] > lookup_value if reverse else arr[mid] < lookup_value
-            right = arr[mid] < lookup_value if reverse else arr[mid] > lookup_value
+            left = arr[mid][0] > lookup_value if reverse else arr[mid][0] < lookup_value
+            right = arr[mid][0] < lookup_value if reverse else arr[mid][0] > lookup_value
 
             if left:
                 if reverse:
@@ -102,13 +102,13 @@ class ExcelInPython:
                 next_largest = mid
                 break
 
-        if arr[next_smallest] > lookup_value:
+        if arr[next_smallest][0] > lookup_value:
             next_smallest = -1
 
-        if arr[next_largest] < lookup_value:
+        if arr[next_largest][0] < lookup_value:
             next_largest = -1
 
-        return value
+        return (exact, next_smallest, next_largest)
 
     def _sum(self, flatten_list: list):
         return sum(self._only_numeric_list(flatten_list))
@@ -122,40 +122,38 @@ class ExcelInPython:
         match match_type:
             case 0:
                 for index, value in enumerate(lookup_array):
-                    if isinstance(value, self.EmptyCell) or not isinstance(value, lookup_value_type):
+                    if isinstance(value[0], self.EmptyCell) or not isinstance(value[0], lookup_value_type):
                         continue
-                    if value == lookup_value:
-                        return index
+                    if value[0] == lookup_value:
+                        return index + 1
                 return '#N/A'
             case match_type if match_type > 0:
                 last_valid_index = '#N/A'
                 for index, value in enumerate(lookup_array):
-                    if isinstance(value, self.EmptyCell) or not isinstance(value, lookup_value_type):
+                    if isinstance(value[0], self.EmptyCell) or not isinstance(value[0], lookup_value_type):
                         continue
-                    if value <= lookup_value:
-                        last_valid_index = index
+                    if value[0] <= lookup_value:
+                        last_valid_index = index + 1
                     else:
                         return last_valid_index
             case match_type if match_type < 0:
                 last_valid_index = '#N/A'
                 for index, value in enumerate(lookup_array):
-                    if isinstance(value, self.EmptyCell) or not isinstance(value, lookup_value_type):
+                    if isinstance(value[0], self.EmptyCell) or not isinstance(value[0], lookup_value_type):
                         continue
-                    if value >= lookup_value:
-                        last_valid_index = index
+                    if value[0] >= lookup_value:
+                        last_valid_index = index + 1
                     else:
                         return last_valid_index
 
     def _xmatch(self, lookup_value, lookup_array: list, match_mode: int = 0, search_mode: int = 1):
         # TODO wildcard match
-        output_value = ''
+        output_value = 0
         match match_mode:
-            case 0:
-                output_value = 'exact'
             case -1:
-                output_value = 'next_smallest'
+                output_value = 1
             case 1:
-                output_value = 'next_largest'
+                output_value = 2
 
         match search_mode:
             case 1:
@@ -163,9 +161,11 @@ class ExcelInPython:
             case -1:
                 return self._match(lookup_value, lookup_array[::-1], match_mode)
             case 2:
-                return self._binary_search(lookup_array, lookup_value).get(output_value, '#N/A')
+                index = self._binary_search(lookup_array, lookup_value)[output_value]
+                return index + 1 if index != -1 else '#N/A'
             case -2:
-                return self._binary_search(lookup_array, lookup_value, reverse=True).get(output_value, '#N/A')
+                index = self._binary_search(lookup_array, lookup_value, reverse=True)[output_value]
+                return index + 1 if index != -1 else '#N/A'
             case _:
                 return '#ERROR!'
 
