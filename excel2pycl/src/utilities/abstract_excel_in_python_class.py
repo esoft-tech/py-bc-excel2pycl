@@ -34,7 +34,7 @@ class AbstractExcelInPython(ABC):
         return [i for i in flatten_list if type(i) in [float, int]]
 
     @staticmethod
-    def _binary_search(arr: list, x: any, reverse: bool = False):
+    def _binary_search(arr: list, lookup_value: any, reverse: bool = False):
         first = 0
         last = len(arr) - 1
         value = {
@@ -46,8 +46,8 @@ class AbstractExcelInPython(ABC):
         while first <= last:
 
             mid = (last + first) // 2
-            left = arr[mid] > x if reverse else arr[mid] < x
-            right = arr[mid] < x if reverse else arr[mid] > x
+            left = arr[mid] > lookup_value if reverse else arr[mid] < lookup_value
+            right = arr[mid] < lookup_value if reverse else arr[mid] > lookup_value
 
             if left:
                 if reverse:
@@ -67,12 +67,14 @@ class AbstractExcelInPython(ABC):
 
             else:
                 value['exact'] = mid
+                value['next_smallest'] = mid
+                value['next_largest'] = mid
                 break
 
-        if arr[value['next_smallest']] > x:
+        if arr[value['next_smallest']] > lookup_value:
             value['next_smallest'] = -1
 
-        if arr[value['next_largest']] < x:
+        if arr[value['next_largest']] < lookup_value:
             value['next_largest'] = -1
 
         return value
@@ -83,25 +85,70 @@ class AbstractExcelInPython(ABC):
     def _average(self, flatten_list: list):
         return self._sum(flatten_list) / len(self._only_numeric_list(flatten_list))
 
+    def _match(self, lookup_value, lookup_array: list, match_type: int = 0):
+        lookup_value_type = int if isinstance(lookup_value, self.EmptyCell) else type(lookup_value)
+
+        match match_type:
+            case 0:
+                for index, value in enumerate(lookup_array):
+                    if isinstance(value, self.EmptyCell) or not isinstance(value, lookup_value_type):
+                        continue
+                    if value == lookup_value:
+                        return index
+                return '#N/A'
+            case match_type if match_type > 0:
+                last_valid_index = '#N/A'
+                for index, value in enumerate(lookup_array):
+                    if isinstance(value, self.EmptyCell) or not isinstance(value, lookup_value_type):
+                        continue
+                    if value <= lookup_value:
+                        last_valid_index = index
+                    else:
+                        return last_valid_index
+            case match_type if match_type < 0:
+                last_valid_index = '#N/A'
+                for index, value in enumerate(lookup_array):
+                    if isinstance(value, self.EmptyCell) or not isinstance(value, lookup_value_type):
+                        continue
+                    if value >= lookup_value:
+                        last_valid_index = index
+                    else:
+                        return last_valid_index
+
+    def _xmatch(self, lookup_value, lookup_array: list, match_mode: int = 0, search_mode: int = 1):
+        # TODO wildcard match
+        match_mode_map = {
+            -1: 'next_smallest',
+            0: 'exact',
+            1: 'next_largest',
+        }
+        match search_mode:
+            case 1:
+                return self._match(lookup_value, lookup_array, match_mode)
+            case -1:
+                return self._match(lookup_value, lookup_array[::-1], match_mode)
+            case 2:
+                return self._binary_search(lookup_array, lookup_value).get(match_mode_map[match_mode], '#N/A')
+            case -2:
+                return self._binary_search(lookup_array, lookup_value, reverse=True).get(match_mode_map[match_mode], '#N/A')
+            case _:
+                return '#ERROR!'
+
     def _vlookup(self, lookup_value, table_array: list, col_index_num: int, range_lookup: bool = False):
-        # TODO search optimization needed
         if not isinstance(range_lookup, (bool, int)):
             return '#ERROR!'
-
-        if range_lookup:
-            table_array.sort(key=lambda row: row[0])
 
         lookup_value_type = int if isinstance(lookup_value, self.EmptyCell) else type(lookup_value)
 
         if range_lookup:
-            minimum = '#N/A'
+            last_valid_value = '#N/A'
             for row in table_array:
                 if isinstance(row[0], self.EmptyCell) or not isinstance(row[0], lookup_value_type):
                     continue
                 if row[0] <= lookup_value:
-                    minimum = row[col_index_num - 1]
+                    last_valid_value = row[col_index_num - 1]
                 else:
-                    return minimum
+                    return last_valid_value
         else:
             for row in table_array:
                 if isinstance(row[0], self.EmptyCell) or not isinstance(row[0], lookup_value_type):
