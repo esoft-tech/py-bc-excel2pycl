@@ -11,7 +11,7 @@ setup(
     packages=['excel2pycl', 'excel2pycl.src', 'excel2pycl.src.utilities', 'excel2pycl.src.translators',
               'excel2pycl.src.tokens', 'excel2pycl.src.tokens.composite_tokens', 'excel2pycl.src.tokens.regexp_tokens',
               'excel2pycl.src.exceptions'],
-    install_requires=['openpyxl>=3.1.2'],
+    install_requires=['openpyxl>=3.1.2', 'python-dateutil>=2.8.2'],
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Environment :: Console',

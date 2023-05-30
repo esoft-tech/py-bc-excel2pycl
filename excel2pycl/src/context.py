@@ -17,6 +17,8 @@ class Context:
     def __class_template(self) -> str:
         # TODO можно сделать кэш ячеек просчитанных
         return '''import datetime
+from dateutil.relativedelta import relativedelta
+
 from typing import Dict, Literal
 import calendar
 
@@ -54,6 +56,12 @@ class ExcelInPython:
 
         return result
 
+    def _find_error_in_list(self, flatten_list: list):
+        for err_value in filter(lambda cell: cell in ['#NUM!', '#DIV/0!',
+                                                      '#N/A', '#NAME?', ' #NULL!',
+                                                      '#REF!', '#VALUE!'], flatten_list):
+            return err_value
+
     @staticmethod
     def _only_numeric_list(flatten_list: list):
         return [i for i in flatten_list if type(i) in [float, int]]
@@ -62,7 +70,7 @@ class ExcelInPython:
         return sum(self._only_numeric_list(flatten_list))
 
     def _average(self, flatten_list: list):
-        return self._sum(flatten_list)/len(self._only_numeric_list(flatten_list))
+        return self._sum(flatten_list) / len(self._only_numeric_list(flatten_list))
 
     def _vlookup(self, lookup_value, table_array: list, col_index_num: int, range_lookup: bool = False):
         # TODO add Range Lookup (https://support.microsoft.com/en-us/office/vlookup-function-0bbc8083-26fe-4963-8ab8-93a18ad188a1)
@@ -84,6 +92,28 @@ class ExcelInPython:
 
     def _round(self, number: float, num_digits: int):
         return round(number, int(num_digits))
+
+    def _date(self, year: int, month: int, day: int):
+        match year:
+            case year if 0 <= year <= 1899:
+                year += 1900
+            case year if year < 0 or year > 9999:
+                return '#NUM!'
+
+        result_date = datetime.datetime(year, 1, 1)
+
+        result_date += relativedelta(months=month - 1)
+
+        days_in_current_month = calendar.monthrange(result_date.year, result_date.month)[1]
+        if abs(day) > days_in_current_month:
+            while abs(day) > days_in_current_month:
+                result_date += relativedelta(months=1 if (day > 0) else (-1))
+                day += (-days_in_current_month) if day > 0 else days_in_current_month
+                days_in_current_month = calendar.monthrange(result_date.year, result_date.month)[1]
+
+        result_date += relativedelta(days=day - 1 if (day >= -1) else day - 2)
+
+        return result_date
 
     def _datedif(self, date_start: datetime.datetime, date_end: datetime.datetime,
                  mode: Literal['Y', 'M', 'D', 'MD', 'YM', 'YD']):
@@ -124,6 +154,39 @@ class ExcelInPython:
 
     def _and(self, flatten_list: list):
         return all(flatten_list)
+
+    def _min(self, flatten_list: list):
+        err_value = self._find_error_in_list(flatten_list)
+        if err_value:
+            return err_value
+
+        return min(self._only_numeric_list(flatten_list))
+
+    def _max(self, flatten_list: list):
+        err_value = self._find_error_in_list(flatten_list)
+        if err_value:
+            return err_value
+
+        return max(self._only_numeric_list(flatten_list))
+
+    def _day(self, date: datetime.datetime):
+        return date.day
+
+    def _month(self, date: datetime.datetime):
+        return date.month
+
+    def _year(self, date: datetime.datetime):
+        return date.year
+
+    def _iferror(self, condition_function, when_error):
+        try:
+            cell = condition_function()
+            if self._find_error_in_list([cell]):
+                return when_error
+            else:
+                return cell
+        except ZeroDivisionError:
+            return when_error
 
     def _cell_preprocessor(self, cell_uid: str):
         return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))
