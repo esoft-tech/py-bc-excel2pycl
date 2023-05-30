@@ -135,7 +135,7 @@ class Parser:
         """
         self._translate()
 
-        with open(file_path, 'w') as f:
+        with open(file_path, 'w', encoding='utf-8') as f:
             f.write(self._translation)
 
         return self

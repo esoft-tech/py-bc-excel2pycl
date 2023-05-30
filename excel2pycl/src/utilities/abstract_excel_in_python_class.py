@@ -1,7 +1,8 @@
 from abc import ABC
-from datetime import datetime
-from typing import Dict
+import datetime
+import calendar
 from dateutil.relativedelta import relativedelta
+from typing import Dict, Literal
 from math import trunc
 
 class AbstractExcelInPython(ABC):
@@ -30,6 +31,12 @@ class AbstractExcelInPython(ABC):
                 result.append(i)
 
         return result
+
+    def _find_error_in_list(self, flatten_list: list):
+        for err_value in filter(lambda cell: cell in ['#NUM!', '#DIV/0!',
+                                                      '#N/A', '#NAME?', ' #NULL!',
+                                                      '#REF!', '#VALUE!'], flatten_list):
+            return err_value
 
     @staticmethod
     def _only_numeric_list(flatten_list: list):
@@ -62,6 +69,70 @@ class AbstractExcelInPython(ABC):
     def _round(self, number: float, num_digits: int):
         return round(number, int(num_digits))
 
+    def _date(self, year: int, month: int, day: int):
+        match year:
+            case year if 0 <= year <= 1899:
+                year += 1900
+            case year if year < 0 or year > 9999:
+                return '#NUM!'
+
+        result_date = datetime.datetime(year, 1, 1)
+
+        result_date += relativedelta(months=month - 1)
+
+        days_in_current_month = calendar.monthrange(result_date.year, result_date.month)[1]
+        if abs(day) > days_in_current_month:
+            while abs(day) > days_in_current_month:
+                result_date += relativedelta(months=1 if (day > 0) else (-1))
+                day += (-days_in_current_month) if day > 0 else days_in_current_month
+                days_in_current_month = calendar.monthrange(result_date.year, result_date.month)[1]
+
+        result_date += relativedelta(days=day - 1 if (day >= -1) else day - 2)
+
+        return result_date
+
+    def _datedif(self, date_start: datetime.datetime, date_end: datetime.datetime,
+                 mode: Literal['Y', 'M', 'D', 'MD', 'YM', 'YD']):
+        if (not isinstance(date_start, datetime.datetime) or not isinstance(date_end, datetime.datetime)):
+            return "#VALUE!"
+        if date_start > date_end:
+            return "#NUM!"
+        match mode:
+            case 'Y':
+                return (date_end - date_start).days // (366 if calendar.isleap(date_start.year) and
+                                                        date_start.month <= 2 else 365)
+            case 'M':
+                result = 12 * (date_end.year - date_start.year) + (date_end.month - date_start.month)
+                if date_start.day > date_end.day:
+                    return result - 1
+                return result
+            case 'D':
+                return (date_end - date_start).days
+            case 'MD':
+                if (date_end.day >= date_start.day):
+                    return date_end.day - date_start.day
+                else:
+                    prev_month_date = datetime.datetime(date_end.year, date_end.month, 1) - datetime.timedelta(days=1)
+                    return calendar.monthrange(prev_month_date.year, prev_month_date.month)[1] - (
+                        date_start.day - date_end.day)
+            case 'YM':
+                return (12 if date_start.month > date_end.month and date_end.year > date_start.year else 0) \
+                    + (date_end.month - date_start.month) \
+                    + (-1 if date_start.day > date_end.day else 0)
+            case 'YD':
+                return (date_end - date_start).days % (366 if calendar.isleap(date_start.year) and
+                                                       date_start.month <= 2 else 365)
+            case _:
+                return "#NUM!"
+
+    def _eomonth(self, start_date: datetime.datetime, months: float | int):
+        # Note: If months is not an integer, it is truncated.
+        if not isinstance(start_date, datetime.datetime):
+            return '#NUM!'
+        result_date = start_date + relativedelta(months=trunc(months))
+        last_day_num = calendar.monthrange(result_date.year, result_date.month)[1]
+        return datetime.datetime(result_date.year, result_date.month, last_day_num)
+
     def _edate(self, start_date: datetime, months: float):
         if not isinstance(start_date, datetime):
             return '#VALUE!'
@@ -74,6 +145,39 @@ class AbstractExcelInPython(ABC):
 
     def _and(self, flatten_list: list):
         return all(flatten_list)
+
+    def _min(self, flatten_list: list):
+        err_value = self._find_error_in_list(flatten_list)
+        if err_value:
+            return err_value
+
+        return min(self._only_numeric_list(flatten_list))
+
+    def _max(self, flatten_list: list):
+        err_value = self._find_error_in_list(flatten_list)
+        if err_value:
+            return err_value
+
+        return max(self._only_numeric_list(flatten_list))
+
+    def _day(self, date: datetime.datetime):
+        return date.day
+
+    def _month(self, date: datetime.datetime):
+        return date.month
+
+    def _year(self, date: datetime.datetime):
+        return date.year
+
+    def _iferror(self, condition_function, when_error):
+        try:
+            cell = condition_function()
+            if self._find_error_in_list([cell]):
+                return when_error
+            else:
+                return cell
+        except ZeroDivisionError:
+            return when_error
 
     def _cell_preprocessor(self, cell_uid: str):
         return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))
