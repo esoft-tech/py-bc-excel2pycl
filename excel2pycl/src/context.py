@@ -27,6 +27,7 @@ class ExcelInPython:
         self.set_arguments(arguments)
         self._titles = {titles}
 
+
     def set_arguments(self, arguments: list):
         self._arguments = {{
             **self._arguments,
@@ -36,12 +37,14 @@ class ExcelInPython:
     def get_titles(self) -> dict:
         return self._titles
 
+
     class EmptyCell(int):
         def __eq__(self, other):
             empty_cell_equal_values = ['', 0, None, False]
             if other in empty_cell_equal_values:
                 return True
             return False
+
 
     def _flatten_list(self, subject: list) -> list:
         result = []
@@ -51,7 +54,14 @@ class ExcelInPython:
             else:
                 result.append(i)
 
+
         return result
+
+    def _find_error_in_list(self, flatten_list: list):
+        for err_value in filter(lambda cell: cell in ['#NUM!', '#DIV/0!',
+                                                      '#N/A', '#NAME?', ' #NULL!',
+                                                      '#REF!', '#VALUE!'], flatten_list):
+            return err_value
 
     @staticmethod
     def _only_numeric_list(flatten_list: list):
@@ -62,6 +72,7 @@ class ExcelInPython:
 
     def _average(self, flatten_list: list):
         return self._sum(flatten_list)/len(self._only_numeric_list(flatten_list))
+
 
     def _vlookup(self, lookup_value, table_array: list, col_index_num: int, range_lookup: bool = False):
         # TODO add Range Lookup (https://support.microsoft.com/en-us/office/vlookup-function-0bbc8083-26fe-4963-8ab8-93a18ad188a1)
@@ -79,6 +90,7 @@ class ExcelInPython:
             if i < len(sum_range) and criteria(range_[i]):
                 result += sum_range[i] or 0
 
+
         return result
 
     def _round(self, number: float, num_digits: int):
@@ -86,6 +98,7 @@ class ExcelInPython:
 
     def _or(self, flatten_list: list):
         return any(flatten_list)
+
 
     def _and(self, flatten_list: list):
         return all(flatten_list)
@@ -98,6 +111,21 @@ class ExcelInPython:
 
     def _year(self, date: datetime):
         return date.year
+
+
+    def _min(self, flatten_list: list):
+        err_value = self._find_error_in_list(flatten_list)
+        if err_value:
+            return err_value
+
+        return min(self._only_numeric_list(flatten_list))
+
+    def _max(self, flatten_list: list):
+        err_value = self._find_error_in_list(flatten_list)
+        if err_value:
+            return err_value
+
+        return max(self._only_numeric_list(flatten_list))
 
     def _cell_preprocessor(self, cell_uid: str):
         return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))

@@ -3,28 +3,6 @@ from excel2pycl.src.exceptions import E2PyclParserException
 from excel2pycl.src.tokens.regexp_base_token import RegexpBaseToken
 
 
-class CellIdentifierRangeToken(RegexpBaseToken):
-    regexp = r'((\'(.*?)\'|(\w*?))!)?((\$?([A-Z]+)(\$?(\d+))?:\$?\8(\$?(\d+))?)|(\$?([A-Z]+)(\$?(\d+))?:\$?([A-Z]+)(\$?\15)?))'
-    last_match_regexp = r'([^\d$].*)?'
-    value_range = [0, -1]
-
-    def __init__(self, *args, **kwargs):
-        self._range = None, None
-        super().__init__(*args, *kwargs)
-
-    def __str__(self):
-        return f'<{self.__class__.__name__}>({self.range})'
-
-    @property
-    def range(self) -> (Cell, Cell,):
-        if self._range[0] is None:
-            self._range = Cell(title=self.value[3] or self.value[4] or self.in_cell.title, column=self.value[7] or self.value[13],
-                               row=self.value[9] or self.value[15]), Cell(title=self.value[3] or self.value[4] or self.in_cell.title,
-                                                                          column=self.value[7] or self.value[16],
-                                                                          row=self.value[11] or self.value[15])
-        return self._range
-
-
 class MatrixOfCellIdentifiersToken(RegexpBaseToken):
     # TODO Consider the possibility of a matrix like A:A
     regexp = r'((\'(.*?)\'|(\w*?))!)?\$?([A-Z]+)(\$?(\d+))?:\$?([A-Z]+)(\$?(\d+))?'
@@ -45,6 +23,28 @@ class MatrixOfCellIdentifiersToken(RegexpBaseToken):
                                 row=self.value[7]), Cell(title=self.value[3] or self.value[4] or self.in_cell.title,
                                                          column=self.value[8], row=self.value[10])
         return self._matrix
+
+
+class CellIdentifierRangeToken(RegexpBaseToken):
+    regexp = r'((\'(.*?)\'|(\w*?))!)?((\$?([A-Z]+)(\$?(\d+))?:\$?\8(\$?(\d+))?)|(\$?([A-Z]+)(\$?(\d+))?:\$?([A-Z]+)(\$?\15)?))'
+    last_match_regexp = r'([^\d$].*)?'
+    value_range = [0, -1]
+
+    def __init__(self, *args, **kwargs):
+        self._range = None, None
+        super().__init__(*args, *kwargs)
+
+    def __str__(self):
+        return f'<{self.__class__.__name__}>({self.range})'
+
+    @property
+    def range(self) -> (Cell, Cell,):
+        if self._range[0] is None:
+            self._range = Cell(title=self.value[3] or self.value[4] or self.in_cell.title, column=self.value[7] or self.value[13],
+                               row=self.value[9] or self.value[15]), Cell(title=self.value[3] or self.value[4] or self.in_cell.title,
+                                                                          column=self.value[7] or self.value[16],
+                                                                          row=self.value[11] or self.value[15])
+        return self._range
 
 
 class CellIdentifierToken(RegexpBaseToken):
@@ -93,6 +93,14 @@ class OrKeywordToken(RegexpBaseToken):
 
 class AndKeywordToken(RegexpBaseToken):
     regexp = r'AND'
+
+
+class MinKeywordToken(RegexpBaseToken):
+    regexp = r'MIN'
+
+
+class MaxKeywordToken(RegexpBaseToken):
+    regexp = r'MAX'
 
 
 class YearKeywordToken(RegexpBaseToken):
