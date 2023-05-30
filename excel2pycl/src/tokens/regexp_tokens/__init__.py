@@ -119,6 +119,10 @@ class DayKeywordToken(RegexpBaseToken):
     regexp = r'DAY'
 
 
+class DateKeywordToken(RegexpBaseToken):
+    regexp = r'DATE'
+
+
 # TODO добавить условие для локализации
 class SeparatorToken(RegexpBaseToken):
     regexp = r';|,'

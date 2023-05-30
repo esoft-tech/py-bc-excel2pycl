@@ -1,6 +1,8 @@
 from abc import ABC
-from datetime import datetime
+import datetime
 from typing import Dict
+from dateutil.relativedelta import relativedelta
+from calendar import monthrange
 
 
 class AbstractExcelInPython(ABC):
@@ -72,6 +74,28 @@ class AbstractExcelInPython(ABC):
 
     def _round(self, number: float, num_digits: int):
         return round(number, int(num_digits))
+
+    def _date(self, year: int, month: int, day: int):
+        match year:
+            case year if 0 <= year <= 1899:
+                year += 1900
+            case year if year < 0 or year > 9999:
+                return '#NUM!'
+
+        result_date = datetime(year, 1, 1)
+
+        result_date += relativedelta(months=month - 1)
+
+        days_in_current_month = monthrange(result_date.year, result_date.month)[1]
+        if abs(day) > days_in_current_month:
+            while abs(day) > days_in_current_month:
+                result_date += relativedelta(months=1 if (day > 0) else (-1))
+                day += (-days_in_current_month) if day > 0 else days_in_current_month
+                days_in_current_month = monthrange(result_date.year, result_date.month)[1]
+
+        result_date += relativedelta(days=day - 1 if (day >= -1) else day - 2)
+
+        return result_date
 
     def _or(self, flatten_list: list):
         return any(flatten_list)

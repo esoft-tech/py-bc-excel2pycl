@@ -3,11 +3,14 @@ from typing import Union
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.tokens.composite_base_token import CompositeBaseToken
 from excel2pycl.src.tokens.recursive_composite_base_token import RecursiveCompositeBaseToken, CLS
-from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, MonthKeywordToken, MaxKeywordToken, MinKeywordToken, ErrorKeywordToken, SumKeywordToken, IfKeywordToken, CellIdentifierToken,\
-    CellIdentifierRangeToken, MatrixOfCellIdentifiersToken, EqOperatorToken, NotEqOperatorToken, GtOperatorToken, \
-    GtOrEqualOperatorToken, LtOperatorToken, LtOrEqualOperatorToken, PlusOperatorToken, MinusOperatorToken, \
-    MultiplicationOperatorToken, DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken,\
-    VlookupKeywordToken, AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken, YearKeywordToken
+from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, MonthKeywordToken, MaxKeywordToken, MinKeywordToken, ErrorKeywordToken, SumKeywordToken, IfKeywordToken, \
+    CellIdentifierToken,CellIdentifierRangeToken, MatrixOfCellIdentifiersToken, \
+    EqOperatorToken, NotEqOperatorToken, GtOperatorToken, GtOrEqualOperatorToken, \
+    LtOperatorToken, LtOrEqualOperatorToken, PlusOperatorToken, MinusOperatorToken, \
+    MultiplicationOperatorToken, DivOperatorToken, LiteralToken, BracketStartToken, \
+    BracketFinishToken, SeparatorToken,VlookupKeywordToken, AverageKeywordToken, \
+    RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken, YearKeywordToken, DateKeywordToken \
+
 
 
 class SumIfKeywordToken(CompositeBaseToken):
@@ -274,6 +277,23 @@ class RoundControlConstructionToken(CompositeBaseToken):
         return self.value[4]
 
 
+class DateControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[DateKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken,
+                    ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken]]
+
+    @property
+    def year(self):
+        return self.value[2]
+
+    @property
+    def month(self):
+        return self.value[4]
+
+    @property
+    def day(self):
+        return self.value[6]
+
+
 class OrControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[OrKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]]
 
@@ -338,7 +358,8 @@ class ControlConstructionToken(CompositeBaseToken):
                    [RoundControlConstructionToken], [OrControlConstructionToken], [AndControlConstructionToken],
                    [YearControlConstructionToken], [MonthControlConstructionToken], [DayControlConstructionToken],
                    [MinControlConstructionToken], [MaxControlConstructionToken],
-                   [IfErrorControlConstructionToken]]
+                   [IfErrorControlConstructionToken],
+                   [DateControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,
@@ -348,7 +369,8 @@ class ControlConstructionToken(CompositeBaseToken):
                                             YearControlConstructionToken, MonthControlConstructionToken,
                                             DayControlConstructionToken,
                                             MinControlConstructionToken, MaxControlConstructionToken,
-                                            IfErrorControlConstructionToken]:
+                                            IfErrorControlConstructionToken,
+                                            DateControlConstructionToken]:
         return self.value[0]
 
 
