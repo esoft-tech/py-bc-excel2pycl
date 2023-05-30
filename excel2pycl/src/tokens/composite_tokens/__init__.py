@@ -3,18 +3,22 @@ from typing import Union
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.tokens.composite_base_token import CompositeBaseToken
 from excel2pycl.src.tokens.recursive_composite_base_token import RecursiveCompositeBaseToken, CLS
-from excel2pycl.src.tokens.regexp_tokens import SumKeywordToken, IfKeywordToken, \
-    CellIdentifierToken, CellIdentifierRangeToken, MatrixOfCellIdentifiersToken, \
+from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, MonthKeywordToken, MaxKeywordToken, MinKeywordToken, ErrorKeywordToken, SumKeywordToken, IfKeywordToken, \
+    CellIdentifierToken,CellIdentifierRangeToken, MatrixOfCellIdentifiersToken, \
     EqOperatorToken, NotEqOperatorToken, GtOperatorToken, GtOrEqualOperatorToken, \
     LtOperatorToken, LtOrEqualOperatorToken, PlusOperatorToken, MinusOperatorToken, \
     MultiplicationOperatorToken, DivOperatorToken, LiteralToken, BracketStartToken, \
-    BracketFinishToken, SeparatorToken, VlookupKeywordToken, AverageKeywordToken, \
-    RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken, DateKeywordToken \
+    BracketFinishToken, SeparatorToken,VlookupKeywordToken, AverageKeywordToken, \
+    RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken, YearKeywordToken, DateKeywordToken \
 
 
 
 class SumIfKeywordToken(CompositeBaseToken):
     _TOKEN_SETS = [[SumKeywordToken, IfKeywordToken]]
+
+
+class IfErrorKeywordToken(CompositeBaseToken):
+    _TOKEN_SETS = [[IfKeywordToken, ErrorKeywordToken]]
 
 
 class SimilarCellToken(CompositeBaseToken):
@@ -175,6 +179,23 @@ class IfControlConstructionToken(CompositeBaseToken):
         return self.value[6]
 
 
+class IfErrorControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[IfErrorKeywordToken,
+                    BracketStartToken,
+                    ExpressionToken,
+                    SeparatorToken,
+                    ExpressionToken,
+                    BracketFinishToken]]
+
+    @property
+    def condition(self) -> ExpressionToken:
+        return self.value[2]
+
+    @property
+    def when_error(self) -> ExpressionToken:
+        return self.value[4]
+
+
 class SumControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[SumKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]]
 
@@ -289,10 +310,55 @@ class AndControlConstructionToken(CompositeBaseToken):
         return self.value[2].expressions
 
 
+class DayControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[DayKeywordToken, BracketStartToken, ExpressionToken, BracketFinishToken]]
+
+    @property
+    def date(self):
+        return self.value[2]
+
+
+class MonthControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[MonthKeywordToken, BracketStartToken, ExpressionToken, BracketFinishToken]]
+
+    @property
+    def date(self):
+        return self.value[2]
+
+
+class YearControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[YearKeywordToken, BracketStartToken, ExpressionToken, BracketFinishToken]]
+
+    @property
+    def date(self):
+        return self.value[2]
+
+
+class MinControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[MinKeywordToken, BracketStartToken,
+                    IterableExpressionToken, BracketFinishToken]]
+
+    @property
+    def expressions(self):
+        return self.value[2].expressions
+
+
+class MaxControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[MaxKeywordToken, BracketStartToken,
+                    IterableExpressionToken, BracketFinishToken]]
+
+    @property
+    def expressions(self):
+        return self.value[2].expressions
+
+
 class ControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[IfControlConstructionToken], [SumControlConstructionToken], [SumIfControlConstructionToken],
                    [VlookupControlConstructionToken], [AverageControlConstructionToken],
                    [RoundControlConstructionToken], [OrControlConstructionToken], [AndControlConstructionToken],
+                   [YearControlConstructionToken], [MonthControlConstructionToken], [DayControlConstructionToken],
+                   [MinControlConstructionToken], [MaxControlConstructionToken],
+                   [IfErrorControlConstructionToken],
                    [DateControlConstructionToken]]
 
     @property
@@ -300,6 +366,10 @@ class ControlConstructionToken(CompositeBaseToken):
                                             SumIfControlConstructionToken, VlookupControlConstructionToken,
                                             AverageControlConstructionToken, RoundControlConstructionToken,
                                             OrControlConstructionToken, AndControlConstructionToken,
+                                            YearControlConstructionToken, MonthControlConstructionToken,
+                                            DayControlConstructionToken,
+                                            MinControlConstructionToken, MaxControlConstructionToken,
+                                            IfErrorControlConstructionToken,
                                             DateControlConstructionToken]:
         return self.value[0]
 
