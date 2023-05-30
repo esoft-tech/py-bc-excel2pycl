@@ -70,11 +70,9 @@ class ExcelInPython:
     def _binary_search(arr: list, lookup_value: any, reverse: bool = False):
         first = 0
         last = len(arr) - 1
-        value = {
-            'next_smallest': last if reverse else first,
-            'next_largest': first if reverse else last,
-            'exact': -1
-        }
+        next_smallest = last if reverse else first
+        next_largest = first if reverse else last
+        exact = -1
 
         while first <= last:
 
@@ -84,31 +82,31 @@ class ExcelInPython:
 
             if left:
                 if reverse:
-                    value['next_largest'] = mid
+                    next_largest = mid
                 else:
-                    value['next_smallest'] = mid
+                    next_smallest = mid
 
                 first = mid + 1
 
             elif right:
                 if reverse:
-                    value['next_smallest'] = mid
+                    next_smallest = mid
                 else:
-                    value['next_largest'] = mid
+                    next_largest = mid
 
                 last = mid - 1
 
             else:
-                value['exact'] = mid
-                value['next_smallest'] = mid
-                value['next_largest'] = mid
+                exact = mid
+                next_smallest = mid
+                next_largest = mid
                 break
 
-        if arr[value['next_smallest']] > lookup_value:
-            value['next_smallest'] = -1
+        if arr[next_smallest] > lookup_value:
+            next_smallest = -1
 
-        if arr[value['next_largest']] < lookup_value:
-            value['next_largest'] = -1
+        if arr[next_largest] < lookup_value:
+            next_largest = -1
 
         return value
 
@@ -150,20 +148,24 @@ class ExcelInPython:
 
     def _xmatch(self, lookup_value, lookup_array: list, match_mode: int = 0, search_mode: int = 1):
         # TODO wildcard match
-        match_mode_map = {
-            -1: 'next_smallest',
-            0: 'exact',
-            1: 'next_largest',
-        }
+        output_value = ''
+        match match_mode:
+            case 0:
+                output_value = 'exact'
+            case -1:
+                output_value = 'next_smallest'
+            case 1:
+                output_value = 'next_largest'
+
         match search_mode:
             case 1:
                 return self._match(lookup_value, lookup_array, match_mode)
             case -1:
                 return self._match(lookup_value, lookup_array[::-1], match_mode)
             case 2:
-                return self._binary_search(lookup_array, lookup_value).get(match_mode_map[match_mode], '#N/A')
+                return self._binary_search(lookup_array, lookup_value).get(output_value, '#N/A')
             case -2:
-                return self._binary_search(lookup_array, lookup_value, reverse=True).get(match_mode_map[match_mode], '#N/A')
+                return self._binary_search(lookup_array, lookup_value, reverse=True).get(output_value, '#N/A')
             case _:
                 return '#ERROR!'
 
