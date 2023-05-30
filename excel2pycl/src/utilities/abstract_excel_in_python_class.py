@@ -1,8 +1,8 @@
 from abc import ABC
 import datetime
-from typing import Dict
+import calendar
+from typing import Dict, Literal
 from dateutil.relativedelta import relativedelta
-from calendar import monthrange
 
 
 class AbstractExcelInPython(ABC):
@@ -31,12 +31,6 @@ class AbstractExcelInPython(ABC):
                 result.append(i)
 
         return result
-
-    def _find_error_in_list(self, flatten_list: list):
-        for err_value in filter(lambda cell: cell in ['#NUM!', '#DIV/0!',
-                                                      '#N/A', '#NAME?', ' #NULL!',
-                                                      '#REF!', '#VALUE!'], flatten_list):
-            return err_value
 
     def _find_error_in_list(self, flatten_list: list):
         for err_value in filter(lambda cell: cell in ['#NUM!', '#DIV/0!',
@@ -86,16 +80,50 @@ class AbstractExcelInPython(ABC):
 
         result_date += relativedelta(months=month - 1)
 
-        days_in_current_month = monthrange(result_date.year, result_date.month)[1]
+        days_in_current_month = calendar.monthrange(result_date.year, result_date.month)[1]
         if abs(day) > days_in_current_month:
             while abs(day) > days_in_current_month:
                 result_date += relativedelta(months=1 if (day > 0) else (-1))
                 day += (-days_in_current_month) if day > 0 else days_in_current_month
-                days_in_current_month = monthrange(result_date.year, result_date.month)[1]
+                days_in_current_month = calendar.monthrange(result_date.year, result_date.month)[1]
 
         result_date += relativedelta(days=day - 1 if (day >= -1) else day - 2)
 
         return result_date
+
+    def _datedif(self, date_start: datetime.datetime, date_end: datetime.datetime,
+                 mode: Literal['Y', 'M', 'D', 'MD', 'YM', 'YD']):
+        if (not isinstance(date_start, datetime.datetime) or not isinstance(date_end, datetime.datetime)):
+            return "#VALUE!"
+        if date_start > date_end:
+            return "#NUM!"
+        match mode:
+            case 'Y':
+                return (date_end - date_start).days // (366 if calendar.isleap(date_start.year) and
+                                                        date_start.month <= 2 else 365)
+            case 'M':
+                result = 12 * (date_end.year - date_start.year) + (date_end.month - date_start.month)
+                if date_start.day > date_end.day:
+                    return result - 1
+                return result
+            case 'D':
+                return (date_end - date_start).days
+            case 'MD':
+                if (date_end.day >= date_start.day):
+                    return date_end.day - date_start.day
+                else:
+                    prev_month_date = datetime.datetime(date_end.year, date_end.month, 1) - datetime.timedelta(days=1)
+                    return calendar.monthrange(prev_month_date.year, prev_month_date.month)[1] - (
+                        date_start.day - date_end.day)
+            case 'YM':
+                return (12 if date_start.month > date_end.month and date_end.year > date_start.year else 0) \
+                    + (date_end.month - date_start.month) \
+                    + (-1 if date_start.day > date_end.day else 0)
+            case 'YD':
+                return (date_end - date_start).days % (366 if calendar.isleap(date_start.year) and
+                                                       date_start.month <= 2 else 365)
+            case _:
+                return "#NUM!"
 
     def _or(self, flatten_list: list):
         return any(flatten_list)

@@ -10,7 +10,8 @@ from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, MonthKeywordTok
     MultiplicationOperatorToken, DivOperatorToken, LiteralToken, BracketStartToken, \
     BracketFinishToken, SeparatorToken,VlookupKeywordToken, AverageKeywordToken, \
     RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken, YearKeywordToken, DateKeywordToken \
-
+, \
+    DateKeywordToken, DifKeywordToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
@@ -19,6 +20,10 @@ class SumIfKeywordToken(CompositeBaseToken):
 
 class IfErrorKeywordToken(CompositeBaseToken):
     _TOKEN_SETS = [[IfKeywordToken, ErrorKeywordToken]]
+
+
+class DateDifKeywordToken(CompositeBaseToken):
+    _TOKEN_SETS = [[DateKeywordToken, DifKeywordToken]]
 
 
 class SimilarCellToken(CompositeBaseToken):
@@ -294,6 +299,23 @@ class DateControlConstructionToken(CompositeBaseToken):
         return self.value[6]
 
 
+class DateDifControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[DateDifKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken,
+                    ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken]]
+
+    @property
+    def date_start(self):
+        return self.value[2]
+
+    @property
+    def date_end(self):
+        return self.value[4]
+
+    @property
+    def mode(self):
+        return self.value[6]
+
+
 class OrControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[OrKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]]
 
@@ -356,6 +378,7 @@ class ControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[IfControlConstructionToken], [SumControlConstructionToken], [SumIfControlConstructionToken],
                    [VlookupControlConstructionToken], [AverageControlConstructionToken],
                    [RoundControlConstructionToken], [OrControlConstructionToken], [AndControlConstructionToken],
+                   [DateDifControlConstructionToken],
                    [YearControlConstructionToken], [MonthControlConstructionToken], [DayControlConstructionToken],
                    [MinControlConstructionToken], [MaxControlConstructionToken],
                    [IfErrorControlConstructionToken],
@@ -370,7 +393,8 @@ class ControlConstructionToken(CompositeBaseToken):
                                             DayControlConstructionToken,
                                             MinControlConstructionToken, MaxControlConstructionToken,
                                             IfErrorControlConstructionToken,
-                                            DateControlConstructionToken]:
+                                            DateControlConstructionToken,
+                                            DateDifControlConstructionToken]:
         return self.value[0]
 
 

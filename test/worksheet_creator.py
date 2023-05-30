@@ -1,6 +1,7 @@
 from datetime import datetime
 from openpyxl import Workbook
 from openpyxl.worksheet.table import Table, TableStyleInfo
+from datetime import datetime
 
 
 def create_test_table(file_name):
@@ -64,5 +65,26 @@ def create_test_table(file_name):
                     "DATE days > 30", "DATE days < 0", "DATE days = -1"])
     for row in data:
         ws_date.append(row)
+
+
+    ws_datedif = wb.create_sheet('datedif')
+
+    data = [
+        ['=DATEDIF(A4, A5, "D")', '=DATEDIF(B4, B5, "M")', '=DATEDIF(C4, C5, "Y")', '=DATEDIF(D4, D5, "MD")',
+         '=DATEDIF(E4, E5, "YM")', '=DATEDIF(F4, F5, "YD")', '=DATEDIF(G4, G5, "YD")', '=DATEDIF(H4, H5, "YD")'],
+        [145, 4, 0, 30, 6, 145, 14, 337],
+        [datetime(2022, 10, 10), datetime(2022, 10, 10), datetime(2022, 10, 10),
+         datetime(2022, 10, 10), datetime(2022, 3, 14), datetime(2022, 10, 10), datetime(2022, 2, 27),
+         datetime(2022, 4, 10)],
+        [datetime(2023, 3, 4), datetime(2023, 3, 4), datetime(2023, 3, 4),
+         datetime(2023, 2, 9), datetime(2023, 10, 5), datetime(2023, 3, 4), datetime(2023, 3, 13),
+         datetime(2023, 3, 13)],
+    ]
+
+    # add column headings. NB. these must be strings
+    ws_datedif.append(["DATEDIF D", "DATEDIF M", "DATEDIF Y", "DATEDIF MD", "DATEDIF YM", "DATEDIF YD", "DATEDIF YD 2",
+                       "DATEDIF YD 3"])
+    for row in data:
+        ws_datedif.append(row)
 
     wb.save(file_name)

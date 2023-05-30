@@ -6,7 +6,8 @@ from excel2pycl.src.tokens import IfControlConstructionToken, ControlConstructio
         MinControlConstructionToken, MaxControlConstructionToken, \
     YearControlConstructionToken, MonthControlConstructionToken, DayControlConstructionToken, \
     IfErrorControlConstructionToken, \
-    DateControlConstructionToken
+    DateControlConstructionToken, \
+    DateDifControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
@@ -28,6 +29,7 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
         from excel2pycl.src.translators.day_cc_token_translator import DayControlConstructionTokenTranslator
         from excel2pycl.src.translators.iferror_cc_token_translator import IfErrorControlConstructionTokenTranslator
         from excel2pycl.src.translators.date_cc_token_translator import DateControlConstructionTokenTranslator
+        from excel2pycl.src.translators.date_dif_cc_token_translator import DateDifControlConstructionTokenTranslator
 
         translate_functions = {
             IfControlConstructionToken.__name__: IfControlConstructionTokenTranslator.translate,
@@ -44,7 +46,8 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             MonthControlConstructionToken.__name__: MonthControlConstructionTokenTranslator.translate,
             DayControlConstructionToken.__name__: DayControlConstructionTokenTranslator.translate,
             IfErrorControlConstructionToken.__name__: IfErrorControlConstructionTokenTranslator.translate,
-            DateControlConstructionToken.__name__: DateControlConstructionTokenTranslator.translate
+            DateControlConstructionToken.__name__: DateControlConstructionTokenTranslator.translate,
+            DateDifControlConstructionToken.__name__: DateDifControlConstructionTokenTranslator.translate
         }
 
         sub_token = token.control_construction
