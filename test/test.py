@@ -77,6 +77,20 @@ class TestTokens(unittest.TestCase):
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='AVERAGE token are OK')
 
+    def test_min_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell(0, 8, 1), Cell(0, 8, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='MIN token are OK')
+
+    def test_max_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell(0, 9, 1), Cell(0, 9, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='MAX token are OK')
+
 
 if __name__ == '__main__':
     unittest.main()

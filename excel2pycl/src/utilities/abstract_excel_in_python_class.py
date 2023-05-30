@@ -29,6 +29,12 @@ class AbstractExcelInPython(ABC):
 
         return result
 
+    def _find_error_in_list(self, flatten_list: list):
+        for err_value in filter(lambda cell: cell in ['#NUM!', '#DIV/0!',
+                                                      '#N/A', '#NAME?', ' #NULL!',
+                                                      '#REF!', '#VALUE!'], flatten_list):
+            return err_value
+
     @staticmethod
     def _only_numeric_list(flatten_list: list):
         return [i for i in flatten_list if type(i) in [float, int]]
@@ -65,6 +71,20 @@ class AbstractExcelInPython(ABC):
 
     def _and(self, flatten_list: list):
         return all(flatten_list)
+
+    def _min(self, flatten_list: list):
+        err_value = self._find_error_in_list(flatten_list)
+        if err_value:
+            return err_value
+
+        return min(self._only_numeric_list(flatten_list))
+
+    def _max(self, flatten_list: list):
+        err_value = self._find_error_in_list(flatten_list)
+        if err_value:
+            return err_value
+
+        return max(self._only_numeric_list(flatten_list))
 
     def _cell_preprocessor(self, cell_uid: str):
         return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))
