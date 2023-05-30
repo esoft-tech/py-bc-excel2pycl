@@ -22,6 +22,8 @@ from dateutil.relativedelta import relativedelta
 from typing import Dict, Literal
 import calendar
 
+from math import trunc
+
 class ExcelInPython:
     def __init__(self, arguments: list = None):
         if arguments is None:
@@ -148,6 +150,14 @@ class ExcelInPython:
                                                        date_start.month <= 2 else 365)
             case _:
                 return "#NUM!"
+
+    def _eomonth(self, start_date: datetime.datetime, months: float | int):
+        # Note: If months is not an integer, it is truncated.
+        if not isinstance(start_date, datetime.datetime):
+            return '#NUM!'
+        result_date = start_date + relativedelta(months=trunc(months))
+        last_day_num = calendar.monthrange(result_date.year, result_date.month)[1]
+        return datetime.datetime(result_date.year, result_date.month, last_day_num)
 
     def _or(self, flatten_list: list):
         return any(flatten_list)

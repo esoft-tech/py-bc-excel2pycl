@@ -1,8 +1,9 @@
 from abc import ABC
 import datetime
 import calendar
-from typing import Dict, Literal
 from dateutil.relativedelta import relativedelta
+from typing import Dict, Literal
+from math import trunc
 
 
 class AbstractExcelInPython(ABC):
@@ -76,7 +77,7 @@ class AbstractExcelInPython(ABC):
             case year if year < 0 or year > 9999:
                 return '#NUM!'
 
-        result_date = datetime(year, 1, 1)
+        result_date = datetime.datetime(year, 1, 1)
 
         result_date += relativedelta(months=month - 1)
 
@@ -125,6 +126,14 @@ class AbstractExcelInPython(ABC):
             case _:
                 return "#NUM!"
 
+    def _eomonth(self, start_date: datetime.datetime, months: float | int):
+        # Note: If months is not an integer, it is truncated.
+        if not isinstance(start_date, datetime.datetime):
+            return '#NUM!'
+        result_date = start_date + relativedelta(months=trunc(months))
+        last_day_num = calendar.monthrange(result_date.year, result_date.month)[1]
+        return datetime.datetime(result_date.year, result_date.month, last_day_num)
+
     def _or(self, flatten_list: list):
         return any(flatten_list)
 
@@ -145,13 +154,13 @@ class AbstractExcelInPython(ABC):
 
         return max(self._only_numeric_list(flatten_list))
 
-    def _day(self, date: datetime):
+    def _day(self, date: datetime.datetime):
         return date.day
 
-    def _month(self, date: datetime):
+    def _month(self, date: datetime.datetime):
         return date.month
 
-    def _year(self, date: datetime):
+    def _year(self, date: datetime.datetime):
         return date.year
 
     def _iferror(self, condition_function, when_error):
