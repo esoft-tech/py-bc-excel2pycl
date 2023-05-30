@@ -112,6 +112,20 @@ class TestTokens(unittest.TestCase):
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='DAY token are OK')
 
+    def test_iferror_when_error_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell(0, 13, 1), Cell(0, 13, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='IFERROR (when_error) token are OK')
+
+    def test_iferror_condition_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell(0, 14, 1), Cell(0, 14, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='IFERROR (condition) token are OK')
+
 
 if __name__ == '__main__':
     unittest.main()

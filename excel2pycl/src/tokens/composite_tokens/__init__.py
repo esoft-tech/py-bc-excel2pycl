@@ -3,15 +3,19 @@ from typing import Union
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.tokens.composite_base_token import CompositeBaseToken
 from excel2pycl.src.tokens.recursive_composite_base_token import RecursiveCompositeBaseToken, CLS
-from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, MonthKeywordToken, MaxKeywordToken, MinKeywordToken, SumKeywordToken, IfKeywordToken, CellIdentifierToken, \
+from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, MonthKeywordToken, MaxKeywordToken, MinKeywordToken, ErrorKeywordToken, SumKeywordToken, IfKeywordToken, CellIdentifierToken,\
     CellIdentifierRangeToken, MatrixOfCellIdentifiersToken, EqOperatorToken, NotEqOperatorToken, GtOperatorToken, \
     GtOrEqualOperatorToken, LtOperatorToken, LtOrEqualOperatorToken, PlusOperatorToken, MinusOperatorToken, \
-    MultiplicationOperatorToken, DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, \
+    MultiplicationOperatorToken, DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken,\
     VlookupKeywordToken, AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken, YearKeywordToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
     _TOKEN_SETS = [[SumKeywordToken, IfKeywordToken]]
+
+
+class IfErrorKeywordToken(CompositeBaseToken):
+    _TOKEN_SETS = [[IfKeywordToken, ErrorKeywordToken]]
 
 
 class SimilarCellToken(CompositeBaseToken):
@@ -172,6 +176,23 @@ class IfControlConstructionToken(CompositeBaseToken):
         return self.value[6]
 
 
+class IfErrorControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[IfErrorKeywordToken,
+                    BracketStartToken,
+                    ExpressionToken,
+                    SeparatorToken,
+                    ExpressionToken,
+                    BracketFinishToken]]
+
+    @property
+    def condition(self) -> ExpressionToken:
+        return self.value[2]
+
+    @property
+    def when_error(self) -> ExpressionToken:
+        return self.value[4]
+
+
 class SumControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[SumKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]]
 
@@ -316,7 +337,8 @@ class ControlConstructionToken(CompositeBaseToken):
                    [VlookupControlConstructionToken], [AverageControlConstructionToken],
                    [RoundControlConstructionToken], [OrControlConstructionToken], [AndControlConstructionToken],
                    [YearControlConstructionToken], [MonthControlConstructionToken], [DayControlConstructionToken],
-                   [MinControlConstructionToken], [MaxControlConstructionToken]]
+                   [MinControlConstructionToken], [MaxControlConstructionToken],
+                   [IfErrorControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,
@@ -325,7 +347,8 @@ class ControlConstructionToken(CompositeBaseToken):
                                             OrControlConstructionToken, AndControlConstructionToken,
                                             YearControlConstructionToken, MonthControlConstructionToken,
                                             DayControlConstructionToken,
-                                            MinControlConstructionToken, MaxControlConstructionToken]:
+                                            MinControlConstructionToken, MaxControlConstructionToken,
+                                            IfErrorControlConstructionToken]:
         return self.value[0]
 
 
