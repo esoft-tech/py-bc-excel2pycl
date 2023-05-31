@@ -13,7 +13,7 @@ class VlookupControlConstructionTokenTranslator(AbstractTranslator):
             = ExpressionTokenTranslator.translate(token.lookup_value, excel, context), \
               MatrixOfCellIdentifiersTokenTranslator.translate(token.matrix, excel, context), \
               ExpressionTokenTranslator.translate(token.column_number, excel, context), \
-              ExpressionTokenTranslator.translate(token.range_lookup, excel, context) if token.range_lookup else 'False'
+              ExpressionTokenTranslator.translate(token.range_lookup, excel, context) if token.range_lookup else 'True'
 
         return context.set_sub_cell(token.in_cell, f'self._vlookup({lookup_value}, {matrix}, {column_number}, {range_lookup})')
 
