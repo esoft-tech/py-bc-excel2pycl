@@ -100,7 +100,7 @@ class AbstractExcelInPython(ABC):
                 for index, value in enumerate(lookup_array):
                     if isinstance(value[0], self.EmptyCell) or not isinstance(value[0], lookup_value_type):
                         continue
-                    if value[0] == lookup_value:
+                    if value[0].lower() == lookup_value.lower() if isinstance(value[0], str) else value[0] == lookup_value:
                         return index + 1
                 return '#N/A'
             case match_type if match_type > 0:
@@ -108,7 +108,7 @@ class AbstractExcelInPython(ABC):
                 for index, value in enumerate(lookup_array):
                     if isinstance(value[0], self.EmptyCell) or not isinstance(value[0], lookup_value_type):
                         continue
-                    if value[0] <= lookup_value:
+                    if value[0].lower() <= lookup_value.lower() if isinstance(value[0], str) else value[0] <= lookup_value:
                         last_valid_index = index + 1
                     else:
                         return last_valid_index
@@ -117,7 +117,7 @@ class AbstractExcelInPython(ABC):
                 for index, value in enumerate(lookup_array):
                     if isinstance(value[0], self.EmptyCell) or not isinstance(value[0], lookup_value_type):
                         continue
-                    if value[0] >= lookup_value:
+                    if value[0].lower() >= lookup_value.lower() if isinstance(value[0], str) else value[0] >= lookup_value:
                         last_valid_index = index + 1
                     else:
                         return last_valid_index
