@@ -3,17 +3,14 @@ from typing import Union
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.tokens.composite_base_token import CompositeBaseToken
 from excel2pycl.src.tokens.recursive_composite_base_token import RecursiveCompositeBaseToken, CLS
-from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, MonthKeywordToken, MaxKeywordToken, MinKeywordToken, ErrorKeywordToken, DateKeywordToken, SumKeywordToken, IfKeywordToken, \
-    CellIdentifierToken,CellIdentifierRangeToken, MatrixOfCellIdentifiersToken, \
-    EqOperatorToken, NotEqOperatorToken, GtOperatorToken, GtOrEqualOperatorToken, \
-    LtOperatorToken, LtOrEqualOperatorToken, PlusOperatorToken, MinusOperatorToken, \
-    MultiplicationOperatorToken, DivOperatorToken, LiteralToken, BracketStartToken, \
-    BracketFinishToken, SeparatorToken,VlookupKeywordToken, AverageKeywordToken, \
-    RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken, YearKeywordToken, DateKeywordToken \
-, \
-    DateKeywordToken, DifKeywordToken, \
-    EoKeywordToken, MonthKeywordToken, \
-    EKeywordToken
+from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, MaxKeywordToken, MinKeywordToken,\
+    ErrorKeywordToken, SumKeywordToken, IfKeywordToken, CellIdentifierToken,CellIdentifierRangeToken,\
+    MatrixOfCellIdentifiersToken, EqOperatorToken, NotEqOperatorToken, GtOperatorToken, GtOrEqualOperatorToken, \
+    LtOperatorToken, LtOrEqualOperatorToken, PlusOperatorToken, MinusOperatorToken, MultiplicationOperatorToken,\
+    DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken,VlookupKeywordToken,\
+    AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken, YearKeywordToken,\
+    DateKeywordToken, DifKeywordToken, EoKeywordToken, MonthKeywordToken, EKeywordToken,\
+    XKeywordToken, MatchKeywordToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
@@ -34,6 +31,10 @@ class EoMonthKeywordToken(CompositeBaseToken):
 
 class EDateKeywordToken(CompositeBaseToken):
     _TOKEN_SETS = [[EKeywordToken, DateKeywordToken]]
+
+
+class XMatchKeywordToken(CompositeBaseToken):
+    _TOKEN_SETS = [[XKeywordToken, MatchKeywordToken]]
 
 
 class SimilarCellToken(CompositeBaseToken):
@@ -410,17 +411,61 @@ class MaxControlConstructionToken(CompositeBaseToken):
         return self.value[2].expressions
 
 
+class MatchControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [
+        [MatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken,
+         SeparatorToken, ExpressionToken, BracketFinishToken],
+        [MatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken,
+         BracketFinishToken]]
+
+    @property
+    def lookup_value(self) -> ExpressionToken:
+        return self.value[2]
+
+    @property
+    def lookup_array(self) -> MatrixOfCellIdentifiersToken:
+        return self.value[4]
+
+    @property
+    def match_type(self) -> ExpressionToken:
+        return self.value[6]
+
+
+class XMatchControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [
+        [XMatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken,
+         SeparatorToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken],
+        [XMatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken,
+         SeparatorToken, ExpressionToken, BracketFinishToken],
+        [XMatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken,
+         BracketFinishToken]]
+
+    @property
+    def lookup_value(self) -> ExpressionToken:
+        return self.value[2]
+
+    @property
+    def lookup_array(self) -> MatrixOfCellIdentifiersToken:
+        return self.value[4]
+
+    @property
+    def match_mode(self) -> ExpressionToken:
+        return self.value[6] if len(self.value) >= 8 else None
+
+    @property
+    def search_mode(self) -> ExpressionToken:
+        return self.value[8] if len(self.value) == 10 else None
+
+
 class ControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[IfControlConstructionToken], [SumControlConstructionToken], [SumIfControlConstructionToken],
                    [VlookupControlConstructionToken], [AverageControlConstructionToken],
                    [RoundControlConstructionToken], [OrControlConstructionToken], [AndControlConstructionToken],
-                   [EDateControlConstructionToken],
-                   [EoMonthControlConstructionToken],
-                   [DateDifControlConstructionToken],
-                   [YearControlConstructionToken], [MonthControlConstructionToken], [DayControlConstructionToken],
-                   [MinControlConstructionToken], [MaxControlConstructionToken],
-                   [IfErrorControlConstructionToken],
-                   [DateControlConstructionToken]]
+                   [EDateControlConstructionToken], [EoMonthControlConstructionToken],
+                   [DateDifControlConstructionToken], [YearControlConstructionToken], [MonthControlConstructionToken],
+                   [DayControlConstructionToken], [MinControlConstructionToken], [MaxControlConstructionToken],
+                   [IfErrorControlConstructionToken], [DateControlConstructionToken], [MatchControlConstructionToken],
+                   [XMatchControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,
@@ -430,11 +475,10 @@ class ControlConstructionToken(CompositeBaseToken):
                                             YearControlConstructionToken, MonthControlConstructionToken,
                                             DayControlConstructionToken,
                                             MinControlConstructionToken, MaxControlConstructionToken,
-                                            IfErrorControlConstructionToken,
-                                            DateControlConstructionToken,
-                                            DateDifControlConstructionToken,
-                                            EoMonthControlConstructionToken,
-                                            EDateControlConstructionToken]:
+                                            IfErrorControlConstructionToken, DateControlConstructionToken,
+                                            DateDifControlConstructionToken, EoMonthControlConstructionToken,
+                                            EDateControlConstructionToken, MatchControlConstructionToken,
+                                            XMatchControlConstructionToken]:
         return self.value[0]
 
 

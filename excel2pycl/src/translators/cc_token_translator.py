@@ -9,7 +9,7 @@ from excel2pycl.src.tokens import IfControlConstructionToken, ControlConstructio
     DateControlConstructionToken, \
     DateDifControlConstructionToken, \
     EoMonthControlConstructionToken, \
-    EDateControlConstructionToken
+    EDateControlConstructionToken, MatchControlConstructionToken, XMatchControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
@@ -34,6 +34,8 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
         from excel2pycl.src.translators.date_dif_cc_token_translator import DateDifControlConstructionTokenTranslator
         from excel2pycl.src.translators.eo_month_cc_token_translator import EoMonthControlConstructionTokenTranslator
         from excel2pycl.src.translators.e_date_cc_token_translator import EDateControlConstructionTokenTranslator
+        from excel2pycl.src.translators.match_cc_token_translator import MatchControlConstructionTokenTranslator
+        from excel2pycl.src.translators.xmatch_cc_token_translator import XMatchControlConstructionTokenTranslator
 
         translate_functions = {
             IfControlConstructionToken.__name__: IfControlConstructionTokenTranslator.translate,
@@ -53,7 +55,9 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             DateControlConstructionToken.__name__: DateControlConstructionTokenTranslator.translate,
             DateDifControlConstructionToken.__name__: DateDifControlConstructionTokenTranslator.translate,
             EoMonthControlConstructionToken.__name__: EoMonthControlConstructionTokenTranslator.translate,
-            EDateControlConstructionToken.__name__: EDateControlConstructionTokenTranslator.translate
+            EDateControlConstructionToken.__name__: EDateControlConstructionTokenTranslator.translate,
+            MatchControlConstructionToken.__name__: MatchControlConstructionTokenTranslator.translate,
+            XMatchControlConstructionToken.__name__: XMatchControlConstructionTokenTranslator.translate,
         }
 
         sub_token = token.control_construction

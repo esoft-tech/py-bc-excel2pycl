@@ -230,3 +230,11 @@ class BracketFinishToken(RegexpBaseToken):
 
 class WhitespaceToken(RegexpBaseToken):
     regexp = r'[\s\n\t]+'
+
+
+class XKeywordToken(RegexpBaseToken):
+    regexp = r'X'
+
+
+class MatchKeywordToken(RegexpBaseToken):
+    regexp = r'MATCH'
