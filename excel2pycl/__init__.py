@@ -7,6 +7,6 @@ from excel2pycl.src.object_loader import load_module
 from excel2pycl.src.translators import CellTranslator
 from excel2pycl.src.utilities import AbstractExcelInPython, Parser, Executor
 
-__version__ = '1.0.4'
+__version__ = '1.1.0'
 __author__ = 'Esoft'
 __license__ = 'MIT'
