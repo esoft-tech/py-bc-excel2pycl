@@ -5,6 +5,7 @@ from dateutil.relativedelta import relativedelta
 from typing import Dict, Literal
 from math import trunc
 
+
 class AbstractExcelInPython(ABC):
     def __init__(self, arguments: list = None):
         if arguments is None:
@@ -290,6 +291,38 @@ class AbstractExcelInPython(ABC):
                 return cell
         except ZeroDivisionError:
             return when_error
+
+    def _left(self, text, num_chars):
+        if num_chars < 0:
+            return '#ERROR!'
+        if not text:
+            return self.EmptyCell()
+        if not num_chars:
+            return text[0]
+        if len(text) < num_chars:
+            return text
+        return text[0:num_chars]
+
+    def _mid(self, text, start_num, num_chars):
+        if start_num < 1:
+            return '#NUM!'
+        if num_chars < 0:
+            return '#VALUE!'
+        if start_num > len(text):
+            return self.EmptyCell()
+        
+        return text[start_num:start_num + num_chars]
+
+    def _right(self, text, num_chars):
+        if num_chars < 0:
+            return '#ERROR!'
+        if not text:
+            return self.EmptyCell()
+        if not num_chars:
+            return text[len(text) - 1]
+        if len(text) < num_chars:
+            return text
+        return text[len(text) - num_chars - 1:]
 
     def _cell_preprocessor(self, cell_uid: str):
         return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))
