@@ -358,11 +358,11 @@ class LeftControlConstructionToken(CompositeBaseToken):
                    [LeftKeywordToken, BracketStartToken, ExpressionToken, BracketFinishToken]]
 
     @property
-    def text(self):
+    def text(self) -> ExpressionToken:
         return self.value[2]
     
     @property
-    def num_chars(self):
+    def num_chars(self) -> ExpressionToken:
         return self.value[4] if len(self.value) == 6 else None
     
     
@@ -370,15 +370,15 @@ class MidControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[MidKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken]]
 
     @property
-    def text(self):
+    def text(self) -> ExpressionToken:
         return self.value[2]
     
     @property
-    def start_num(self):
+    def start_num(self) -> ExpressionToken:
         return self.value[4]
     
     @property
-    def num_chars(self):
+    def num_chars(self) -> ExpressionToken:
         return self.value[6]
     
     
@@ -387,11 +387,11 @@ class RightControlConstructionToken(CompositeBaseToken):
                    [RightKeywordToken, BracketStartToken, ExpressionToken, BracketFinishToken]]
 
     @property
-    def text(self):
+    def text(self) -> ExpressionToken:
         return self.value[2]
     
     @property
-    def num_chars(self):
+    def num_chars(self) -> ExpressionToken:
         return self.value[4] if len(self.value) == 6 else None
 
 

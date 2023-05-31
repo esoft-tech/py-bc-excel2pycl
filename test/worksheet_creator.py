@@ -15,9 +15,10 @@ def create_test_table(file_name):
          '=MIN(I4:I13)', '=MAX(J4:J13)',
          '=YEAR(K4)', '=MONTH(L4)', '=DAY(M4)',
          '=IFERROR(N4/N5,5)', '=IFERROR(O4+O5,5)',
-         '=EOMONTH(P4, 2)', '=EOMONTH(Q4, -2)', 
+         '=EOMONTH(P4, 2)', '=EOMONTH(Q4, -2)',
          '=EDATE(R4, 2)', '=EDATE(S4, -1)', '=MATCH(30;T4:T12;1)', '=XMATCH(50;U4:U12;1;1)'],
-        [10.24, '=TRUE()', '=FALSE()', 5, 44, 55, 34, 5.5, 1, 10, 2023, 10, 10, 5, 12, datetime(2022, 3, 31), datetime(2021, 11, 30), datetime(2011, 3, 15), datetime(2010, 12, 15), 4, 6],
+        [10.24, '=TRUE()', '=FALSE()', 5, 44, 55, 34, 5.5, 1, 10, 2023, 10, 10, 5, 12, datetime(
+            2022, 3, 31), datetime(2021, 11, 30), datetime(2011, 3, 15), datetime(2010, 12, 15), 4, 6],
         [10.239584, '', 0, 1, 1, 1, 1, 1, 1, 1, datetime(2023, 10, 10), datetime(2023, 10, 10), datetime(
             2023, 10, 10), 12, 12, datetime(2022, 1, 1), datetime(2022, 1, 1), datetime(2011, 1, 15), datetime(2011, 1, 15), 0, 0],
         ['', 100, 1, 2, 2, 2, 2, 2, 2, 2, '', '', '', 0, 0, '', '', '', '', 10, 10],
@@ -33,9 +34,9 @@ def create_test_table(file_name):
 
     # add column headings. NB. these must be strings
     ws.append(["ROUND", "OR", "AND", "VLOOKUP", "IF", "SUM", "SUMIF", "AVERAGE", "MIN",
-               "MAX", "YEAR", "MONTH", "DAY", 
-               "IFERROR when_error", "IFERROR condition", 
-               "EOMONTH", "EOMONTH NEGATIVE", 
+               "MAX", "YEAR", "MONTH", "DAY",
+               "IFERROR when_error", "IFERROR condition",
+               "EOMONTH", "EOMONTH NEGATIVE",
                "EDATE plus", "EDATE minus", "MATCH", "XMATCH"])
 
     for row in data:
@@ -71,7 +72,6 @@ def create_test_table(file_name):
     for row in data:
         ws_date.append(row)
 
-
     ws_datedif = wb.create_sheet('datedif')
 
     data = [
@@ -91,5 +91,43 @@ def create_test_table(file_name):
                        "DATEDIF YD 3"])
     for row in data:
         ws_datedif.append(row)
+
+    ws_left = wb.create_sheet('left')
+
+    data = [
+        ['LEFT some num', 'LEFT zero', 'LEFT big length', 'LEFT eq len', 'LEFT one arg', 'LEFT negative arg'],
+        ['=LEFT(A4,2)', '=LEFT(B4,0)', '=LEFT(C4,200)', '=LEFT(D4,11)', '=LEFT(E4)', '=LEFT(F4,-2)' ],
+        ['He', '', 'Hello World', 'Hello World', 'H', '#ERROR!'],
+        ['Hello World', 'Hello World', 'Hello World', 'Hello World', 'Hello World', 'Hello World']
+    ]
+    
+    for row in data:
+        ws_left.append(row)
+        
+        
+    ws_right = wb.create_sheet('right')
+
+    data = [
+        ['RIGHT some num', 'RIGHT zero', 'RIGHT big length', 'RIGHT eq len', 'RIGHT one arg', 'RIGHT negative arg'],
+        ['=RIGHT(A4,5)', '=RIGHT(B4,0)', '=RIGHT(C4,200)', '=RIGHT(D4,11)', '=RIGHT(E4)', '=RIGHT(F4,-2)' ],
+        ['World', '', 'Hello World', 'Hello World', 'd', '#ERROR!'],
+        ['Hello World', 'Hello World', 'Hello World', 'Hello World', 'Hello World', 'Hello World']
+    ]
+    
+    for row in data:
+        ws_right.append(row)
+        
+        
+    ws_mid = wb.create_sheet('mid')
+
+    data = [
+        ['MID normal', 'MID zero', 'MID big length', 'MID full length', 'MID eq length', 'MID sec arg err', 'MID third arg err'],
+        ['=MID(A4, 1, 5)', '=MID(B4, 1, 0)', '=MID(C4, 100, 100)', '=MID(D4, 1, 100)', '=MID(E4, 1, 11)', '=MID(F4,0,10)', '=MID(F4,1,-1)' ],
+        ['Hello', '', '', 'Hello World', 'Hello World', '#NUM!', '#VALUE!'],
+        ['Hello World', 'Hello World', 'Hello World', 'Hello World', 'Hello World', 'Hello World', 'Hello World']
+    ]
+    
+    for row in data:
+        ws_mid.append(row)
 
     wb.save(file_name)

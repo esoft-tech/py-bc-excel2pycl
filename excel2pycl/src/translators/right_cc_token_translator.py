@@ -10,6 +10,6 @@ class RightControlConstructionTokenTranslator(AbstractTranslator):
         from excel2pycl.src.translators.expression_token_translator import ExpressionTokenTranslator
         
         text = ExpressionTokenTranslator.translate(token.text, excel, context)
-        num_chars = ExpressionTokenTranslator.translate(token.num_chars, excel, context)
+        num_chars = ExpressionTokenTranslator.translate(token.num_chars, excel, context) if token.num_chars else None
 
         return f'self._right({text}, {num_chars})'

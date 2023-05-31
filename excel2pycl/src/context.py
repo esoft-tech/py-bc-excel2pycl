@@ -275,6 +275,39 @@ class ExcelInPython:
         if not isinstance(months, (int, float)):
             return '#VALUE!'
         return start_date + relativedelta(months=trunc(months))
+        
+        
+    def _left(self, text, num_chars):
+        if num_chars is None:
+            return text[0]
+        if num_chars < 0:
+            return '#ERROR!'
+        if not text:
+            return self.EmptyCell()
+        if len(text) < num_chars:
+            return text
+        return text[0:num_chars]
+
+    def _mid(self, text, start_num, num_chars):
+        if start_num < 1:
+            return '#NUM!'
+        if num_chars < 0:
+            return '#VALUE!'
+        if start_num > len(text):
+            return self.EmptyCell()
+        
+        return text[start_num - 1:start_num + num_chars - 1]
+    
+    def _right(self, text, num_chars):
+        if num_chars is None:
+            return text[len(text) - 1]
+        if num_chars < 0:
+            return '#ERROR!'
+        if not text:
+            return self.EmptyCell()
+        if len(text) < num_chars:
+            return text
+        return text[len(text) - num_chars:]
 
     def _or(self, flatten_list: list):
         return any(flatten_list)

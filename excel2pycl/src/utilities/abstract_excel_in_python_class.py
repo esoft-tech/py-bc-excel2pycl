@@ -293,12 +293,12 @@ class AbstractExcelInPython(ABC):
             return when_error
 
     def _left(self, text, num_chars):
+        if num_chars is None:
+            return text[0]
         if num_chars < 0:
             return '#ERROR!'
         if not text:
             return self.EmptyCell()
-        if not num_chars:
-            return text[0]
         if len(text) < num_chars:
             return text
         return text[0:num_chars]
@@ -311,18 +311,18 @@ class AbstractExcelInPython(ABC):
         if start_num > len(text):
             return self.EmptyCell()
         
-        return text[start_num:start_num + num_chars]
+        return text[start_num - 1:start_num + num_chars - 1]
 
     def _right(self, text, num_chars):
+        if num_chars is None:
+            return text[len(text) - 1]
         if num_chars < 0:
             return '#ERROR!'
         if not text:
             return self.EmptyCell()
-        if not num_chars:
-            return text[len(text) - 1]
         if len(text) < num_chars:
             return text
-        return text[len(text) - num_chars - 1:]
+        return text[len(text) - num_chars:]
 
     def _cell_preprocessor(self, cell_uid: str):
         return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))
