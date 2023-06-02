@@ -139,6 +139,18 @@ class DateKeywordToken(RegexpBaseToken):
     regexp = r'DATE'
 
 
+class LeftKeywordToken(RegexpBaseToken):
+    regexp = r'LEFT'
+
+
+class MidKeywordToken(RegexpBaseToken):
+    regexp = r'MID'
+
+
+class RightKeywordToken(RegexpBaseToken):
+    regexp = r'RIGHT'
+
+
 class EKeywordToken(RegexpBaseToken):
     regexp = r'E'
 

@@ -293,6 +293,159 @@ class TestTokens(unittest.TestCase):
             .get_cells([Cell(0, 20, 1), Cell(0, 20, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='XMATCH token are OK')
+        
+    
+    def test_left_normal_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('left', 0, 1), Cell('left', 0, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='LEFT token are OK')
+        
+
+    def test_left_zero_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('left', 1, 1), Cell('left', 1, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='LEFT token are OK')
+        
+        
+    def test_left_bt_len_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('left', 2, 1), Cell('left', 2, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='LEFT token are OK')
+        
+        
+    def test_left_eq_len_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('left', 3, 1), Cell('left', 3, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='LEFT token are OK')
+        
+        
+    def test_left_1_arg_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('left', 4, 1), Cell('left', 4, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='LEFT token are OK')
+        
+        
+    def test_left_neg_arg_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('left', 5, 1), Cell('left', 5, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='LEFT token are OK')
+        
+        
+        
+    def test_right_normal_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('right', 0, 1), Cell('right', 0, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='right token are OK')
+        
+
+    def test_right_zero_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('right', 1, 1), Cell('right', 1, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='right token are OK')
+        
+        
+    def test_right_bt_len_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('right', 2, 1), Cell('right', 2, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='right token are OK')
+        
+        
+    def test_right_eq_len_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('right', 3, 1), Cell('right', 3, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='right token are OK')
+        
+        
+    def test_right_1_arg_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('right', 4, 1), Cell('right', 4, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='right token are OK')
+        
+        
+    def test_right_neg_arg_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('right', 5, 1), Cell('right', 5, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='right token are OK')
+        
+        
+    def test_mid_normal_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('mid', 0, 1), Cell('mid', 0, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='MID token are OK')
+        
+
+    def test_mid_zero_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('mid', 1, 1), Cell('mid', 1, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='MID token are OK')
+        
+        
+    def test_mid_bt_start_pos_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('mid', 2, 1), Cell('mid', 2, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='MID token are OK')
+        
+        
+    def test_mid_eq_start_pos_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('mid', 3, 1), Cell('mid', 3, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='MID token are OK')
+        
+        
+    def test_mid_eq_len_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('mid', 4, 1), Cell('mid', 4, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='MID token are OK')
+        
+        
+    def test_mid_sec_arg_err_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('mid', 5, 1), Cell('mid', 5, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='MID token are OK')
+        
+    def test_mid_third_arg_err_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('mid', 6, 1), Cell('mid', 6, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='MID token are OK')
+        
 
 
 if __name__ == '__main__':
