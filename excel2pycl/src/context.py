@@ -219,6 +219,24 @@ class ExcelInPython:
         return round(number, int(num_digits))
         
     def _date(self, year: int, month: int, day: int):
+        if isinstance(year, str):
+            try:
+                year = int(year)
+            except:
+                return '#NUM!'
+        
+        if isinstance(month, str):
+            try:
+                month = int(month)
+            except:
+                return '#NUM!'
+            
+        if isinstance(day, str):
+            try:
+                day = int(day)
+            except:
+                return '#NUM!'
+    
         match year:
             case year if 0 <= year <= 1899:
                 year += 1900

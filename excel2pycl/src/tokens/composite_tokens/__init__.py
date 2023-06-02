@@ -516,7 +516,7 @@ class RangeOfCellIdentifierWithConditionToken(CompositeBaseToken):
         return None if self.condition_lambda is not None else self.value[2]
 
 
-class IterableRangeOfCellIdentifierWithConditionToken(CompositeBaseToken):
+class IterableRangeOfCellIdentifierWithConditionToken(RecursiveCompositeBaseToken):
     _TOKEN_SETS = [
         [RangeOfCellIdentifierWithConditionToken, SeparatorToken, CLS],
         [RangeOfCellIdentifierWithConditionToken]
