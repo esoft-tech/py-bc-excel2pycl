@@ -17,12 +17,16 @@ class Context:
     def __class_template(self) -> str:
         # TODO можно сделать кэш ячеек просчитанных
         return '''import datetime
+from dateutil import parser as date_parser
 from dateutil.relativedelta import relativedelta
 from math import trunc
 from typing import Dict, Literal
 import calendar
 
 class ExcelInPython:
+    class ExcelInPythonException(Exception):
+        pass
+        
     def __init__(self, arguments: list = None):
         if arguments is None:
             arguments = []
@@ -45,6 +49,15 @@ class ExcelInPython:
             if other in empty_cell_equal_values:
                 return True
             return False
+            
+    def _parse_date_obj(self, date: str | datetime.datetime) -> datetime.datetime | None:
+        if isinstance(date, datetime.datetime):
+            return date
+
+        try:
+            return date_parser.parse(date)
+        except (date_parser.ParserError, TypeError):
+            return None
 
     def _flatten_list(self, subject: list) -> list:
         result = []
@@ -347,6 +360,50 @@ class ExcelInPython:
                 return cell
         except ZeroDivisionError:
             return when_error
+            
+    def _averageifs(self, average_range: list[list], *range_and_criteria):
+        class Undefined:
+            pass
+
+        # Если ячейка в диапазоне критериев пуста, AVERAGEIFS обрабатывает ее как значение 0.
+        _when_cell_is_empty_cast_to_zero = lambda l: [0 if isinstance(i, self.EmptyCell) else i for i in l]
+        # Ячейки в диапазоне, содержащие значение TRUE, оцениваются как 1; ячейки в диапазоне,
+        # содержащие значение FALSE, оцениваются как 0 (ноль).
+        _when_bool_cast_to_int = lambda l: [int(i) if isinstance(i, bool) else i for i in l]
+
+        average_range = self._flatten_list(average_range)
+        # If average_range is a blank or text value, AVERAGEIFS returns the #DIV0! error value.
+        if not average_range or isinstance(average_range, str) or isinstance(average_range, self.EmptyCell):
+            return '#DIV0!'
+
+        # Если ячейки в average_range не могут быть преобразованы в числа, AVERAGEIFS возвращает #DIV0! значение ошибки.
+        try:
+            [int(i) for i in average_range]
+        except:
+            return '#DIV0!'
+
+        # list[list[criteria_range, criteria]]
+        range_and_criteria_zip = []
+        for i in range_and_criteria:
+            if not range_and_criteria_zip or len(range_and_criteria_zip[-1]) == 2:
+                i = self._flatten_list(i)
+                if len(average_range) != len(i):
+                    raise self.ExcelInPythonException('Invalid averageifs range size')
+                range_and_criteria_zip.append([_when_bool_cast_to_int(_when_cell_is_empty_cast_to_zero(i))])
+            else:
+                range_and_criteria_zip[-1].append(i)
+
+        for [_range, criteria] in range_and_criteria_zip:
+            for i in range(len(_range)):
+                if not criteria(_range[i]):
+                    average_range[i] = Undefined()
+
+
+        average_range = _when_bool_cast_to_int([i for i in average_range if not isinstance(i, Undefined)])
+        if not average_range or [True for i in average_range if isinstance(i, self.EmptyCell)]:
+            return '#DIV/0!'
+
+        return self._average(average_range)
 
     def _cell_preprocessor(self, cell_uid: str):
         return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))

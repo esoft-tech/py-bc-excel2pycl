@@ -11,8 +11,9 @@ class LambdaTokenTranslator(AbstractTranslator):
     def translate(cls, token: LambdaToken, excel: Excel, context: Context) -> str:
         from excel2pycl.src.translators.expression_token_translator import ExpressionTokenTranslator
 
-        literal, expression = token.literal, ExpressionTokenTranslator.translate(token.expression, excel,
-                                                                                 context) if token.expression else None
+        literal, expression = token.literal, ExpressionTokenTranslator.translate(
+            token.expression, excel, context
+            ) if token.expression else None
 
         condition_symbol = '=='
         condition_value = literal
@@ -33,4 +34,11 @@ class LambdaTokenTranslator(AbstractTranslator):
         else:
             condition_value = expression
 
-        return context.set_sub_cell(token.in_cell, f'lambda x:x{condition_symbol}{condition_value}')
+        return context.set_sub_cell(
+            token.in_cell, f'lambda x: '
+                           f'self._parse_date_obj(x){condition_symbol}self._parse_date_obj({condition_value}) '
+                           f'if self._parse_date_obj({condition_value}) '
+                           f'else str(x).lower(){condition_symbol}str({condition_value}).lower() '
+                           f'if isinstance({condition_value}, str) '
+                           f'else x{condition_symbol}{condition_value}'
+            )

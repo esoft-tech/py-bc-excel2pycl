@@ -5,8 +5,10 @@ __pycache__/
 
 # C extensions
 *.so
-*.xlsx
+[^test]*.xlsx
 .idea
+*.xlsx#
+.DS_Store
 
 # Distribution / packaging
 .Python

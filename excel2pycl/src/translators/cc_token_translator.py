@@ -3,14 +3,15 @@ from excel2pycl.src.excel import Excel
 from excel2pycl.src.tokens import IfControlConstructionToken, ControlConstructionToken, SumIfControlConstructionToken, \
     SumControlConstructionToken, AverageControlConstructionToken, VlookupControlConstructionToken, \
     RoundControlConstructionToken, OrControlConstructionToken, AndControlConstructionToken, \
-        MinControlConstructionToken, MaxControlConstructionToken, \
+    MinControlConstructionToken, MaxControlConstructionToken, \
     YearControlConstructionToken, MonthControlConstructionToken, DayControlConstructionToken, \
     IfErrorControlConstructionToken, \
     DateControlConstructionToken, \
     DateDifControlConstructionToken, \
     EoMonthControlConstructionToken, \
     EDateControlConstructionToken, MatchControlConstructionToken, XMatchControlConstructionToken, \
-        LeftControlConstructionToken, MidControlConstructionToken, RightControlConstructionToken
+    LeftControlConstructionToken, MidControlConstructionToken, RightControlConstructionToken, \
+    AverageIfsControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
@@ -37,10 +38,11 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
         from excel2pycl.src.translators.e_date_cc_token_translator import EDateControlConstructionTokenTranslator
         from excel2pycl.src.translators.match_cc_token_translator import MatchControlConstructionTokenTranslator
         from excel2pycl.src.translators.xmatch_cc_token_translator import XMatchControlConstructionTokenTranslator
-        
         from excel2pycl.src.translators.left_cc_token_translator import LeftControlConstructionTokenTranslator
         from excel2pycl.src.translators.mid_cc_token_translator import MidControlConstructionTokenTranslator
         from excel2pycl.src.translators.right_cc_token_translator import RightControlConstructionTokenTranslator
+        from excel2pycl.src.translators.averageifs_cc_token_translator import \
+            AverageIfsControlConstructionTokenTranslator
 
         translate_functions = {
             IfControlConstructionToken.__name__: IfControlConstructionTokenTranslator.translate,
@@ -66,6 +68,7 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             LeftControlConstructionToken.__name__: LeftControlConstructionTokenTranslator.translate,
             MidControlConstructionToken.__name__: MidControlConstructionTokenTranslator.translate,
             RightControlConstructionToken.__name__: RightControlConstructionTokenTranslator.translate,
+            AverageIfsControlConstructionToken.__name__: AverageIfsControlConstructionTokenTranslator.translate,
         }
 
         sub_token = token.control_construction

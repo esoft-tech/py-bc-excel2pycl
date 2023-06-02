@@ -45,6 +45,9 @@ class Executor:
 
         return self
 
+    def get_executed_class(self):
+        return self._executed_instance
+
     def set_cells(self, cells: List[Cell]) -> Executor:
         """
         Sets cell values for an ExcelInPython object.
