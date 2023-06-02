@@ -238,3 +238,7 @@ class XKeywordToken(RegexpBaseToken):
 
 class MatchKeywordToken(RegexpBaseToken):
     regexp = r'MATCH'
+
+
+class SKeywordToken(RegexpBaseToken):
+    regexp = r'S'
