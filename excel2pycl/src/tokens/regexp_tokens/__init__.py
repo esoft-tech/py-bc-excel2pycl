@@ -127,16 +127,8 @@ class DayKeywordToken(RegexpBaseToken):
     regexp = r'DAY'
 
 
-class DateKeywordToken(RegexpBaseToken):
-    regexp = r'DATE'
-
-
 class EoKeywordToken(RegexpBaseToken):
     regexp = r'EO'
-
-
-class DateKeywordToken(RegexpBaseToken):
-    regexp = r'DATE'
 
 
 class LeftKeywordToken(RegexpBaseToken):
