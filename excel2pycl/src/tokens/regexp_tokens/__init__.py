@@ -91,6 +91,10 @@ class RoundKeywordToken(RegexpBaseToken):
     regexp = r'ROUND'
 
 
+class MatchKeywordToken(RegexpBaseToken):
+    regexp = r'MATCH'
+
+
 class DateKeywordToken(RegexpBaseToken):
     regexp = r'DATE'
 
@@ -147,33 +151,41 @@ class EKeywordToken(RegexpBaseToken):
     regexp = r'E'
 
 
+class XKeywordToken(RegexpBaseToken):
+    regexp = r'X'
+
+
+class SKeywordToken(RegexpBaseToken):
+    regexp = r'S'
+
+
 # TODO добавить условие для локализации
 class SeparatorToken(RegexpBaseToken):
     regexp = r';|,'
-
-
-class EqOperatorToken(RegexpBaseToken):
-    regexp = r'='
 
 
 class NotEqOperatorToken(RegexpBaseToken):
     regexp = r'<>'
 
 
-class GtOperatorToken(RegexpBaseToken):
-    regexp = r'>'
+class EqOperatorToken(RegexpBaseToken):
+    regexp = r'='
 
 
 class GtOrEqualOperatorToken(RegexpBaseToken):
     regexp = r'>='
 
 
-class LtOperatorToken(RegexpBaseToken):
-    regexp = r'<'
-
-
 class LtOrEqualOperatorToken(RegexpBaseToken):
     regexp = r'<='
+
+
+class GtOperatorToken(RegexpBaseToken):
+    regexp = r'>'
+
+
+class LtOperatorToken(RegexpBaseToken):
+    regexp = r'<'
 
 
 class PlusOperatorToken(RegexpBaseToken):
@@ -234,15 +246,3 @@ class BracketFinishToken(RegexpBaseToken):
 
 class WhitespaceToken(RegexpBaseToken):
     regexp = r'[\s\n\t]+'
-
-
-class XKeywordToken(RegexpBaseToken):
-    regexp = r'X'
-
-
-class MatchKeywordToken(RegexpBaseToken):
-    regexp = r'MATCH'
-
-
-class SKeywordToken(RegexpBaseToken):
-    regexp = r'S'
