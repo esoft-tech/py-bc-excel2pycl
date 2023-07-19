@@ -187,12 +187,16 @@ class ExcelInPython:
             return '#ERROR!'
 
         lookup_value_type = int if isinstance(lookup_value, self.EmptyCell) else type(lookup_value)
+        
+        def is_number(value):
+            return isinstance(value, (float, int))
 
         if range_lookup:
             last_valid_value = '#N/A'
             for row in table_array:
                 if isinstance(row[0], self.EmptyCell) or not isinstance(row[0], lookup_value_type):
-                    continue
+                    if not is_number(row[0]) or not is_number(lookup_value):
+                        continue
                 if row[0] <= lookup_value:
                     last_valid_value = row[col_index_num - 1]
                 else:
@@ -200,7 +204,8 @@ class ExcelInPython:
         else:
             for row in table_array:
                 if isinstance(row[0], self.EmptyCell) or not isinstance(row[0], lookup_value_type):
-                    continue
+                    if not is_number(row[0]) or not is_number(lookup_value):
+                        continue
                 if row[0] == lookup_value:
                     return row[col_index_num - 1]
 
