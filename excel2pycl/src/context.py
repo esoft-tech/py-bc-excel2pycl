@@ -433,6 +433,23 @@ class ExcelInPython:
 
     def exec_function_in(self, cell_uid: str):
         return self._cell_preprocessor(cell_uid)
+    
+    
+    def _search(self, find_text: str, within_text: str, start_num: int = 1):
+        import re
+        if start_num and (start_num > len(within_text) or start_num <= 0):
+            return '#VALUE!'
+
+        find_text = find_text.replace('?', '.')
+        find_text = find_text.replace('*', '.*')
+
+        result = re.search(find_text, within_text)
+
+        if result is None:
+            return '#VALUE!'
+
+        return result.span()[0] + 1
+
 
 {functions}
 '''

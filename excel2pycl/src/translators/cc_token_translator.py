@@ -11,7 +11,7 @@ from excel2pycl.src.tokens import IfControlConstructionToken, ControlConstructio
     EoMonthControlConstructionToken, \
     EDateControlConstructionToken, MatchControlConstructionToken, XMatchControlConstructionToken, \
     LeftControlConstructionToken, MidControlConstructionToken, RightControlConstructionToken, \
-    AverageIfsControlConstructionToken
+    AverageIfsControlConstructionToken, SearchControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
@@ -43,6 +43,7 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
         from excel2pycl.src.translators.right_cc_token_translator import RightControlConstructionTokenTranslator
         from excel2pycl.src.translators.averageifs_cc_token_translator import \
             AverageIfsControlConstructionTokenTranslator
+        from excel2pycl.src.translators.search_cc_token_translator import SearchControlConstructionTokenTranslator
 
         translate_functions = {
             IfControlConstructionToken.__name__: IfControlConstructionTokenTranslator.translate,
@@ -69,9 +70,11 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             MidControlConstructionToken.__name__: MidControlConstructionTokenTranslator.translate,
             RightControlConstructionToken.__name__: RightControlConstructionTokenTranslator.translate,
             AverageIfsControlConstructionToken.__name__: AverageIfsControlConstructionTokenTranslator.translate,
+            SearchControlConstructionToken.__name__: SearchControlConstructionTokenTranslator.translate
         }
 
         sub_token = token.control_construction
+        print(sub_token.__class__.__name__)
         translate_function = translate_functions.get(sub_token.__class__.__name__)
         if not translate_function:
             raise TypeError('Unknown control construction token')

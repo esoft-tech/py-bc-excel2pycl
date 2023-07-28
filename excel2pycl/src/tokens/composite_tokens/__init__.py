@@ -10,7 +10,7 @@ from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, LeftKeywordToke
     DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, VlookupKeywordToken, \
     AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken, YearKeywordToken, \
     DateKeywordToken, DifKeywordToken, EoKeywordToken, MonthKeywordToken, EKeywordToken, \
-    XKeywordToken, MatchKeywordToken, SKeywordToken
+    XKeywordToken, MatchKeywordToken, SKeywordToken, SearchKeywordToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
@@ -366,6 +366,33 @@ class LeftControlConstructionToken(CompositeBaseToken):
         return self.value[4] if len(self.value) == 6 else None
 
 
+class SearchControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [
+        [
+            SearchKeywordToken, BracketStartToken, ExpressionToken,
+            SeparatorToken, ExpressionToken, BracketFinishToken
+        ],
+        [
+            SearchKeywordToken, BracketStartToken, ExpressionToken,
+            SeparatorToken, ExpressionToken,
+            SeparatorToken, ExpressionToken,
+            BracketFinishToken
+        ]
+    ]
+
+    @property
+    def find_text(self) -> ExpressionToken:
+        return self.value[2]
+
+    @property
+    def within_text(self) -> ExpressionToken:
+        return self.value[4]
+
+    @property
+    def start_num(self) -> ExpressionToken:
+        return self.value[6] if len(self.value) == 8 else None
+
+
 class MidControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[MidKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken]]
 
@@ -555,7 +582,8 @@ class ControlConstructionToken(CompositeBaseToken):
                    [DayControlConstructionToken], [MinControlConstructionToken], [MaxControlConstructionToken],
                    [IfErrorControlConstructionToken], [DateControlConstructionToken], [MatchControlConstructionToken],
                    [XMatchControlConstructionToken], [LeftControlConstructionToken], [MidControlConstructionToken],
-                   [RightControlConstructionToken], [AverageIfsControlConstructionToken]]
+                   [RightControlConstructionToken], [AverageIfsControlConstructionToken],
+                   [SearchControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,
@@ -569,7 +597,8 @@ class ControlConstructionToken(CompositeBaseToken):
                                             DateDifControlConstructionToken, EoMonthControlConstructionToken,
                                             EDateControlConstructionToken, MatchControlConstructionToken,
                                             XMatchControlConstructionToken, LeftControlConstructionToken,
-                                            MidControlConstructionToken, RightControlConstructionToken, AverageIfsControlConstructionToken]:
+                                            MidControlConstructionToken, RightControlConstructionToken,
+                                            AverageIfsControlConstructionToken, SearchControlConstructionToken]:
         return self.value[0]
 
 

@@ -405,6 +405,21 @@ class AbstractExcelInPython(ABC):
             return text
         return text[len(text) - num_chars:]
 
+    def _search(self, find_text: str, within_text: str, start_num: int = 1):
+        import re
+        if start_num and (start_num > len(within_text) or start_num <= 0):
+            return '#VALUE!'
+
+        find_text = find_text.replace('?', '.')
+        find_text = find_text.replace('*', '.*')
+
+        result = re.search(find_text, within_text)
+
+        if result is None:
+            return '#VALUE!'
+
+        return result.span()[0] + 1
+
     def _cell_preprocessor(self, cell_uid: str):
         return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))
 
