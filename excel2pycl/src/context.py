@@ -187,12 +187,16 @@ class ExcelInPython:
             return '#ERROR!'
 
         lookup_value_type = int if isinstance(lookup_value, self.EmptyCell) else type(lookup_value)
+        
+        def is_number(value):
+            return isinstance(value, (float, int))
 
         if range_lookup:
             last_valid_value = '#N/A'
             for row in table_array:
                 if isinstance(row[0], self.EmptyCell) or not isinstance(row[0], lookup_value_type):
-                    continue
+                    if not is_number(row[0]) or not is_number(lookup_value):
+                        continue
                 if row[0] <= lookup_value:
                     last_valid_value = row[col_index_num - 1]
                 else:
@@ -200,7 +204,8 @@ class ExcelInPython:
         else:
             for row in table_array:
                 if isinstance(row[0], self.EmptyCell) or not isinstance(row[0], lookup_value_type):
-                    continue
+                    if not is_number(row[0]) or not is_number(lookup_value):
+                        continue
                 if row[0] == lookup_value:
                     return row[col_index_num - 1]
 
@@ -423,11 +428,21 @@ class ExcelInPython:
 
         return self._average(average_range)
 
+    def _count_blank(self, flatten_list: list):
+        err_value = self._find_error_in_list(flatten_list)
+        if err_value:
+            return err_value
+
+        empty = [elem for elem in flatten_list if elem is None]
+
+        return len(empty)
+
     def _cell_preprocessor(self, cell_uid: str):
         return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))
 
     def exec_function_in(self, cell_uid: str):
         return self._cell_preprocessor(cell_uid)
+
 
 {functions}
 '''
