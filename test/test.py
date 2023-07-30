@@ -445,7 +445,41 @@ class TestTokens(unittest.TestCase):
             .get_cells([Cell('mid', 6, 1), Cell('mid', 6, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='MID token are OK')
-        
+
+    def test_count_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path)\
+            .get_cells([Cell('count', 0, 2), Cell('count', 0, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNT token with range argument down')
+
+    def test_count_token_single_cell_arg(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path)\
+            .get_cells([Cell('count', 0, 3), Cell('count', 1, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNT token with single cell argument down')
+
+    def test_count_token_num_and_string_digits(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path)\
+            .get_cells([Cell('count', 0, 4), Cell('count', 2, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNT token with string digits down')
+
+    def test_count_token_range_and_arg_sequence(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path)\
+            .get_cells([Cell('count', 0, 5), Cell('count', 3, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNT token with argument sequence down')
+
+    def test_count_token_range_and_arg_sequence_with_bool_and_string_digit(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path)\
+            .get_cells([Cell('count', 0, 6), Cell('count', 4, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNT token with bool in argument down')
 
 
 if __name__ == '__main__':
