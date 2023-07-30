@@ -128,6 +128,9 @@ class ExcelInPython:
 
     def _average(self, flatten_list: list):
         return self._sum(flatten_list) / len(self._only_numeric_list(flatten_list))
+    
+    def _count(self, flatten_list: list):
+        return len(self._only_numeric_list(flatten_list))
 
     def _match(self, lookup_value, lookup_array: list, match_type: int = 0):
         lookup_value_type = int if isinstance(lookup_value, self.EmptyCell) else type(lookup_value)

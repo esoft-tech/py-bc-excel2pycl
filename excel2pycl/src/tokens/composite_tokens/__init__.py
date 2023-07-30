@@ -3,14 +3,16 @@ from typing import Union
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.tokens.composite_base_token import CompositeBaseToken
 from excel2pycl.src.tokens.recursive_composite_base_token import RecursiveCompositeBaseToken, CLS
-from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, LeftKeywordToken, MaxKeywordToken, MidKeywordToken, MinKeywordToken, \
-    ErrorKeywordToken, RightKeywordToken, SumKeywordToken, IfKeywordToken, CellIdentifierToken, CellIdentifierRangeToken, \
+from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, LeftKeywordToken, MaxKeywordToken, MidKeywordToken, \
+    MinKeywordToken, \
+    ErrorKeywordToken, RightKeywordToken, SumKeywordToken, IfKeywordToken, CellIdentifierToken, \
+    CellIdentifierRangeToken, \
     MatrixOfCellIdentifiersToken, EqOperatorToken, NotEqOperatorToken, GtOperatorToken, GtOrEqualOperatorToken, \
     LtOperatorToken, LtOrEqualOperatorToken, PlusOperatorToken, MinusOperatorToken, MultiplicationOperatorToken, \
     DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, VlookupKeywordToken, \
     AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken, YearKeywordToken, \
     DateKeywordToken, DifKeywordToken, EoKeywordToken, MonthKeywordToken, EKeywordToken, \
-    XKeywordToken, MatchKeywordToken, SKeywordToken
+    XKeywordToken, MatchKeywordToken, SKeywordToken, CountKeywordToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
@@ -546,6 +548,16 @@ class AverageIfsControlConstructionToken(CompositeBaseToken):
         return self.value[6]
 
 
+class CountControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [
+        [CountKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]
+    ]
+
+    @property
+    def expressions(self):
+        return self.value[2].expressions
+
+
 class ControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[IfControlConstructionToken], [SumControlConstructionToken], [SumIfControlConstructionToken],
                    [VlookupControlConstructionToken], [AverageControlConstructionToken],
@@ -555,7 +567,8 @@ class ControlConstructionToken(CompositeBaseToken):
                    [DayControlConstructionToken], [MinControlConstructionToken], [MaxControlConstructionToken],
                    [IfErrorControlConstructionToken], [DateControlConstructionToken], [MatchControlConstructionToken],
                    [XMatchControlConstructionToken], [LeftControlConstructionToken], [MidControlConstructionToken],
-                   [RightControlConstructionToken], [AverageIfsControlConstructionToken]]
+                   [RightControlConstructionToken], [AverageIfsControlConstructionToken],
+                   [CountControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,
@@ -569,7 +582,8 @@ class ControlConstructionToken(CompositeBaseToken):
                                             DateDifControlConstructionToken, EoMonthControlConstructionToken,
                                             EDateControlConstructionToken, MatchControlConstructionToken,
                                             XMatchControlConstructionToken, LeftControlConstructionToken,
-                                            MidControlConstructionToken, RightControlConstructionToken, AverageIfsControlConstructionToken]:
+                                            MidControlConstructionToken, RightControlConstructionToken,
+                                            AverageIfsControlConstructionToken, CountControlConstructionToken]:
         return self.value[0]
 
 
