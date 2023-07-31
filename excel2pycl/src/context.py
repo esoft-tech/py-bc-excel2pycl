@@ -428,20 +428,18 @@ class ExcelInPython:
 
         return self._average(average_range)
 
-    def _count_blank(self, flatten_list: list):
-        err_value = self._find_error_in_list(flatten_list)
-        if err_value:
-            return err_value
-
-        empty = [elem for elem in flatten_list if elem is None]
-
-        return len(empty)
-
     def _cell_preprocessor(self, cell_uid: str):
         return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))
 
     def exec_function_in(self, cell_uid: str):
         return self._cell_preprocessor(cell_uid)
+        
+    def _count_blank(self, flatten_list: list):
+        err_value = self._find_error_in_list(flatten_list)
+        if err_value:
+            return err_value
+        empty = [elem for elem in flatten_list if elem is None or elem == ""]
+        return len(empty)
 
 
 {functions}

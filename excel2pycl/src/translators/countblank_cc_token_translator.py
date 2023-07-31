@@ -9,4 +9,4 @@ class CountBlankControlConstructionTokenTranslator(AbstractTranslator):
     @classmethod
     def translate(cls, token: CountBlankControlConstructionToken, excel: Excel, context: Context) -> str:
         flatten_list = get_flatten_list(token, excel, context)
-        return context.set_sub_cell(token.in_cell, f'self._max({flatten_list})')
+        return context.set_sub_cell(token.in_cell, f'self._count_blank({flatten_list})')

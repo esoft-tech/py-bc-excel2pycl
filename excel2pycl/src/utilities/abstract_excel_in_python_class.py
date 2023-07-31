@@ -410,7 +410,7 @@ class AbstractExcelInPython(ABC):
         if err_value:
             return err_value
 
-        empty = [elem for elem in flatten_list if elem is None]
+        empty = [elem for elem in flatten_list if elem is None or elem == '']
         return len(empty)
 
     def _cell_preprocessor(self, cell_uid: str):
