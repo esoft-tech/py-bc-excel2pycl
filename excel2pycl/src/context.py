@@ -86,6 +86,10 @@ class ExcelInPython:
     @staticmethod
     def _only_bool_list(flatten_list: list):
         return [i for i in flatten_list if isinstance(i, bool)]
+    
+    @staticmethod
+    def _only_datetime_list(flatten_list: list):
+        return [i for i in flatten_list if isinstance(i, datetime.datetime)]
 
     @staticmethod
     def _binary_search(arr: list, lookup_value: any, reverse: bool = False):
@@ -146,6 +150,8 @@ class ExcelInPython:
                 args
             ) + self._only_numeric_list(
                 args, with_string_digits=True
+            ) + self._only_datetime_list(
+                flattened_matrices + args_cells + args
             )
         )
 

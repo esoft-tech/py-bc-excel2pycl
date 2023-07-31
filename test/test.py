@@ -481,6 +481,13 @@ class TestTokens(unittest.TestCase):
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNT token with bool in argument down')
 
+    def test_count_with_date(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('count', 0, 7), Cell('count', 5, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNT token with date in array down')
+
 
 if __name__ == '__main__':
     unittest.main()
