@@ -1,7 +1,6 @@
-from datetime import datetime
 from openpyxl import Workbook
 from openpyxl.worksheet.table import Table, TableStyleInfo
-from datetime import datetime
+from datetime import datetime, date, timedelta
 
 
 def create_test_table(file_name):
@@ -127,6 +126,22 @@ def create_test_table(file_name):
         ['Hello World', 'Hello World', 'Hello World', 'Hello World', 'Hello World', 'Hello World', 'Hello World']
     ]
     
+    for row in data:
+        ws_mid.append(row)
+
+    ws_mid = wb.create_sheet('today')
+    data = [
+        ['TODAY normal', 'TODAY ADD DAY'],
+        ['=TODAY()', '=TODAY() + 5', '=DATE(2024; 5; 24) - TODAY()', '=DAY(TODAY())', '=MONTH(TODAY())'],
+        [
+            date.today(),
+            date.today() + timedelta(days=5),
+            date(2024, 5, 24) - date.today(),
+            date.today().day,
+            date.today().month
+        ]
+    ]
+
     for row in data:
         ws_mid.append(row)
 

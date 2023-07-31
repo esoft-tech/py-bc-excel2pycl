@@ -445,8 +445,41 @@ class TestTokens(unittest.TestCase):
             .get_cells([Cell('mid', 6, 1), Cell('mid', 6, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='MID token are OK')
-        
 
+    def test_today_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('today', 0, 2), Cell('today', 0, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='TODAY token down')
+
+    def test_today_add_day_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('today', 1, 2), Cell('today', 1, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='TODAY add day token down')
+
+    def test_today_subtract_date_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('today', 2, 2), Cell('today', 2, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='TODAY subtract date token down')
+
+    def test_today_get_day_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('today', 2, 2), Cell('today', 2, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='TODAY get day token down')
+
+    def test_today_get_month_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('today', 3, 2), Cell('today', 3, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='TODAY get month token down')
 
 if __name__ == '__main__':
     unittest.main()
