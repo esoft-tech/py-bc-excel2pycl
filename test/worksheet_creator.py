@@ -134,14 +134,14 @@ def create_test_table(file_name):
 
     data = [
         ['COUNT normal', 'COUNT single cell', 'COUNT num & string digits', 'COUNT range & arg sequence',
-         'COUNT range & arg sequence with bool and string digits'],
-        ['=COUNT(B3:I3)', '=COUNT(B4)', '=COUNT(B5:H5)', '=COUNT(B6:H6; 2; 3)',
-         '=COUNT(B7:H7; TRUE; FALSE; "asd"; "2")'],
+         'COUNT range & arg sequence with bool & string digits & single cells'],
+        ['=COUNT(B3:I3)', '=COUNT(B4; C4)', '=COUNT(B5:H5)', '=COUNT(B6:H6; 2; 3)',
+         '=COUNT(B7:H7; TRUE; FALSE; "asd"; "2"; I7; J7)'],
         [2, 'Hello', 1, 2, 'Hello World', 'Hello World', '#NUM!', '#VALUE!', '#DIV/0'],
         [1, 1, 'Hello World', 'Hello World', 'Hello World', 'Hello World', 'Hello World', 'Hello World'],
-        [4, 1, '2', 'Hello World', '4', '6', 'Hello World', 'Hello World'],
-        [6, 1, '2', 'Hello World', '4', '6', 'Hello World', 'Hello World'],
-        [7, 1, '2', 'Hello World', '4', '6', 'Hello World', '0'],
+        [2, 1, 2, 'Hello World', '4', '6', 'Hello World', 'Hello World'],
+        [3, 1, '2', 'Hello World', '4', '6', 'Hello World', 'Hello World'],
+        [5, 1, '2', 'Hello World', '4', '6', 'Hello World', '0', 2, '23'],
     ]
 
     for row in data:

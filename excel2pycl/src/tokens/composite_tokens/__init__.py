@@ -550,12 +550,33 @@ class AverageIfsControlConstructionToken(CompositeBaseToken):
 
 class CountControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
-        [CountKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]
+        [CountKeywordToken, BracketStartToken, IterableExpressionToken,
+         BracketFinishToken]
     ]
 
     @property
+    def matrices(self) -> list[MatrixOfCellIdentifiersToken]:
+        return [
+            expression.left_operand.matrix
+            for expression in self.value[2].expressions
+            if hasattr(expression.left_operand, 'matrix') and expression.left_operand.matrix is not None
+        ]
+
+    @property
+    def arg_cells(self) -> list[CellIdentifierToken]:
+        return [
+            expression.left_operand.value[0]
+            for expression in self.value[2].expressions
+            if isinstance(expression.left_operand.value[0], CellIdentifierToken)
+        ]
+
+    @property
     def expressions(self):
-        return self.value[2].expressions
+        return [
+            expression
+            for expression in self.value[2].expressions
+            if isinstance(expression.left_operand.value[0], LiteralToken)
+        ]
 
 
 class ControlConstructionToken(CompositeBaseToken):

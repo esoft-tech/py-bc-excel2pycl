@@ -54,8 +54,16 @@ class AbstractExcelInPython(ABC):
             return err_value
 
     @staticmethod
-    def _only_numeric_list(flatten_list: list):
-        return [i for i in flatten_list if type(i) in [float, int]]
+    def _only_numeric_list(flatten_list: list, with_string_digits: bool = False):
+        return [
+            i
+            for i in flatten_list
+            if type(i) in [float, int] or (with_string_digits and isinstance(i, str) and i.isdigit())
+        ]
+
+    @staticmethod
+    def _only_bool_list(flatten_list: list):
+        return [i for i in flatten_list if isinstance(i, bool)]
 
     @staticmethod
     def _binary_search(arr: list, lookup_value: any, reverse: bool = False):
@@ -107,8 +115,17 @@ class AbstractExcelInPython(ABC):
     def _average(self, flatten_list: list):
         return self._sum(flatten_list) / len(self._only_numeric_list(flatten_list))
 
-    def _count(self, flatten_list: list):
-        return len(self._only_numeric_list(flatten_list))
+    def _count(self, matrices: list[list], args: list, args_cells: list):
+        flattened_matrices = self._flatten_list(matrices)
+        return len(
+            self._only_numeric_list(
+                flattened_matrices + args_cells
+            ) + self._only_bool_list(
+                args
+            ) + self._only_numeric_list(
+                args, with_string_digits=True
+            )
+        )
 
     def _match(self, lookup_value, lookup_array: list, match_type: int = 0):
         lookup_value_type = int if isinstance(lookup_value, self.EmptyCell) else type(lookup_value)
