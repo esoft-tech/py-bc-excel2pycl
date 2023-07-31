@@ -130,4 +130,21 @@ def create_test_table(file_name):
     for row in data:
         ws_mid.append(row)
 
+    ws_mid = wb.create_sheet('countifs')
+
+    data = [
+        ['COUNTIFS text condition', 'COUNTIFS cell condition', 'COUNTIFS lambda condition',
+         'COUNTIFS expression condition', 'COUNTIFS any text condition', 'COUNTIF pattern text condition'],
+        ['=COUNTIFS(A4:A7;"яблоки")', '=COUNTIFS(A4:A7;A5)', '=COUNTIFS(B4:B7;">55")',
+         '=COUNTIFS(B4:B7;"<>"&B5)', '=COUNTIFS(A4:A7;"*")', '=COUNTIFS(A4:A7;"????ки")'],
+        [2, 1, 3, 2, 3, 1, 4, 2],
+        ['яблоки', 32],
+        ['апельсины', 54],
+        ['персики', 75],
+        ['яблоки', 86],
+    ]
+
+    for row in data:
+        ws_mid.append(row)
+
     wb.save(file_name)
