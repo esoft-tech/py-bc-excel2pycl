@@ -481,5 +481,13 @@ class TestTokens(unittest.TestCase):
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='TODAY get month token down')
 
+    def test_compare_dates(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('today', 4, 2), Cell('today', 4, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='date compare down')
+
+
 if __name__ == '__main__':
     unittest.main()

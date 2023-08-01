@@ -131,14 +131,17 @@ def create_test_table(file_name):
 
     ws_mid = wb.create_sheet('today')
     data = [
-        ['TODAY normal', 'TODAY ADD DAY'],
-        ['=TODAY()', '=TODAY() + 5', '=DATE(2024; 5; 24) - TODAY()', '=DAY(TODAY())', '=MONTH(TODAY())'],
+        ['TODAY normal', 'TODAY ADD DAY', 'TODAY subtract today from date', 'Get DAY from TODAY',
+         'Get MONTH from TODAY', 'Compare TODAY and TODAY'],
+        ['=TODAY()', '=TODAY() + 5', '=DATE(2024; 5; 24) - TODAY()', '=DAY(TODAY())',
+         '=MONTH(TODAY())', '=TODAY() = TODAY()'],
         [
             date.today(),
             date.today() + timedelta(days=5),
             date(2024, 5, 24) - date.today(),
             date.today().day,
-            date.today().month
+            date.today().month,
+            date.today() == date.today()
         ]
     ]
 

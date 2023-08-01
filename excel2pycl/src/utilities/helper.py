@@ -11,3 +11,7 @@ def get_flatten_list(token: CompositeBaseToken, excel: Excel, context: Context) 
 
 def get_flatten_numeric_list(token: CompositeBaseToken, excel: Excel, context: Context) -> str:
     return context.set_sub_cell(token.in_cell, f'self._only_numeric_list({get_flatten_list(token, excel, context)})')
+
+
+def get_source_token(token: CompositeBaseToken | None) -> CompositeBaseToken | None:
+    return getattr(getattr(token, 'control_construction', None), 'control_construction', None).__class__
