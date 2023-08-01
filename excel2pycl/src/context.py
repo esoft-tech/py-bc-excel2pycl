@@ -443,7 +443,7 @@ class ExcelInPython:
         find_text = find_text.replace('?', '.')
         find_text = find_text.replace('*', '.*')
 
-        result = re.search(find_text, within_text)
+        result = re.search(find_text, within_text, re.I)
 
         if result is None:
             return '#VALUE!'
