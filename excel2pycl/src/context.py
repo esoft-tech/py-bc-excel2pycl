@@ -443,12 +443,14 @@ class ExcelInPython:
         find_text = find_text.replace('?', '.')
         find_text = find_text.replace('*', '.*')
 
-        result = re.search(find_text, within_text, re.I)
+        result = re.finditer(find_text, within_text, re.I)
 
         if result is None:
             return '#VALUE!'
 
-        return result.span()[0] + 1
+        positions = [i.span(0)[0] + 1 for i in result if i.span(0)[0] + 1 >= start_num]
+
+        return positions[0] if len(positions) else '#VALUE!'
 
 
 {functions}

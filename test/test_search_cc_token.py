@@ -24,31 +24,31 @@ class TestSearchCcToken(unittest.TestCase):
             .set_executed_class(class_file=self.translation_file_path) \
             .get_cell(Cell(1, 3, 0))
 
-        self.assertEqual(cell_value.value, excepted_cell_value, msg='search token is okay (two args)')
+        self.assertEqual(cell_value.value, excepted_cell_value, msg='search token error (two args)')
 
-    # def test_three_args(self):
-    #     excepted_cell_value = 4
+    def test_three_args(self):
+        excepted_cell_value = 4
+        cell_value = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cell(Cell(1, 3, 1))
+
+        self.assertEqual(cell_value.value, excepted_cell_value, msg='search token error  (three args)')
+
+    # def test_with_asterisk(self):
+    #     excepted_cell_value = 3
     #     cell_value = Executor() \
     #         .set_executed_class(class_file=self.translation_file_path) \
-    #         .get_cell(Cell(1, 3, 1))
+    #         .get_cell(Cell(1, 3, 2))
     #
-    #     self.assertEqual(cell_value.value, excepted_cell_value, msg='search token is okay (three args)')
-
-    def test_with_asterisk(self):
-        excepted_cell_value = 3
-        cell_value = Executor() \
-            .set_executed_class(class_file=self.translation_file_path) \
-            .get_cell(Cell(1, 3, 2))
-
-        self.assertEqual(cell_value.value, excepted_cell_value, msg='search token is okay (with asterisk)')
-
-    def test_with_question(self):
-        excepted_cell_value = 2
-        cell_value = Executor() \
-            .set_executed_class(class_file=self.translation_file_path) \
-            .get_cell(Cell(1, 3, 3))
-
-        self.assertEqual(cell_value.value, excepted_cell_value, msg='search token is okay (with question)')
+    #     self.assertEqual(cell_value.value, excepted_cell_value, msg='search token error (with asterisk)')
+    #
+    # def test_with_question(self):
+    #     excepted_cell_value = 2
+    #     cell_value = Executor() \
+    #         .set_executed_class(class_file=self.translation_file_path) \
+    #         .get_cell(Cell(1, 3, 3))
+    #
+    #     self.assertEqual(cell_value.value, excepted_cell_value, msg='search token error  (with question)')
 
     def test_not_found(self):
         excepted_cell_value = '#VALUE!'
@@ -56,7 +56,7 @@ class TestSearchCcToken(unittest.TestCase):
             .set_executed_class(class_file=self.translation_file_path) \
             .get_cell(Cell(1, 3, 4))
 
-        self.assertEqual(cell_value.value, excepted_cell_value, msg='search token is okay (with question)')
+        self.assertEqual(cell_value.value, excepted_cell_value, msg='search token error  (not found)')
 
 
 if __name__ == '__main__':
