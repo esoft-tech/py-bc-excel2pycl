@@ -137,9 +137,9 @@ def create_test_table(file_name):
          'ADDRESS relative', 'ADDRESS absolute strict', 'ADDRESS RC type col relative',
          'ADDRESS RC type col relative link sheet', 'ADDRESS absolute link sheet & workbook', 'ADDRESS HUGE'],
         ['=ADDRESS(3;1)', '=ADDRESS(3;2;2)', '=ADDRESS(3;3;3)', '=ADDRESS(3;4;4)', '=ADDRESS(3;5;1)',
-         '=ADDRESS(3;6;2;FALSE)', '=ADDRESS(3;7;2;FALSE;"mid")', '=ADDRESS(3;6;1;TRUE;"[WorkBook1]ASD")',
+         '=ADDRESS(3;6;2;FALSE)', '=ADDRESS(3;7;2;FALSE;"mid")', '=ADDRESS(3;8;1;TRUE;"[WorkBook1]ASD")',
          '=ADDRESS(3;704)'],
-        ['$A$3', 'B$3', '$C3', 'D3', '$E$3', 'R3C[6]', '"mid"!R3C[7]', '"[WorkBook1]ASD"!$H$3', '$AAB$3'],
+        ['$A$3', 'B$3', '$C3', 'D3', '$E$3', 'R3C[6]', "'mid'!R3C[7]", "'[WorkBook1]ASD'!$H$3", '$AAB$3'],
     ]
 
     for row in data:
