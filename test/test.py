@@ -453,6 +453,13 @@ class TestTokens(unittest.TestCase):
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS absolute down')
 
+    def test_address_absolute_huge_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('address', 8, 2), Cell('address', 8, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS absolute huge down')
+
     def test_address_relative_col_token(self):
         cell_values = Executor() \
             .set_executed_class(class_file=self.translation_file_path) \

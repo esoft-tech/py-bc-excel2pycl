@@ -565,7 +565,7 @@ class AddressControlConstructionToken(CompositeBaseToken):
 
     @property
     def expressions(self):
-        return self.value[6].expressions if len(self.value) > 5 else None
+        return self.value[6].expressions if len(self.value) > 6 else []
 
 
 class ControlConstructionToken(CompositeBaseToken):
