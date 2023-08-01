@@ -551,7 +551,7 @@ class AverageIfsControlConstructionToken(CompositeBaseToken):
 class AddressControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [AddressKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken],
-        [AddressKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, ExpressionToken,
+        [AddressKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, ExpressionToken, SeparatorToken,
          IterableExpressionToken, BracketFinishToken]
     ]
 

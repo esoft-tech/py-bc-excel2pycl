@@ -445,7 +445,62 @@ class TestTokens(unittest.TestCase):
             .get_cells([Cell('mid', 6, 1), Cell('mid', 6, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='MID token are OK')
-        
+
+    def test_address_absolute_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('address', 0, 2), Cell('address', 0, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS absolute down')
+
+    def test_address_relative_col_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('address', 1, 2), Cell('address', 1, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS absolute row, relative col down')
+
+    def test_address_relative_row_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('address', 2, 2), Cell('address', 2, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS absolute col, relative row down')
+
+    def test_address_relative_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('address', 3, 2), Cell('address', 3, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS relative down')
+
+    def test_address_absolute_strict_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('address', 4, 2), Cell('address', 4, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS absolute strict down')
+
+    def test_address_rc_type_col_relative_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('address', 5, 2), Cell('address', 5, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS RC type col relative down')
+
+    def test_address_rc_type_col_relative_link_sheet_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('address', 6, 2), Cell('address', 6, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS RC type col relative link sheet down')
+
+    def test_address_absoute_link_sheet_n_workbook_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('address', 7, 2), Cell('address', 7, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS absolute link sheet & workbook down')
 
 
 if __name__ == '__main__':

@@ -71,7 +71,6 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             RightControlConstructionToken.__name__: RightControlConstructionTokenTranslator.translate,
             AverageIfsControlConstructionToken.__name__: AverageIfsControlConstructionTokenTranslator.translate,
             AddressControlConstructionToken.__name__: AddressControlConstructionTokenTranslator.translate
-
         }
 
         sub_token = token.control_construction
