@@ -370,8 +370,15 @@ class ExcelInPython:
 
         if args:
             a1_type, *args = args
-            if not a1_type:
+            if a1_type == 'False':
                 col_value = 'R' + str(row) + 'C' + str(col)
+                match ref_type:
+                    case '2':
+                        col_value = 'R' + str(row) + 'C' + '[' + str(col) + ']'
+                    case '3':
+                        col_value = 'R' + '[' + str(row) + ']' + 'C' + str(col)
+                    case '4':
+                        col_value = 'R' + '[' + str(row) + ']' + 'C' + '[' + str(col) + ']'
 
         if args:
             sheet_name, *args = args

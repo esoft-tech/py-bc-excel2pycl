@@ -375,19 +375,26 @@ class AbstractExcelInPython(ABC):
         ref_type, *args = args
         col_value = ''
         match ref_type:
-            case 1:
+            case '1':
                 col_value = '$' + get_col() + '$' + str(row)
-            case 2:
+            case '2':
                 col_value = get_col() + '$' + str(row)
-            case 3:
+            case '3':
                 col_value = '$' + get_col() + str(row)
-            case 4:
+            case '4':
                 col_value = get_col() + str(row)
 
         if args:
             a1_type, *args = args
-            if not a1_type:
+            if a1_type == 'False':
                 col_value = 'R' + str(row) + 'C' + str(col)
+                match ref_type:
+                    case '2':
+                        col_value = 'R' + str(row) + 'C' + '[' + str(col) + ']'
+                    case '3':
+                        col_value = 'R' + '[' + str(row) + ']' + 'C' + str(col)
+                    case '4':
+                        col_value = 'R' + '[' + str(row) + ']' + 'C' + '[' + str(col) + ']'
 
         if args:
             sheet_name, *args = args
