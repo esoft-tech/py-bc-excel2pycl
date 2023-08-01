@@ -12,11 +12,11 @@ class ExpressionTokenTranslator(AbstractTranslator):
     def translate(cls, token: ExpressionToken, excel: Excel, context: Context) -> str:
         from excel2pycl.src.translators.operand_token_translator import OperandTokenTranslator
         from excel2pycl.src.translators.operator_sub_token_translator import OperatorSubTokenTranslator
-        from excel2pycl.src.utilities.helper import get_source_token
+        from excel2pycl.src.utilities.helper import get_operand_source_token
 
         left_brackets, right_brackets, operator, left_operand, right_operand = token.left_brackets, token.right_brackets, token.operator, token.left_operand, token.right_operand
-        left_operand_class = get_source_token(left_operand)
-        right_operand_class = get_source_token(right_operand)
+        left_operand_class = get_operand_source_token(left_operand)
+        right_operand_class = get_operand_source_token(right_operand)
 
         if left_operand:
             token_translator = ExpressionTokenTranslator if left_operand.__class__ is ExpressionToken else OperandTokenTranslator
