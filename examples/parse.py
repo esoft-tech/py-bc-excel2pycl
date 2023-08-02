@@ -8,7 +8,6 @@ def main():
 
     Parser() \
         .set_excel_file_path('./test.xlsx') \
-        .set_entrypoint_cell(Cell(0, 2, 0)) \
         .enable_safety_check() \
         .write_translation(translation_file_path)
 
@@ -17,3 +16,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
