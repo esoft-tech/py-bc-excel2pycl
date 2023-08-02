@@ -541,7 +541,7 @@ class NetworkDaysControlConstructionToken(CompositeBaseToken):
         return self.value[4]
 
     @property
-    def additional(self) -> ExpressionToken:
+    def holidays(self) -> ExpressionToken:
         return self.value[6] if len(self.value) == 8 else None
 
 

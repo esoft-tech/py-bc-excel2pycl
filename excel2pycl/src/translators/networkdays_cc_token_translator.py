@@ -12,6 +12,6 @@ class NetworkDaysControlConstructionTokenTranslator(AbstractTranslator):
         date_start = ExpressionTokenTranslator.translate(token.date_start, excel, context)
         date_end = ExpressionTokenTranslator.translate(token.date_end, excel, context)
 
-        additional = ExpressionTokenTranslator.translate(token.additional, excel, context) if token.additional else None
+        holidays = ExpressionTokenTranslator.translate(token.holidays, excel, context) if token.holidays else None
 
-        return f'self._network_days({date_start}, {date_end}, {additional})'
+        return f'self._network_days({date_start}, {date_end}, {holidays})'
