@@ -405,6 +405,19 @@ class AbstractExcelInPython(ABC):
             return text
         return text[len(text) - num_chars:]
 
+    def _network_days(self, date_start: datetime, date_end: datetime, additional: list[datetime] = None):
+        work_days_count = 0
+        start = date_start.date()
+        additional_days = [day.date() for day in additional if isinstance(day, datetime.datetime)] \
+            if additional is not None else []
+        end = date_end.date()
+        while start <= end:
+            if start.weekday() not in [5, 6] and start not in additional_days:
+                work_days_count += 1
+            start = start + datetime.timedelta(days=1)
+
+        return work_days_count
+
     def _cell_preprocessor(self, cell_uid: str):
         return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))
 

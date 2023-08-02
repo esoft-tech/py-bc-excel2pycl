@@ -3,14 +3,16 @@ from typing import Union
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.tokens.composite_base_token import CompositeBaseToken
 from excel2pycl.src.tokens.recursive_composite_base_token import RecursiveCompositeBaseToken, CLS
-from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, LeftKeywordToken, MaxKeywordToken, MidKeywordToken, MinKeywordToken, \
-    ErrorKeywordToken, RightKeywordToken, SumKeywordToken, IfKeywordToken, CellIdentifierToken, CellIdentifierRangeToken, \
+from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, LeftKeywordToken, MaxKeywordToken, MidKeywordToken, \
+    MinKeywordToken, \
+    ErrorKeywordToken, RightKeywordToken, SumKeywordToken, IfKeywordToken, CellIdentifierToken, \
+    CellIdentifierRangeToken, \
     MatrixOfCellIdentifiersToken, EqOperatorToken, NotEqOperatorToken, GtOperatorToken, GtOrEqualOperatorToken, \
     LtOperatorToken, LtOrEqualOperatorToken, PlusOperatorToken, MinusOperatorToken, MultiplicationOperatorToken, \
     DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, VlookupKeywordToken, \
     AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken, YearKeywordToken, \
     DateKeywordToken, DifKeywordToken, EoKeywordToken, MonthKeywordToken, EKeywordToken, \
-    XKeywordToken, MatchKeywordToken, SKeywordToken
+    XKeywordToken, MatchKeywordToken, SKeywordToken, NetworkDaysToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
@@ -516,6 +518,33 @@ class RangeOfCellIdentifierWithConditionToken(CompositeBaseToken):
         return None if self.condition_lambda is not None else self.value[2]
 
 
+class NetworkDaysControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [
+        [
+            NetworkDaysToken, BracketStartToken, ExpressionToken,
+            SeparatorToken, ExpressionToken, BracketFinishToken
+        ],
+        [
+            NetworkDaysToken, BracketStartToken, ExpressionToken,
+            SeparatorToken, ExpressionToken,
+            SeparatorToken, ExpressionToken,
+            BracketFinishToken
+        ]
+    ]
+
+    @property
+    def date_start(self) -> ExpressionToken:
+        return self.value[2]
+
+    @property
+    def date_end(self) -> ExpressionToken:
+        return self.value[4]
+
+    @property
+    def additional(self) -> ExpressionToken:
+        return self.value[6] if len(self.value) == 8 else None
+
+
 class IterableRangeOfCellIdentifierWithConditionToken(RecursiveCompositeBaseToken):
     _TOKEN_SETS = [
         [RangeOfCellIdentifierWithConditionToken, SeparatorToken, CLS],
@@ -555,7 +584,8 @@ class ControlConstructionToken(CompositeBaseToken):
                    [DayControlConstructionToken], [MinControlConstructionToken], [MaxControlConstructionToken],
                    [IfErrorControlConstructionToken], [DateControlConstructionToken], [MatchControlConstructionToken],
                    [XMatchControlConstructionToken], [LeftControlConstructionToken], [MidControlConstructionToken],
-                   [RightControlConstructionToken], [AverageIfsControlConstructionToken]]
+                   [RightControlConstructionToken], [AverageIfsControlConstructionToken],
+                   [NetworkDaysControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,
@@ -569,7 +599,8 @@ class ControlConstructionToken(CompositeBaseToken):
                                             DateDifControlConstructionToken, EoMonthControlConstructionToken,
                                             EDateControlConstructionToken, MatchControlConstructionToken,
                                             XMatchControlConstructionToken, LeftControlConstructionToken,
-                                            MidControlConstructionToken, RightControlConstructionToken, AverageIfsControlConstructionToken]:
+                                            MidControlConstructionToken, RightControlConstructionToken,
+                                            AverageIfsControlConstructionToken, NetworkDaysControlConstructionToken]:
         return self.value[0]
 
 
