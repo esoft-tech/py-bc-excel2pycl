@@ -127,6 +127,10 @@ class MonthKeywordToken(RegexpBaseToken):
     regexp = r'MONTH'
 
 
+class NetworkDaysKeywordToken(RegexpBaseToken):
+    regexp = r'NETWORKDAYS'
+
+
 class DayKeywordToken(RegexpBaseToken):
     regexp = r'DAY'
 
@@ -246,7 +250,4 @@ class BracketFinishToken(RegexpBaseToken):
 
 class WhitespaceToken(RegexpBaseToken):
     regexp = r'[\s\n\t]+'
-
-class NetworkDaysToken(RegexpBaseToken):
-    regexp = r'NETWORKDAYS'
 

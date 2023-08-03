@@ -12,7 +12,7 @@ from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, LeftKeywordToke
     DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, VlookupKeywordToken, \
     AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken, YearKeywordToken, \
     DateKeywordToken, DifKeywordToken, EoKeywordToken, MonthKeywordToken, EKeywordToken, \
-    XKeywordToken, MatchKeywordToken, SKeywordToken, NetworkDaysToken
+    XKeywordToken, MatchKeywordToken, SKeywordToken, NetworkDaysKeywordToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
@@ -521,11 +521,11 @@ class RangeOfCellIdentifierWithConditionToken(CompositeBaseToken):
 class NetworkDaysControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [
-            NetworkDaysToken, BracketStartToken, ExpressionToken,
+            NetworkDaysKeywordToken, BracketStartToken, ExpressionToken,
             SeparatorToken, ExpressionToken, BracketFinishToken
         ],
         [
-            NetworkDaysToken, BracketStartToken, ExpressionToken,
+            NetworkDaysKeywordToken, BracketStartToken, ExpressionToken,
             SeparatorToken, ExpressionToken,
             SeparatorToken, MatrixOfCellIdentifiersToken,
             BracketFinishToken
