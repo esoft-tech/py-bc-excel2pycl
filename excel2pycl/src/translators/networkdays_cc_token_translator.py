@@ -18,5 +18,4 @@ class NetworkDaysControlConstructionTokenTranslator(AbstractTranslator):
         if token.holidays:
             holidays = MatrixOfCellIdentifiersTokenTranslator.translate(token.holidays, excel, context)
 
-
         return f'self._network_days({date_start}, {date_end}, {holidays})'
