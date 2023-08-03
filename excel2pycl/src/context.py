@@ -435,8 +435,9 @@ class ExcelInPython:
         return self._cell_preprocessor(cell_uid)
     
     
-    def _search(self, find_text: str, within_text: str, start_num: int = 1):
+    def _search(self, find_text: str, within_text: str, start_num: int | None):
         import re
+        start_num = start_num if start_num else 1
         if start_num and (start_num > len(within_text) or start_num <= 0):
             return '#VALUE!'
 
