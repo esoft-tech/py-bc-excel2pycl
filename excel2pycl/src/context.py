@@ -443,8 +443,12 @@ class ExcelInPython:
             end = date_start.date()
             multiple = -1
 
-        additional_days = [day.date() for day in holidays if isinstance(day, datetime.datetime)] \
-            if holidays is not None else []
+        additional_days = []
+        if holidays:
+            for row in holidays:
+                additional_days_in_row = [day.date() for day in row if isinstance(day, datetime.datetime)] \
+                    if row is not None else []
+                additional_days += additional_days_in_row
 
         while start <= end:
             if start.weekday() not in [5, 6] and start not in additional_days:

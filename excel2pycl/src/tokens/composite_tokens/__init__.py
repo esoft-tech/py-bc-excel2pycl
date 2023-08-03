@@ -527,7 +527,7 @@ class NetworkDaysControlConstructionToken(CompositeBaseToken):
         [
             NetworkDaysToken, BracketStartToken, ExpressionToken,
             SeparatorToken, ExpressionToken,
-            SeparatorToken, ExpressionToken,
+            SeparatorToken, MatrixOfCellIdentifiersToken,
             BracketFinishToken
         ]
     ]
@@ -541,7 +541,7 @@ class NetworkDaysControlConstructionToken(CompositeBaseToken):
         return self.value[4]
 
     @property
-    def holidays(self) -> ExpressionToken:
+    def holidays(self) -> MatrixOfCellIdentifiersToken:
         return self.value[6] if len(self.value) == 8 else None
 
 

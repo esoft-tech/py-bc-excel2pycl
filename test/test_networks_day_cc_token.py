@@ -23,8 +23,8 @@ def create_test_table(filename):
     data = [
         [datetime.datetime(2023, 4, 1), datetime.datetime(2023, 5, 31), '=NETWORKDAYS(A1,B1)'],
         [datetime.datetime(2023, 5, 31), datetime.datetime(2023, 4, 1), '=NETWORKDAYS(A2,B2)'],
-        [datetime.datetime(2023, 5, 1), datetime.datetime(2023, 8, 1), ''],
-        [datetime.datetime(2023, 9, 1), 'ewewwewe', '=NETWORKDAYS(A1,B1,A3:B4)'],
+        [datetime.datetime(2023, 5, 1), datetime.datetime(2023, 5, 8), ''],
+        [40, 'ewewwewe', '=NETWORKDAYS(A1,B1,A3:B4)'],
         ['', '', '=NETWORKDAYS(A4,B4)']
     ]
 
@@ -34,7 +34,7 @@ def create_test_table(filename):
     wb.save(filename)
 
 
-class TestANetworkDaysCcToken(unittest.TestCase):
+class TestNetworkDaysCcToken(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.translation_file_path = f'test/{uuid.uuid4()}.py'
@@ -47,9 +47,8 @@ class TestANetworkDaysCcToken(unittest.TestCase):
     @classmethod
     def tearDownClass(cls) -> None:
         # после выполнения всех тестов удаляем файлики
-        # os.remove(cls.translation_file_path)
-        # os.remove('test/networks_days.xlsx')
-        pass
+        os.remove(cls.translation_file_path)
+        os.remove('test/networks_days.xlsx')
 
     def test_two_args(self):
         excepted_cell_value = 43
@@ -60,7 +59,7 @@ class TestANetworkDaysCcToken(unittest.TestCase):
         self.assertEqual(cell_value.value, excepted_cell_value)
 
     def test_three_args(self):
-        excepted_cell_value = 42
+        excepted_cell_value = 41
         cell_value = Executor() \
             .set_executed_class(class_file=self.translation_file_path) \
             .get_cell(Cell(0, 2, 3))

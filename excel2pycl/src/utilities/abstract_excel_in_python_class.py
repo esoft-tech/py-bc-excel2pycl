@@ -409,6 +409,7 @@ class AbstractExcelInPython(ABC):
         # Большая загадка как вычисляется значение если на входе не даты - поэтому я решила просто кидать '#VALUE!'
         if not isinstance(date_start, datetime.datetime) or not isinstance(date_end, datetime.datetime):
             return '#VALUE!'
+
         work_days_count = 0
         if date_start.date() <= date_end.date():
             start = date_start.date()
@@ -419,8 +420,12 @@ class AbstractExcelInPython(ABC):
             end = date_start.date()
             multiple = -1
 
-        additional_days = [day.date() for day in holidays if isinstance(day, datetime.datetime)] \
-            if holidays is not None else []
+        additional_days = []
+        if holidays:
+            for row in holidays:
+                additional_days_in_row = [day.date() for day in row if isinstance(day, datetime.datetime)] \
+                    if row is not None else []
+                additional_days += additional_days_in_row
 
         while start <= end:
             if start.weekday() not in [5, 6] and start not in additional_days:
