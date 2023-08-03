@@ -429,7 +429,7 @@ class ExcelInPython:
         return self._average(average_range)
         
     def _network_days(self, date_start: datetime.datetime, date_end: datetime.datetime,
-                      holidays: list[datetime] = None):
+                      holidays: list[datetime.datetime] = None):
         # Большая загадка как вычисляется значение если на входе не даты - поэтому я решила просто кидать '#VALUE!'
         if not isinstance(date_start, datetime.datetime) or not isinstance(date_end, datetime.datetime):
             return '#VALUE!'
