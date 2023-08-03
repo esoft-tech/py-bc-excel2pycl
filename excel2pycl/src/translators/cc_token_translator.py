@@ -11,8 +11,9 @@ from excel2pycl.src.tokens import IfControlConstructionToken, ControlConstructio
     EoMonthControlConstructionToken, \
     EDateControlConstructionToken, MatchControlConstructionToken, XMatchControlConstructionToken, \
     LeftControlConstructionToken, MidControlConstructionToken, RightControlConstructionToken, \
-    AverageIfsControlConstructionToken
+    AverageIfsControlConstructionToken, NetworkDaysControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
+from excel2pycl.src.translators.networkdays_cc_token_translator import NetworkDaysControlConstructionTokenTranslator
 
 
 class ControlConstructionTokenTranslator(AbstractTranslator):
@@ -69,6 +70,7 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             MidControlConstructionToken.__name__: MidControlConstructionTokenTranslator.translate,
             RightControlConstructionToken.__name__: RightControlConstructionTokenTranslator.translate,
             AverageIfsControlConstructionToken.__name__: AverageIfsControlConstructionTokenTranslator.translate,
+            NetworkDaysControlConstructionToken.__name__: NetworkDaysControlConstructionTokenTranslator.translate
         }
 
         sub_token = token.control_construction
