@@ -12,7 +12,7 @@ from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, LeftKeywordToke
     DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, VlookupKeywordToken, \
     AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken, YearKeywordToken, \
     DateKeywordToken, DifKeywordToken, EoKeywordToken, MonthKeywordToken, EKeywordToken, \
-    XKeywordToken, MatchKeywordToken, SKeywordToken, AddressKeywordToken, NetworkDaysKeywordToken
+    XKeywordToken, MatchKeywordToken, SKeywordToken, AddreKeywordToken, NetworkDaysKeywordToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
@@ -577,22 +577,23 @@ class AverageIfsControlConstructionToken(CompositeBaseToken):
 
 class AddressControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
-        [AddressKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken],
-        [AddressKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, ExpressionToken, SeparatorToken,
-         IterableExpressionToken, BracketFinishToken]
+        [AddreKeywordToken, SKeywordToken, SKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken,
+         ExpressionToken, BracketFinishToken],
+        [AddreKeywordToken, SKeywordToken, SKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken,
+         ExpressionToken, SeparatorToken, IterableExpressionToken, BracketFinishToken]
     ]
 
     @property
     def row(self) -> ExpressionToken:
-        return self.value[2]
-
-    @property
-    def col(self) -> ExpressionToken:
         return self.value[4]
 
     @property
+    def col(self) -> ExpressionToken:
+        return self.value[6]
+
+    @property
     def expressions(self):
-        return self.value[6].expressions if len(self.value) > 6 else []
+        return self.value[8].expressions if len(self.value) > 8 else []
 
 
 class ControlConstructionToken(CompositeBaseToken):

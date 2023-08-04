@@ -252,5 +252,5 @@ class WhitespaceToken(RegexpBaseToken):
     regexp = r'[\s\n\t]+'
 
 
-class AddressKeywordToken(RegexpBaseToken):
-    regexp = r'ADDRESS'
+class AddreKeywordToken(RegexpBaseToken):
+    regexp = r'ADDRE'
