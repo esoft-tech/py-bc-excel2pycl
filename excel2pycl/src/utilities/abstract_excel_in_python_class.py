@@ -1,3 +1,4 @@
+import re
 from abc import ABC
 import datetime
 import calendar
@@ -56,6 +57,19 @@ class AbstractExcelInPython(ABC):
     @staticmethod
     def _only_numeric_list(flatten_list: list):
         return [i for i in flatten_list if type(i) in [float, int]]
+
+    @staticmethod
+    def _regexp(pattern: str):
+        pattern_flags = r'(?<![~])[?]+|[*]+'
+        for item in re.finditer(pattern_flags, pattern):
+            match item:
+                case item if '?' in item.group():
+                    pattern = pattern.replace(item.group(), '.' + '{{' + str(item.span()[1]-item.span()[0]) + '}}', 1)
+                case item if '*' in item.group():
+                    pattern = pattern.replace(item.group(), '.*', 1)
+        pattern = re.sub(r'(?<=~)[?*]', r'\\\\\g<0>', pattern)
+        pattern = re.sub(r'[\[\]]', r'\\\\\g<0>', pattern)
+        return pattern
 
     @staticmethod
     def _binary_search(arr: list, lookup_value: any, reverse: bool = False):
@@ -350,12 +364,14 @@ class AbstractExcelInPython(ABC):
 
         return text[start_num - 1:start_num + num_chars - 1]
 
+    def _when_cell_is_empty_cast_to_zero(self, iterable: list):
+        return [0 if isinstance(i, self.EmptyCell) else i for i in iterable]
+
     def _averageifs(self, average_range: list[list], *range_and_criteria):
         class Undefined:
             pass
 
         # Если ячейка в диапазоне критериев пуста, AVERAGEIFS обрабатывает ее как значение 0.
-        _when_cell_is_empty_cast_to_zero = lambda l: [0 if isinstance(i, self.EmptyCell) else i for i in l]
         # Ячейки в диапазоне, содержащие значение TRUE, оцениваются как 1; ячейки в диапазоне,
         # содержащие значение FALSE, оцениваются как 0 (ноль).
         _when_bool_cast_to_int = lambda l: [int(i) if isinstance(i, bool) else i for i in l]
@@ -378,7 +394,7 @@ class AbstractExcelInPython(ABC):
                 i = self._flatten_list(i)
                 if len(average_range) != len(i):
                     raise self.ExcelInPythonException('Invalid averageifs range size')
-                range_and_criteria_zip.append([_when_bool_cast_to_int(_when_cell_is_empty_cast_to_zero(i))])
+                range_and_criteria_zip.append([_when_bool_cast_to_int(self._when_cell_is_empty_cast_to_zero(i))])
             else:
                 range_and_criteria_zip[-1].append(i)
 
@@ -393,6 +409,28 @@ class AbstractExcelInPython(ABC):
             return '#DIV/0!'
 
         return self._average(average_range)
+
+    def _countifs(self, count_range: list[list], count_condition: callable, *range_n_criteria):
+        # Если ячейка в диапазоне критериев пуста, COUNTIFS обрабатывает ее как значение 0.
+
+        count_range = self._flatten_list(count_range)
+
+        range_and_criteria_zip = []
+        for i in range_n_criteria:
+            if not range_and_criteria_zip or len(range_and_criteria_zip[-1]) == 2:
+                i = self._flatten_list(i)
+                if len(count_range) != len(i):
+                    raise self.ExcelInPythonException('Invalid countifs range size')
+                range_and_criteria_zip.append([self._when_cell_is_empty_cast_to_zero(i)])
+            else:
+                range_and_criteria_zip[-1].append(i)
+
+        for [_range, criteria] in range_and_criteria_zip:
+            for i in range(len(_range)):
+                if not criteria(_range[i]):
+                    count_range[i] = None
+        count_range = [i if count_condition(i) else None for i in count_range]
+        return len(list(filter(None, count_range)))
 
     def _right(self, text, num_chars):
         if num_chars is None:

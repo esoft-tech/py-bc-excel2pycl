@@ -20,6 +20,9 @@ class OperandTokenTranslator(AbstractTranslator):
             from excel2pycl.src.translators.matrix_of_cell_identifiers_token_translator import \
                 MatrixOfCellIdentifiersTokenTranslator
             return MatrixOfCellIdentifiersTokenTranslator.translate(token.matrix, excel, context)
+        elif token.pattern:
+            from excel2pycl.src.translators.pattern_token_translator import PatternTokenTranslator
+            return PatternTokenTranslator.translate(token.pattern, excel, context)
         elif token.literal:
             return token.literal
         elif token.control_construction:
