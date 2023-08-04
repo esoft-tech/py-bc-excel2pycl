@@ -413,9 +413,6 @@ class AbstractExcelInPython(ABC):
     def _countifs(self, count_range: list[list], count_condition: callable, *range_n_criteria):
         # Если ячейка в диапазоне критериев пуста, COUNTIFS обрабатывает ее как значение 0.
 
-        class Undefined:
-            pass
-
         count_range = self._flatten_list(count_range)
 
         range_and_criteria_zip = []
@@ -431,9 +428,9 @@ class AbstractExcelInPython(ABC):
         for [_range, criteria] in range_and_criteria_zip:
             for i in range(len(_range)):
                 if not criteria(_range[i]):
-                    count_range[i] = Undefined()
-        count_range = [i if count_condition(i) else Undefined() for i in count_range]
-        return len(list(filter(lambda x: not isinstance(x, Undefined), count_range)))
+                    count_range[i] = None
+        count_range = [i if count_condition(i) else None for i in count_range]
+        return len(list(filter(None, count_range)))
 
     def _right(self, text, num_chars):
         if num_chars is None:

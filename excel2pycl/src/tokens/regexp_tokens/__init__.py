@@ -213,6 +213,13 @@ class AmpersandToken(RegexpBaseToken):
 
 
 class PatternToken(RegexpBaseToken):
+    """
+    Parses excel pattern system
+    ? - stands for single symbol
+    * - stands for sequence of symbols
+    ~ - cancels pattern effect if placed before ? or * (cancels effect only for next symbol, but not for all)
+    Would be useful to recognize argument in function e.g =COUNTIFS(A3:B3; "???le") or =COUNTIFS(A4:B7; "a*")
+    """
     regexp = r'\"(.*(?<![~])[?*]+.*)\"'
 
 
