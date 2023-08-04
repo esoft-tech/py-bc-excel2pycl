@@ -1,10 +1,9 @@
+import os
 import unittest
 import uuid
-import os
 from excel2pycl import Parser, Executor, Cell
 from openpyxl import Workbook
 from openpyxl.worksheet.table import Table, TableStyleInfo
-from datetime import datetime
 
 
 def create_test_table(file_name):
@@ -14,9 +13,14 @@ def create_test_table(file_name):
         ['р', 'имбирь', '=SEARCH(A1,B1)'],
         ['и', 'имбирь', '=SEARCH(A2,B2,2)'],
         ['и*ь',	'ИМБИРЬ', '=SEARCH(A3,B3)'],
-        ['МБ?РЬ', 'МБ?РЬ', '=SEARCH(A4,B4)'],
+        ['МБ?РЬ', 'имбирь', '=SEARCH(A4,B4)'],
         ['Река', 'Имбирь', '=SEARCH(A5,B5)'],
-        ['м', 'имбирь', '=SEARCH(A6,B6,3)']
+        ['м', 'имбирь', '=SEARCH(A6,B6,3)'],
+        [r'\d+', '12356', '=SEARCH(A7,B7)'],
+        ['?ткрыт*р', 'эти открытые двери', '=SEARCH(A8,B8)'],
+        ['п?чему же~?', 'Почему, почему же?', '=SEARCH(A9,B9)'],
+        ['П*очему', 'Почему, почему же?', '=SEARCH(A10;B10)'],
+
     ]
 
     for row in data:
@@ -33,6 +37,7 @@ def create_test_table(file_name):
 
     wb.save(file_name)
 
+
 class TestSearchCcToken(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -46,9 +51,8 @@ class TestSearchCcToken(unittest.TestCase):
     @classmethod
     def tearDownClass(cls) -> None:
         # после выполнения всех тестов удаляем файлики
-        # os.remove(cls.translation_file_path)
+        os.remove(cls.translation_file_path)
         # os.remove('test/search.xlsx')
-        pass
 
     def test_two_args(self):
         excepted_cell_value = 5
@@ -56,7 +60,7 @@ class TestSearchCcToken(unittest.TestCase):
             .set_executed_class(class_file=self.translation_file_path) \
             .get_cell(Cell(0, 2, 0))
 
-        self.assertEqual(cell_value.value, excepted_cell_value, msg='search token error (two args)')
+        self.assertEqual(cell_value.value, excepted_cell_value)
 
     def test_three_args(self):
         excepted_cell_value = 4
@@ -64,23 +68,23 @@ class TestSearchCcToken(unittest.TestCase):
             .set_executed_class(class_file=self.translation_file_path) \
             .get_cell(Cell(0, 2, 1))
 
-        self.assertEqual(cell_value.value, excepted_cell_value, msg='search token error  (three args)')
+        self.assertEqual(cell_value.value, excepted_cell_value)
 
     def test_with_asterisk(self):
-        excepted_cell_value = 3
+        excepted_cell_value = 1
         cell_value = Executor() \
             .set_executed_class(class_file=self.translation_file_path) \
             .get_cell(Cell(0, 2, 2))
 
-        self.assertEqual(cell_value.value, excepted_cell_value, msg='search token error (with asterisk)')
+        self.assertEqual(cell_value.value, excepted_cell_value)
 
     def test_with_question(self):
         excepted_cell_value = 2
         cell_value = Executor() \
             .set_executed_class(class_file=self.translation_file_path) \
-            .get_cell(Cell(1, 2, 3))
+            .get_cell(Cell(0, 2, 3))
 
-        self.assertEqual(cell_value.value, excepted_cell_value, msg='search token error  (with question)')
+        self.assertEqual(cell_value.value, excepted_cell_value)
 
     def test_not_found(self):
         excepted_cell_value = '#VALUE!'
@@ -88,7 +92,55 @@ class TestSearchCcToken(unittest.TestCase):
             .set_executed_class(class_file=self.translation_file_path) \
             .get_cell(Cell(0, 2, 4))
 
-        self.assertEqual(cell_value.value, excepted_cell_value, msg='search token error  (not found)')
+        self.assertEqual(cell_value.value, excepted_cell_value)
+
+    def test_not_found_three_args(self):
+        excepted_cell_value = '#VALUE!'
+        cell_value = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cell(Cell(0, 2, 5))
+
+        self.assertEqual(cell_value.value, excepted_cell_value)
+
+    def test_reg(self):
+            excepted_cell_value = '#VALUE!'
+            cell_value = Executor() \
+                .set_executed_class(class_file=self.translation_file_path) \
+                .get_cell(Cell(0, 2, 6))
+
+            self.assertEqual(cell_value.value, excepted_cell_value)
+
+    def test_asterisk_and_question(self):
+        excepted_cell_value = 5
+        cell_value = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cell(Cell(0, 2, 7))
+
+        self.assertEqual(cell_value.value, excepted_cell_value)
+
+    def test_with_tilda(self):
+        excepted_cell_value = 9
+        cell_value = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cell(Cell(0, 2, 8))
+
+        self.assertEqual(cell_value.value, excepted_cell_value)
+
+    def test_asterisk_empty(self):
+        excepted_cell_value = 1
+        cell_value = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cell(Cell(0, 2, 9))
+
+        self.assertEqual(cell_value.value, excepted_cell_value)
+
+    def test_question_empty(self):
+        excepted_cell_value = '#VALUE!'
+        cell_value = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cell(Cell(0, 2, 10))
+
+        self.assertEqual(cell_value.value, excepted_cell_value)
 
 
 if __name__ == '__main__':

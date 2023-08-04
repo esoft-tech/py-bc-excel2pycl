@@ -441,8 +441,18 @@ class ExcelInPython:
         if start_num and (start_num > len(within_text) or start_num <= 0):
             return '#VALUE!'
 
-        find_text = find_text.replace('?', '.')
-        find_text = find_text.replace('*', '.*')
+        pattern = r'[^~][\?\*]'
+        if len(re.findall(pattern, find_text)) == 0:
+            find_text = find_text.replace('~?', '?') \
+                .replace('~*', '*')
+
+            result = within_text.find(find_text, start_num - 1) + 1
+            return result if result else '#VALUE!'
+
+        find_text = find_text.replace('?', '.') \
+            .replace('*', '.*') \
+            .replace('~.*', r'\*') \
+            .replace('~.', r'\?')
 
         result = re.finditer(find_text, within_text, re.I)
 
@@ -452,6 +462,7 @@ class ExcelInPython:
         positions = [i.span(0)[0] + 1 for i in result if i.span(0)[0] + 1 >= start_num]
 
         return positions[0] if len(positions) else '#VALUE!'
+
 
 
 {functions}

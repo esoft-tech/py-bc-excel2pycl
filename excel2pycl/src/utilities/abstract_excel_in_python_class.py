@@ -411,8 +411,18 @@ class AbstractExcelInPython(ABC):
         if start_num and (start_num > len(within_text) or start_num <= 0):
             return '#VALUE!'
 
-        find_text = find_text.replace('?', '.')
-        find_text = find_text.replace('*', '.*')
+        pattern = r'[^~][\?\*]'
+        if len(re.findall(pattern, find_text)) == 0:
+            find_text = find_text.replace('~?', '?') \
+                .replace('~*', '*')
+
+            result = within_text.find(find_text, start_num - 1) + 1
+            return result if result else '#VALUE!'
+
+        find_text = find_text.replace('?', '.') \
+            .replace('*', '.*') \
+            .replace('~.*', r'\*') \
+            .replace('~.', r'\?')
 
         result = re.finditer(find_text, within_text, re.I)
 
