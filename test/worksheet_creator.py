@@ -130,4 +130,18 @@ def create_test_table(file_name):
     for row in data:
         ws_mid.append(row)
 
+    ws_mid = wb.create_sheet('column')
+
+    data = [
+        ['COLUMN no args'],
+        [1, 2, 3, 4, 5, 3],
+        ['=COLUMN()'],
+        ['=COLUMN(B3)'],
+        ['=COLUMN(C3:E3)'],
+        ['=COLUMN(C3:C7)']
+    ]
+
+    for row in data:
+        ws_mid.append(row)
+
     wb.save(file_name)

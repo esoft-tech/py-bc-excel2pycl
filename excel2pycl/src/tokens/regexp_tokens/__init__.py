@@ -246,3 +246,7 @@ class BracketFinishToken(RegexpBaseToken):
 
 class WhitespaceToken(RegexpBaseToken):
     regexp = r'[\s\n\t]+'
+
+
+class ColumnKeywordToken(RegexpBaseToken):
+    regexp = r'COLUMN'

@@ -445,7 +445,34 @@ class TestTokens(unittest.TestCase):
             .get_cells([Cell('mid', 6, 1), Cell('mid', 6, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='MID token are OK')
-        
+
+    def test_column_no_args_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('column', 0, 1), Cell('column', 0, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='Column token no args down')
+
+    def test_column_cell_arg_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('column', 1, 1), Cell('column', 0, 3)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='Column token cell arg down')
+
+    def test_column_matrix_arg_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('column', 2, 1), Cell('column', 1, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='Column token matrix arg down')
+
+    def test_column_array_arg_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('column', 5, 1), Cell('column', 0, 5)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='Column token array arg down')
 
 
 if __name__ == '__main__':
