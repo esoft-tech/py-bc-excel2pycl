@@ -12,7 +12,7 @@ from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, LeftKeywordToke
     DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, VlookupKeywordToken, \
     AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken, YearKeywordToken, \
     DateKeywordToken, DifKeywordToken, EoKeywordToken, MonthKeywordToken, EKeywordToken, \
-    XKeywordToken, MatchKeywordToken, SKeywordToken, AddressKeywordToken
+    XKeywordToken, MatchKeywordToken, SKeywordToken, AddressKeywordToken, NetworkDaysKeywordToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
@@ -518,6 +518,33 @@ class RangeOfCellIdentifierWithConditionToken(CompositeBaseToken):
         return None if self.condition_lambda is not None else self.value[2]
 
 
+class NetworkDaysControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [
+        [
+            NetworkDaysKeywordToken, BracketStartToken, ExpressionToken,
+            SeparatorToken, ExpressionToken, BracketFinishToken
+        ],
+        [
+            NetworkDaysKeywordToken, BracketStartToken, ExpressionToken,
+            SeparatorToken, ExpressionToken,
+            SeparatorToken, MatrixOfCellIdentifiersToken,
+            BracketFinishToken
+        ]
+    ]
+
+    @property
+    def date_start(self) -> ExpressionToken:
+        return self.value[2]
+
+    @property
+    def date_end(self) -> ExpressionToken:
+        return self.value[4]
+
+    @property
+    def holidays(self) -> MatrixOfCellIdentifiersToken:
+        return self.value[6] if len(self.value) == 8 else None
+
+
 class IterableRangeOfCellIdentifierWithConditionToken(RecursiveCompositeBaseToken):
     _TOKEN_SETS = [
         [RangeOfCellIdentifierWithConditionToken, SeparatorToken, CLS],
@@ -578,7 +605,7 @@ class ControlConstructionToken(CompositeBaseToken):
                    [IfErrorControlConstructionToken], [DateControlConstructionToken], [MatchControlConstructionToken],
                    [XMatchControlConstructionToken], [LeftControlConstructionToken], [MidControlConstructionToken],
                    [RightControlConstructionToken], [AverageIfsControlConstructionToken],
-                   [AddressControlConstructionToken]]
+                   [AddressControlConstructionToken], [NetworkDaysControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,
@@ -593,7 +620,8 @@ class ControlConstructionToken(CompositeBaseToken):
                                             EDateControlConstructionToken, MatchControlConstructionToken,
                                             XMatchControlConstructionToken, LeftControlConstructionToken,
                                             MidControlConstructionToken, RightControlConstructionToken,
-                                            AverageIfsControlConstructionToken, AddressControlConstructionToken]:
+                                            AverageIfsControlConstructionToken, AddressControlConstructionToken,
+                                            NetworkDaysControlConstructionToken]:
         return self.value[0]
 
 
