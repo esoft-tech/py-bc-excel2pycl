@@ -427,6 +427,37 @@ class ExcelInPython:
             return '#DIV/0!'
 
         return self._average(average_range)
+        
+    def _network_days(self, date_start: datetime.datetime, date_end: datetime.datetime,
+                      holidays: list[datetime.datetime] = None):
+        # Большая загадка как вычисляется значение если на входе не даты - поэтому я решила просто кидать '#VALUE!'
+        if not isinstance(date_start, datetime.datetime) or not isinstance(date_end, datetime.datetime):
+            return '#VALUE!'
+
+        work_days_count = 0
+        if date_start.date() <= date_end.date():
+            start = date_start.date()
+            end = date_end.date()
+            multiple = 1
+        else:
+            start = date_end.date()
+            end = date_start.date()
+            multiple = -1
+
+        additional_days = []
+        if holidays:
+            for row in holidays:
+                additional_days_in_row = [day.date() for day in row if isinstance(day, datetime.datetime)] \
+                    if row is not None else []
+                additional_days += additional_days_in_row
+
+        while start <= end:
+            if start.weekday() not in [5, 6] and start not in additional_days:
+                work_days_count += 1
+            start = start + datetime.timedelta(days=1)
+
+        return work_days_count * multiple
+
 
     def _cell_preprocessor(self, cell_uid: str):
         return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))
