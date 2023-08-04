@@ -413,8 +413,7 @@ class AbstractExcelInPython(ABC):
 
     @staticmethod
     def _today() -> datetime.date:
-        from datetime import date
-        return datetime.datetime.combine(date.today(), datetime.time(0, 0))
+        return datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
 
     class EmptyCell(int):
         def __eq__(self, other):
