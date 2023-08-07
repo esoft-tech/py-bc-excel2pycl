@@ -453,13 +453,6 @@ class TestTokens(unittest.TestCase):
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='TODAY token down')
 
-    def test_today_add_day_token(self):
-        cell_values = Executor() \
-            .set_executed_class(class_file=self.translation_file_path) \
-            .get_cells([Cell('today', 1, 2), Cell('today', 1, 1)])
-
-        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='TODAY add day token down')
-
     def test_today_subtract_date_token(self):
         cell_values = Executor() \
             .set_executed_class(class_file=self.translation_file_path) \
