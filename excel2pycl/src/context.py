@@ -441,7 +441,7 @@ class ExcelInPython:
         if start_num and (start_num > len(within_text) or start_num <= 0):
             return '#VALUE!'
 
-        pattern = r'[^~][\?\*]'
+        pattern = r'([^~][?*]|^[?*])'
         if len(re.findall(pattern, find_text)) == 0:
             find_text = find_text.replace('~?', '?') \
                 .replace('~*', '*')

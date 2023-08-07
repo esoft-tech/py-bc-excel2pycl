@@ -19,8 +19,12 @@ def create_test_table(file_name):
         [r'\d+', '12356', '=SEARCH(A7,B7)'],
         ['?ткрыт*р', 'эти открытые двери', '=SEARCH(A8,B8)'],
         ['п?чему же~?', 'Почему, почему же?', '=SEARCH(A9,B9)'],
-        ['П*очему', 'Почему, почему же?', '=SEARCH(A10;B10)'],
-        ['П?че\dу', 'поче5у', '=SEARCH(A11;B11)']
+        ['П*очему', 'Почему, почему же?', '=SEARCH(A10,B10)'],
+        ['П?очему', 'почему', '=SEARCH(A11,B11)'],
+        ['П?че\dу', 'поче5у', '=SEARCH(A12,B12)'],
+        ['?мбирь', 'имбирь', '=SEARCH(A13,B13)'],
+        ['* ?мбирь', 'консервированный имбирь', '=SEARCH(A14,B14)']
+
     ]
 
     for row in data:
@@ -141,6 +145,29 @@ class TestSearchCcToken(unittest.TestCase):
             .get_cell(Cell(0, 2, 10))
 
         self.assertEqual(cell_value.value, excepted_cell_value)
+
+    def test_reg2(self):
+        excepted_cell_value = '#VALUE!'
+        cell_value = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cell(Cell(0, 2, 11))
+
+        self.assertEqual(cell_value.value, excepted_cell_value)
+
+    def test_start_with_question(self):
+        excepted_cell_value = 1
+        cell_value = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cell(Cell(0, 2, 12))
+        self.assertEqual(cell_value.value, excepted_cell_value)
+
+    def test_start_with_asterisk(self):
+        excepted_cell_value = 1
+        cell_value = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cell(Cell(0, 2, 13))
+        self.assertEqual(cell_value.value, excepted_cell_value)
+
 
 
 if __name__ == '__main__':
