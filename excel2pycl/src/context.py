@@ -22,6 +22,7 @@ from dateutil.relativedelta import relativedelta
 from math import trunc
 from typing import Dict, Literal
 import calendar
+import re
 
 class ExcelInPython:
     class ExcelInPythonException(Exception):
@@ -90,6 +91,19 @@ class ExcelInPython:
     @staticmethod
     def _only_datetime_list(flatten_list: list):
         return [i for i in flatten_list if isinstance(i, datetime.datetime)]
+        
+    @staticmethod
+    def _regexp(pattern: str):
+        pattern_flags = r'(?<![~])[?]+|[*]+'
+        for item in re.finditer(pattern_flags, pattern):
+            match item:
+                case item if '?' in item.group():
+                    pattern = pattern.replace(item.group(), '.' + '{{' + str(item.span()[1]-item.span()[0]) + '}}', 1)
+                case item if '*' in item.group():
+                    pattern = pattern.replace(item.group(), '.*', 1)
+        pattern = re.sub(r'(?<=~)[?*]', r'\\\\\g<0>', pattern)
+        pattern = re.sub(r'[\[\]]', r'\\\\\g<0>', pattern)
+        return pattern
 
     @staticmethod
     def _binary_search(arr: list, lookup_value: any, reverse: bool = False):
@@ -360,6 +374,58 @@ class ExcelInPython:
         
         return text[start_num - 1:start_num + num_chars - 1]
     
+    @staticmethod
+    def _address(row: int, col: int, *args) -> str:
+        from string import ascii_uppercase
+
+        def get_col():
+            array = []
+
+            def get_col_recursive(letters, _col):
+                parent = _col // len(letters)
+                child = _col % len(letters)
+
+                if parent > len(letters):
+                    array.append(get_col_recursive(letters, parent))
+                return (letters[parent - 1] if parent < len(letters) and parent else '') + (
+                    letters[child - 1] if child else '')
+
+            array.append(get_col_recursive(ascii_uppercase, col))
+            return ''.join(array)
+
+        if not args:
+            return '$' + get_col() + '$' + str(row)
+
+        ref_type, *args = args
+        col_value = ''
+        match ref_type:
+            case '1':
+                col_value = '$' + get_col() + '$' + str(row)
+            case '2':
+                col_value = get_col() + '$' + str(row)
+            case '3':
+                col_value = '$' + get_col() + str(row)
+            case '4':
+                col_value = get_col() + str(row)
+
+        if args:
+            a1_type, *args = args
+            if a1_type == 'False':
+                col_value = 'R' + str(row) + 'C' + str(col)
+                match ref_type:
+                    case '2':
+                        col_value = 'R' + str(row) + 'C' + '[' + str(col) + ']'
+                    case '3':
+                        col_value = 'R' + '[' + str(row) + ']' + 'C' + str(col)
+                    case '4':
+                        col_value = 'R' + '[' + str(row) + ']' + 'C' + '[' + str(col) + ']'
+
+        if args:
+            sheet_name, *args = args
+            col_value = sheet_name + '!' + col_value
+
+        return col_value
+    
     def _right(self, text, num_chars):
         if num_chars is None:
             return text[len(text) - 1]
@@ -409,7 +475,10 @@ class ExcelInPython:
                 return cell
         except ZeroDivisionError:
             return when_error
-            
+    
+    def _when_cell_is_empty_cast_to_zero(self, iterable: list):
+        return [0 if isinstance(i, self.EmptyCell) else i for i in iterable]
+        
     def _averageifs(self, average_range: list[list], *range_and_criteria):
         class Undefined:
             pass
@@ -438,7 +507,7 @@ class ExcelInPython:
                 i = self._flatten_list(i)
                 if len(average_range) != len(i):
                     raise self.ExcelInPythonException('Invalid averageifs range size')
-                range_and_criteria_zip.append([_when_bool_cast_to_int(_when_cell_is_empty_cast_to_zero(i))])
+                range_and_criteria_zip.append([_when_bool_cast_to_int(self._when_cell_is_empty_cast_to_zero(i))])
             else:
                 range_and_criteria_zip[-1].append(i)
 
@@ -453,6 +522,28 @@ class ExcelInPython:
             return '#DIV/0!'
 
         return self._average(average_range)
+    
+    def _countifs(self, count_range: list[list], count_condition: callable, *range_n_criteria):
+        # Если ячейка в диапазоне критериев пуста, COUNTIFS обрабатывает ее как значение 0.
+
+        count_range = self._flatten_list(count_range)
+
+        range_and_criteria_zip = []
+        for i in range_n_criteria:
+            if not range_and_criteria_zip or len(range_and_criteria_zip[-1]) == 2:
+                i = self._flatten_list(i)
+                if len(count_range) != len(i):
+                    raise self.ExcelInPythonException('Invalid countifs range size')
+                range_and_criteria_zip.append([self._when_cell_is_empty_cast_to_zero(i)])
+            else:
+                range_and_criteria_zip[-1].append(i)
+
+        for [_range, criteria] in range_and_criteria_zip:
+            for i in range(len(_range)):
+                if not criteria(_range[i]):
+                    count_range[i] = None
+        count_range = [i if count_condition(i) else None for i in count_range]
+        return len(list(filter(None, count_range)))
         
     def _network_days(self, date_start: datetime.datetime, date_end: datetime.datetime,
                       holidays: list[datetime.datetime] = None):
@@ -483,7 +574,6 @@ class ExcelInPython:
             start = start + datetime.timedelta(days=1)
 
         return work_days_count * multiple
-
 
     def _cell_preprocessor(self, cell_uid: str):
         return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))
