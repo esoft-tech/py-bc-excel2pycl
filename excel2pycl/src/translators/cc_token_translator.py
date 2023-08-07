@@ -86,7 +86,6 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
         }
 
         sub_token = token.control_construction
-        print(sub_token.__class__.__name__)
         translate_function = translate_functions.get(sub_token.__class__.__name__)
         if not translate_function:
             raise TypeError('Unknown control construction token')

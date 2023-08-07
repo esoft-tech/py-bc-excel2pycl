@@ -56,7 +56,7 @@ class TestSearchCcToken(unittest.TestCase):
     def tearDownClass(cls) -> None:
         # после выполнения всех тестов удаляем файлики
         os.remove(cls.translation_file_path)
-        # os.remove('test/search.xlsx')
+        os.remove('test/search.xlsx')
 
     def test_two_args(self):
         excepted_cell_value = 5
