@@ -449,19 +449,37 @@ class ExcelInPython:
             result = within_text.find(find_text, start_num - 1) + 1
             return result if result else '#VALUE!'
 
-        find_text = find_text.replace('?', '.') \
-            .replace('*', '.*') \
-            .replace('~.*', r'\*') \
-            .replace('~.', r'\?')
+        find_text = find_text \
+            .replace('?', '(.)') \
+            .replace('*', '(.*)') \
+            .replace('~(.*)', r'\*') \
+            .replace('~(.)', r'\?')
 
         result = re.finditer(find_text, within_text, re.I)
 
         if result is None:
             return '#VALUE!'
 
-        positions = [i.span(0)[0] + 1 for i in result if i.span(0)[0] + 1 >= start_num]
-
-        return positions[0] if len(positions) else '#VALUE!'
+        find_elem = None
+        for i in result:
+            if i.span(0)[0] + 1 < start_num:
+                continue
+            find_elem = i
+            break
+        #исключаем поиск по regex вроде \d
+        if find_elem:
+            sequences = find_elem.groups(0)
+            found_text = find_elem.group(0)
+            find_text = find_text.replace('(.*)', '(.)') \
+                                 .replace(r'\?', '?') \
+                                 .replace(r'\.', '.')
+            for sequence in sequences:
+                find_text = find_text.replace('(.)', sequence, 1)
+    
+            if found_text.lower() != find_text.lower():
+                return '#VALUE!'
+            
+        return find_elem.span(0)[0] + 1 if find_elem else '#VALUE!'
 
 
 
