@@ -263,5 +263,9 @@ class WhitespaceToken(RegexpBaseToken):
     regexp = r'[\s\n\t]+'
 
 
+class AddreKeywordToken(RegexpBaseToken):
+    regexp = r'ADDRE'
+
+
 class CountKeywordToken(RegexpBaseToken):
     regexp = r'COUNT'

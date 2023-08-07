@@ -348,6 +348,58 @@ class ExcelInPython:
         
         return text[start_num - 1:start_num + num_chars - 1]
     
+    @staticmethod
+    def _address(row: int, col: int, *args) -> str:
+        from string import ascii_uppercase
+
+        def get_col():
+            array = []
+
+            def get_col_recursive(letters, _col):
+                parent = _col // len(letters)
+                child = _col % len(letters)
+
+                if parent > len(letters):
+                    array.append(get_col_recursive(letters, parent))
+                return (letters[parent - 1] if parent < len(letters) and parent else '') + (
+                    letters[child - 1] if child else '')
+
+            array.append(get_col_recursive(ascii_uppercase, col))
+            return ''.join(array)
+
+        if not args:
+            return '$' + get_col() + '$' + str(row)
+
+        ref_type, *args = args
+        col_value = ''
+        match ref_type:
+            case '1':
+                col_value = '$' + get_col() + '$' + str(row)
+            case '2':
+                col_value = get_col() + '$' + str(row)
+            case '3':
+                col_value = '$' + get_col() + str(row)
+            case '4':
+                col_value = get_col() + str(row)
+
+        if args:
+            a1_type, *args = args
+            if a1_type == 'False':
+                col_value = 'R' + str(row) + 'C' + str(col)
+                match ref_type:
+                    case '2':
+                        col_value = 'R' + str(row) + 'C' + '[' + str(col) + ']'
+                    case '3':
+                        col_value = 'R' + '[' + str(row) + ']' + 'C' + str(col)
+                    case '4':
+                        col_value = 'R' + '[' + str(row) + ']' + 'C' + '[' + str(col) + ']'
+
+        if args:
+            sheet_name, *args = args
+            col_value = sheet_name + '!' + col_value
+
+        return col_value
+    
     def _right(self, text, num_chars):
         if num_chars is None:
             return text[len(text) - 1]
