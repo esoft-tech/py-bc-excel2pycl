@@ -445,7 +445,153 @@ class TestTokens(unittest.TestCase):
             .get_cells([Cell('mid', 6, 1), Cell('mid', 6, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='MID token are OK')
-        
+
+    def test_count_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path)\
+            .get_cells([Cell('count', 0, 2), Cell('count', 0, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNT token with range argument down')
+
+    def test_count_token_single_cell_arg(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path)\
+            .get_cells([Cell('count', 0, 3), Cell('count', 1, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNT token with single cell argument down')
+
+    def test_count_token_num_and_string_digits(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path)\
+            .get_cells([Cell('count', 0, 4), Cell('count', 2, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNT token with string digits down')
+
+    def test_count_token_range_and_arg_sequence(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path)\
+            .get_cells([Cell('count', 0, 5), Cell('count', 3, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNT token with argument sequence down')
+
+    def test_count_token_range_and_arg_sequence_with_bool_and_string_digit(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path)\
+            .get_cells([Cell('count', 0, 6), Cell('count', 4, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNT token with bool in argument down')
+
+    def test_count_with_date(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('count', 0, 7), Cell('count', 5, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNT token with date in array down')
+
+    def test_address_absolute_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('address', 0, 2), Cell('address', 0, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS absolute down')
+
+    def test_address_absolute_huge_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('address', 8, 2), Cell('address', 8, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS absolute huge down')
+
+    def test_address_relative_col_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('address', 1, 2), Cell('address', 1, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS absolute row, relative col down')
+
+    def test_address_relative_row_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('address', 2, 2), Cell('address', 2, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS absolute col, relative row down')
+
+    def test_address_relative_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('address', 3, 2), Cell('address', 3, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS relative down')
+
+    def test_address_absolute_strict_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('address', 4, 2), Cell('address', 4, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS absolute strict down')
+
+    def test_address_rc_type_col_relative_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('address', 5, 2), Cell('address', 5, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS RC type col relative down')
+
+    def test_address_rc_type_col_relative_link_sheet_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('address', 6, 2), Cell('address', 6, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS RC type col relative link sheet down')
+
+    def test_address_absoute_link_sheet_n_workbook_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('address', 7, 2), Cell('address', 7, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS absolute link sheet & workbook down')
+
+    def test_countifs_text_condition(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('countifs', 0, 2), Cell('countifs', 0, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNTIFS text condition down')
+
+    def test_countifs_cell_condition(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('countifs', 1, 2), Cell('countifs', 1, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNTIFS cell condition down')
+
+    def test_countifs_lambda_condition(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('countifs', 2, 2), Cell('countifs', 2, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNTIFS lambda condition down')
+
+    def test_countifs_expression_condition(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('countifs', 3, 2), Cell('countifs', 3, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNTIFS expression condition down')
+
+    def test_countifs_any_text_condition(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('countifs', 4, 2), Cell('countifs', 4, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNTIFS any text condition down')
+
+    def test_countifs_pattern_text_condition(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('countifs', 5, 2), Cell('countifs', 5, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNTIFS pattern text condition down')
 
 
 if __name__ == '__main__':
