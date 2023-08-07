@@ -26,5 +26,7 @@ class ColumnControlConstructionTokenTranslator(AbstractTranslator):
                 # парсинге одного токена
                 context.set_cell(token.in_cell, str(i))
                 token.in_cell.column += 1
+            token.in_cell.column = token.matrix.matrix[0].column + 1
+            return context.set_sub_cell(token.in_cell, str(token.in_cell.column))
         else:
             return token.in_cell.column + 1
