@@ -2,7 +2,7 @@ import re
 
 from excel2pycl.src.context import Context
 from excel2pycl.src.excel import Excel
-from excel2pycl.src.tokens import LambdaToken
+from excel2pycl.src.tokens import LambdaToken, PatternToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
@@ -33,6 +33,12 @@ class LambdaTokenTranslator(AbstractTranslator):
                     condition_value = expression
         else:
             condition_value = expression
+
+        if getattr(getattr(token.expression, 'left_operand', None), 'value', None) \
+                and isinstance(token.expression.left_operand.value[0], PatternToken):
+            return context.set_sub_cell(
+                token.in_cell, f'lambda x: re.match({condition_value}, str(x))'
+            )
 
         return context.set_sub_cell(
             token.in_cell, f'lambda x: '

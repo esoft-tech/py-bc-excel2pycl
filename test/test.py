@@ -509,6 +509,48 @@ class TestTokens(unittest.TestCase):
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS absolute link sheet & workbook down')
 
+    def test_countifs_text_condition(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('countifs', 0, 2), Cell('countifs', 0, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNTIFS text condition down')
+
+    def test_countifs_cell_condition(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('countifs', 1, 2), Cell('countifs', 1, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNTIFS cell condition down')
+
+    def test_countifs_lambda_condition(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('countifs', 2, 2), Cell('countifs', 2, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNTIFS lambda condition down')
+
+    def test_countifs_expression_condition(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('countifs', 3, 2), Cell('countifs', 3, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNTIFS expression condition down')
+
+    def test_countifs_any_text_condition(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('countifs', 4, 2), Cell('countifs', 4, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNTIFS any text condition down')
+
+    def test_countifs_pattern_text_condition(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('countifs', 5, 2), Cell('countifs', 5, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNTIFS pattern text condition down')
+
 
 if __name__ == '__main__':
     unittest.main()
