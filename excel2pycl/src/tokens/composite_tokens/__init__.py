@@ -581,6 +581,7 @@ class AverageIfsControlConstructionToken(CompositeBaseToken):
     def conditions(self) -> IterableRangeOfCellIdentifierWithConditionToken:
         return self.value[6]
 
+
 class CountBlankControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[CountBlankKeywordToken, BracketStartToken,
                     IterableExpressionToken, BracketFinishToken]]
@@ -588,6 +589,8 @@ class CountBlankControlConstructionToken(CompositeBaseToken):
     @property
     def expressions(self):
         return self.value[2].expressions
+
+
 class CountIfsControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [
