@@ -47,7 +47,7 @@ class TestCountBlankCcToken(unittest.TestCase):
         # после выполнения всех тестов удаляем файлики
         os.remove(cls.translation_file_path)
         os.remove('test/count_blank.xlsx')
-        pass
+
     def test_standard(self):
         excepted_cell_value = 3
         cell_value = Executor() \
