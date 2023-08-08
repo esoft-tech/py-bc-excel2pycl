@@ -13,7 +13,7 @@ from excel2pycl.src.tokens import IfControlConstructionToken, ControlConstructio
     LeftControlConstructionToken, MidControlConstructionToken, RightControlConstructionToken, \
     SearchControlConstructionToken, \
     AverageIfsControlConstructionToken, AddressControlConstructionToken, CountIfsControlConstructionToken, \
-    NetworkDaysControlConstructionToken, CountControlConstructionToken
+    NetworkDaysControlConstructionToken, CountControlConstructionToken, SumIfsControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
@@ -52,6 +52,7 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
         from excel2pycl.src.translators.networkdays_cc_token_translator import \
             NetworkDaysControlConstructionTokenTranslator
         from excel2pycl.src.translators.count_cc_token_translator import CountControlConstructionTokenTranslator
+        from excel2pycl.src.translators.sumifs_cc_token_tranlator import SumIfsControlConstructionTokenTranslator
 
         translate_functions = {
             IfControlConstructionToken.__name__: IfControlConstructionTokenTranslator.translate,
@@ -82,7 +83,8 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             CountControlConstructionToken.__name__: CountControlConstructionTokenTranslator.translate,
             AddressControlConstructionToken.__name__: AddressControlConstructionTokenTranslator.translate,
             CountIfsControlConstructionToken.__name__: CountIfsControlConstructionTokenTranslator.translate,
-            NetworkDaysControlConstructionToken.__name__: NetworkDaysControlConstructionTokenTranslator.translate
+            NetworkDaysControlConstructionToken.__name__: NetworkDaysControlConstructionTokenTranslator.translate,
+            SumIfsControlConstructionToken.__name__: SumIfsControlConstructionTokenTranslator.translate
         }
 
         sub_token = token.control_construction

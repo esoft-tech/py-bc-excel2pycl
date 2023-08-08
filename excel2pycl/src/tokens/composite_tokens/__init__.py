@@ -693,6 +693,42 @@ class CountControlConstructionToken(CompositeBaseToken):
         ]
 
 
+class SumIfsControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [
+        [
+            SumKeywordToken, IfKeywordToken, SKeywordToken,
+            BracketStartToken,
+            MatrixOfCellIdentifiersToken, SeparatorToken,
+            LambdaToken, SeparatorToken,
+            IterableRangeOfCellIdentifierWithConditionToken,
+            BracketFinishToken
+        ],
+        # [
+        #     SumKeywordToken, IfKeywordToken, SKeywordToken,
+        #     BracketStartToken,
+        #     MatrixOfCellIdentifiersToken, SeparatorToken,
+        #     LambdaToken,
+        #     BracketFinishToken
+        # ]
+    ]
+
+    @property
+    def sum_range(self) -> MatrixOfCellIdentifiersToken:
+        return self.value[4]
+
+    @property
+    def sum_condition(self) -> LambdaToken:
+        return self.value[8]
+
+    # @property
+    # def conditions(self) -> IterableRangeOfCellIdentifierWithConditionToken:
+    #     return self.value[6]
+
+    @property
+    def conditions(self) -> IterableRangeOfCellIdentifierWithConditionToken:
+        return self.value[8] if len(self.value) > 8 else None
+
+
 class ControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[IfControlConstructionToken], [SumControlConstructionToken], [SumIfControlConstructionToken],
                    [VlookupControlConstructionToken], [AverageControlConstructionToken],
@@ -705,7 +741,8 @@ class ControlConstructionToken(CompositeBaseToken):
                    [RightControlConstructionToken], [AverageIfsControlConstructionToken],
                    [SearchControlConstructionToken],
                    [AddressControlConstructionToken], [CountIfsControlConstructionToken],
-                   [CountControlConstructionToken], [NetworkDaysControlConstructionToken]]
+                   [CountControlConstructionToken], [NetworkDaysControlConstructionToken]
+                   [SumIfsControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,
@@ -723,7 +760,7 @@ class ControlConstructionToken(CompositeBaseToken):
                                             AverageIfsControlConstructionToken, SearchControlConstructionToken,
                                             AverageIfsControlConstructionToken, CountIfsControlConstructionToken,
                                             AddressControlConstructionToken, CountControlConstructionToken,
-                                            NetworkDaysControlConstructionToken]:
+                                            NetworkDaysControlConstructionToken, SumIfsControlConstructionToken]:
         return self.value[0]
 
 
