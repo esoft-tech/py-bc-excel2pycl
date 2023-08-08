@@ -580,6 +580,15 @@ class ExcelInPython:
 
     def exec_function_in(self, cell_uid: str):
         return self._cell_preprocessor(cell_uid)
+
+        
+    def _count_blank(self, flatten_list: list):
+        err_value = self._find_error_in_list(flatten_list)
+        if err_value:
+            return err_value
+        empty = [elem for elem in flatten_list if elem is None or elem == ""]
+        return len(empty)
+
     
     
     def _search(self, find_text: str, within_text: str, start_num: int | None):
@@ -626,8 +635,6 @@ class ExcelInPython:
                 return '#VALUE!'
             
         return find_elem.span(0)[0] + 1 if find_elem else '#VALUE!'
-
-
 
 {functions}
 '''

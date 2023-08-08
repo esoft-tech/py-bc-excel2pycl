@@ -12,6 +12,7 @@ from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, LeftKeywordToke
     DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, VlookupKeywordToken, \
     AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken, YearKeywordToken, \
     DateKeywordToken, DifKeywordToken, EoKeywordToken, MonthKeywordToken, EKeywordToken, \
+    CountBlankKeywordToken, \
     SearchKeywordToken, \
     XKeywordToken, MatchKeywordToken, SKeywordToken, AddreKeywordToken, CountKeywordToken, PatternToken, \
     NetworkDaysKeywordToken
@@ -609,6 +610,15 @@ class AverageIfsControlConstructionToken(CompositeBaseToken):
         return self.value[6]
 
 
+class CountBlankControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[CountBlankKeywordToken, BracketStartToken,
+                    IterableExpressionToken, BracketFinishToken]]
+
+    @property
+    def expressions(self):
+        return self.value[2].expressions
+
+
 class CountIfsControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [
@@ -703,6 +713,7 @@ class ControlConstructionToken(CompositeBaseToken):
                    [IfErrorControlConstructionToken], [DateControlConstructionToken], [MatchControlConstructionToken],
                    [XMatchControlConstructionToken], [LeftControlConstructionToken], [MidControlConstructionToken],
                    [RightControlConstructionToken], [AverageIfsControlConstructionToken],
+                   [CountBlankControlConstructionToken],
                    [SearchControlConstructionToken],
                    [AddressControlConstructionToken], [CountIfsControlConstructionToken],
                    [CountControlConstructionToken], [NetworkDaysControlConstructionToken]]
@@ -720,8 +731,9 @@ class ControlConstructionToken(CompositeBaseToken):
                                             EDateControlConstructionToken, MatchControlConstructionToken,
                                             XMatchControlConstructionToken, LeftControlConstructionToken,
                                             MidControlConstructionToken, RightControlConstructionToken,
+                                            CountBlankControlConstructionToken,
                                             AverageIfsControlConstructionToken, SearchControlConstructionToken,
-                                            AverageIfsControlConstructionToken, CountIfsControlConstructionToken,
+                                            CountIfsControlConstructionToken,
                                             AddressControlConstructionToken, CountControlConstructionToken,
                                             NetworkDaysControlConstructionToken]:
         return self.value[0]

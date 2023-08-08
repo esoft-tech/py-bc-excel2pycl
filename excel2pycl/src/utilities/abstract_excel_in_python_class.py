@@ -521,6 +521,15 @@ class AbstractExcelInPython(ABC):
             return text
         return text[len(text) - num_chars:]
 
+
+    def _count_blank(self, flatten_list: list):
+        err_value = self._find_error_in_list(flatten_list)
+        if err_value:
+            return err_value
+
+        empty = [elem for elem in flatten_list if elem is None or elem == '']
+        return len(empty)
+
     def _search(self, find_text: str, within_text: str, start_num: int | None):
         start_num = start_num if start_num else 1
         if start_num and (start_num > len(within_text) or start_num <= 0):
@@ -566,6 +575,7 @@ class AbstractExcelInPython(ABC):
 
         return find_elem.span(0)[0] + 1 if find_elem else '#VALUE!'
 
+
     def _network_days(self, date_start: datetime.datetime, date_end: datetime.datetime,
                       holidays: list[datetime.datetime] = None):
         # Большая загадка как вычисляется значение если на входе не даты - поэтому я решила просто кидать '#VALUE!'
@@ -595,6 +605,7 @@ class AbstractExcelInPython(ABC):
             start = start + datetime.timedelta(days=1)
 
         return work_days_count * multiple
+
 
     def _cell_preprocessor(self, cell_uid: str):
         return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))

@@ -216,6 +216,11 @@ class AmpersandToken(RegexpBaseToken):
     regexp = r'&'
 
 
+
+class CountBlankKeywordToken(RegexpBaseToken):
+    regexp = r'COUNTBLANK'
+
+
 class PatternToken(RegexpBaseToken):
     """
     Parses excel pattern system
