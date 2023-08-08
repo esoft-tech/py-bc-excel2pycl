@@ -1,3 +1,5 @@
+from openpyxl.cell.read_only import EmptyCell
+
 from excel2pycl.src.context import Context
 from excel2pycl.src.excel import Excel
 from excel2pycl.src.tokens import ExpressionToken, AmpersandToken
@@ -24,6 +26,10 @@ class ExpressionTokenTranslator(AbstractTranslator):
 
         if operator:
             if operator.__class__ is AmpersandToken:
+                if isinstance(left_operand, EmptyCell):
+                    left_operand = "''"
+                if isinstance(right_operand, EmptyCell):
+                    right_operand = "''"
                 left_operand = f'str({left_operand})'
                 right_operand = f'str({right_operand})'
 

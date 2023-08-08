@@ -47,7 +47,7 @@ class TestCountBlankCcToken(unittest.TestCase):
         # после выполнения всех тестов удаляем файлики
         os.remove(cls.translation_file_path)
         os.remove('test/count_blank.xlsx')
-
+        pass
     def test_standard(self):
         excepted_cell_value = 3
         cell_value = Executor() \
@@ -57,16 +57,15 @@ class TestCountBlankCcToken(unittest.TestCase):
         self.assertEqual(cell_value.value, excepted_cell_value, msg='test standart')
 
     def test_cell_concat(self):
-        excepted_cell_value = 2
+        excepted_cell_value = 3
         cell_value = Executor() \
             .set_executed_class(class_file=self.translation_file_path) \
             .get_cell(Cell(0, 5, 1))
 
         self.assertEqual(cell_value.value, excepted_cell_value, msg='test sell concat')
 
-
     def test_rectangle(self):
-        excepted_cell_value = 5
+        excepted_cell_value = 6
         cell_value = Executor() \
             .set_executed_class(class_file=self.translation_file_path) \
             .get_cell(Cell(0, 5, 2))
