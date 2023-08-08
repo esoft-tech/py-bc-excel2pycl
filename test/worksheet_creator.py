@@ -1,7 +1,6 @@
-from datetime import datetime
 from openpyxl import Workbook
 from openpyxl.worksheet.table import Table, TableStyleInfo
-from datetime import datetime
+from datetime import datetime, date
 
 
 def create_test_table(file_name):
@@ -127,6 +126,56 @@ def create_test_table(file_name):
         ['Hello World', 'Hello World', 'Hello World', 'Hello World', 'Hello World', 'Hello World', 'Hello World']
     ]
     
+    for row in data:
+        ws_mid.append(row)
+
+    ws_mid = wb.create_sheet('count')
+
+    data = [
+        ['COUNT normal', 'COUNT single cell', 'COUNT num & string digits', 'COUNT range & arg sequence',
+         'COUNT range & arg sequence with bool & string digits & single cells'],
+        ['=COUNT(B3:I3)', '=COUNT(B4; C4)', '=COUNT(B5:H5)', '=COUNT(B6:H6; 2; 3)',
+         '=COUNT(B7:H7; TRUE; FALSE; "asd"; "2"; I7; J7)', '=COUNT(B8:H8)'],
+        [2, 'Hello', 1, 2, 'Hello World', 'Hello World', '#NUM!', '#VALUE!', '#DIV/0'],
+        [1, 1, 'Hello World', 'Hello World', 'Hello World', 'Hello World', 'Hello World', 'Hello World'],
+        [2, 1, 2, 'Hello World', '4', '6', 'Hello World', 'Hello World'],
+        [3, 1, '2', 'Hello World', '4', '6', 'Hello World', 'Hello World'],
+        [5, 1, '2', 'Hello World', '4', '6', 'Hello World', '0', 2, '23'],
+        [2, 1, '2', datetime(2022, 10, 10), '4', '6', 'Hello World', '0'],
+    ]
+
+    for row in data:
+        ws_mid.append(row)
+
+    ws_mid = wb.create_sheet('countifs')
+
+    data = [
+        ['COUNTIFS text condition', 'COUNTIFS cell condition', 'COUNTIFS lambda condition',
+         'COUNTIFS expression condition', 'COUNTIFS any text condition', 'COUNTIF pattern text condition'],
+        ['=COUNTIFS(A4:A7;"яблоки";B4:B7;">55")', '=COUNTIFS(A4:A7;A5)', '=COUNTIFS(B4:B7;">55")',
+         '=COUNTIFS(B4:B7;"<>"&B5)', '=COUNTIFS(A4:A7;"*")', '=COUNTIFS(A4:A7;"????ки")'],
+        [1, 1, 2, 3, 4, 2],
+        ['яблоки', 32],
+        ['апельсины', 54],
+        ['персики', 75],
+        ['яблоки', 86],
+    ]
+
+    for row in data:
+        ws_mid.append(row)
+
+    ws_mid = wb.create_sheet('address')
+
+    data = [
+        ['ADDRESS absolute', 'ADDRESS absolute row, relative col', 'ADDRESS absolute col, relative row',
+         'ADDRESS relative', 'ADDRESS absolute strict', 'ADDRESS RC type col relative',
+         'ADDRESS RC type col relative link sheet', 'ADDRESS absolute link sheet & workbook', 'ADDRESS HUGE'],
+        ['=ADDRESS(3;1)', '=ADDRESS(3;2;2)', '=ADDRESS(3;3;3)', '=ADDRESS(3;4;4)', '=ADDRESS(3;5;1)',
+         '=ADDRESS(3;6;2;FALSE)', '=ADDRESS(3;7;2;FALSE;"mid")', '=ADDRESS(3;8;1;TRUE;"[WorkBook1]ASD")',
+         '=ADDRESS(3;704)'],
+        ['$A$3', 'B$3', '$C3', 'D3', '$E$3', 'R3C[6]', "'mid'!R3C[7]", "'[WorkBook1]ASD'!$H$3", '$AAB$3'],
+    ]
+
     for row in data:
         ws_mid.append(row)
 
