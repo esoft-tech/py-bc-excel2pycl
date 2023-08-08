@@ -12,6 +12,7 @@ from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, LeftKeywordToke
     DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, VlookupKeywordToken, \
     AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken, YearKeywordToken, \
     DateKeywordToken, DifKeywordToken, EoKeywordToken, MonthKeywordToken, EKeywordToken, \
+    SearchKeywordToken, \
     XKeywordToken, MatchKeywordToken, SKeywordToken, AddreKeywordToken, CountKeywordToken, PatternToken, \
     NetworkDaysKeywordToken
 
@@ -374,6 +375,33 @@ class LeftControlConstructionToken(CompositeBaseToken):
         return self.value[4] if len(self.value) == 6 else None
 
 
+class SearchControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [
+        [
+            SearchKeywordToken, BracketStartToken, ExpressionToken,
+            SeparatorToken, ExpressionToken, BracketFinishToken
+        ],
+        [
+            SearchKeywordToken, BracketStartToken, ExpressionToken,
+            SeparatorToken, ExpressionToken,
+            SeparatorToken, ExpressionToken,
+            BracketFinishToken
+        ]
+    ]
+
+    @property
+    def find_text(self) -> ExpressionToken:
+        return self.value[2]
+
+    @property
+    def within_text(self) -> ExpressionToken:
+        return self.value[4]
+
+    @property
+    def start_num(self) -> ExpressionToken:
+        return self.value[6] if len(self.value) == 8 else None
+
+
 class MidControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[MidKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken]]
 
@@ -675,6 +703,7 @@ class ControlConstructionToken(CompositeBaseToken):
                    [IfErrorControlConstructionToken], [DateControlConstructionToken], [MatchControlConstructionToken],
                    [XMatchControlConstructionToken], [LeftControlConstructionToken], [MidControlConstructionToken],
                    [RightControlConstructionToken], [AverageIfsControlConstructionToken],
+                   [SearchControlConstructionToken],
                    [AddressControlConstructionToken], [CountIfsControlConstructionToken],
                    [CountControlConstructionToken], [NetworkDaysControlConstructionToken]]
 
@@ -691,6 +720,7 @@ class ControlConstructionToken(CompositeBaseToken):
                                             EDateControlConstructionToken, MatchControlConstructionToken,
                                             XMatchControlConstructionToken, LeftControlConstructionToken,
                                             MidControlConstructionToken, RightControlConstructionToken,
+                                            AverageIfsControlConstructionToken, SearchControlConstructionToken,
                                             AverageIfsControlConstructionToken, CountIfsControlConstructionToken,
                                             AddressControlConstructionToken, CountControlConstructionToken,
                                             NetworkDaysControlConstructionToken]:
