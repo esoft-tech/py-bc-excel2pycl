@@ -530,6 +530,52 @@ class AbstractExcelInPython(ABC):
         empty = [elem for elem in flatten_list if elem is None or elem == '']
         return len(empty)
 
+    def _search(self, find_text: str, within_text: str, start_num: int | None):
+        start_num = start_num if start_num else 1
+        if start_num and (start_num > len(within_text) or start_num <= 0):
+            return '#VALUE!'
+
+        pattern = r'([^~][?*]|^[?*])'
+        if len(re.findall(pattern, find_text)) == 0:
+            find_text = find_text.replace('~?', '?') \
+                .replace('~*', '*')
+
+            result = within_text.find(find_text, start_num - 1) + 1
+            return result if result else '#VALUE!'
+
+        find_text = find_text \
+            .replace('?', '(.)') \
+            .replace('*', '(.*)') \
+            .replace('~(.*)', r'\*') \
+            .replace('~(.)', r'\?')
+
+        result = re.finditer(find_text, within_text, re.I)
+
+        if result is None:
+            return '#VALUE!'
+
+        find_elem = None
+        for i in result:
+            if i.span(0)[0] + 1 < start_num:
+                continue
+            find_elem = i
+            break
+        # исключаем поиск по regex вроде \d
+        if find_elem:
+            sequences = find_elem.groups(0)
+            found_text = find_elem.group(0)
+            find_text = find_text.replace('(.*)', '(.)') \
+                .replace(r'\?', '?') \
+                .replace(r'\.', '.')
+            for sequence in sequences:
+                find_text = find_text.replace('(.)', sequence, 1)
+
+            if found_text.lower() != find_text.lower():
+                return '#VALUE!'
+
+        return find_elem.span(0)[0] + 1 if find_elem else '#VALUE!'
+
+
     def _network_days(self, date_start: datetime.datetime, date_end: datetime.datetime,
                       holidays: list[datetime.datetime] = None):
         # Большая загадка как вычисляется значение если на входе не даты - поэтому я решила просто кидать '#VALUE!'

@@ -159,6 +159,10 @@ class XKeywordToken(RegexpBaseToken):
     regexp = r'X'
 
 
+class SearchKeywordToken(RegexpBaseToken):
+    regexp = r'SEARCH'
+
+
 class SKeywordToken(RegexpBaseToken):
     regexp = r'S'
 
