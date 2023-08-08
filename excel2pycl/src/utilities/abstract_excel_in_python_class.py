@@ -522,7 +522,6 @@ class AbstractExcelInPython(ABC):
         return text[len(text) - num_chars:]
 
     def _search(self, find_text: str, within_text: str, start_num: int | None):
-        import re
         start_num = start_num if start_num else 1
         if start_num and (start_num > len(within_text) or start_num <= 0):
             return '#VALUE!'
@@ -566,6 +565,7 @@ class AbstractExcelInPython(ABC):
                 return '#VALUE!'
 
         return find_elem.span(0)[0] + 1 if find_elem else '#VALUE!'
+
     def _network_days(self, date_start: datetime.datetime, date_end: datetime.datetime,
                       holidays: list[datetime.datetime] = None):
         # Большая загадка как вычисляется значение если на входе не даты - поэтому я решила просто кидать '#VALUE!'
