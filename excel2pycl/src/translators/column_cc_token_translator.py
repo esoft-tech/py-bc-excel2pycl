@@ -22,8 +22,7 @@ class ColumnControlConstructionTokenTranslator(AbstractTranslator):
                 return str(token.matrix.matrix[0].column + 1)
 
             for i in range(token.matrix.matrix[0].column + 1, token.matrix.matrix[-1].column + 2):
-                # Единственный способ, которым получилось установить несколько значений в разные ячейки при
-                # парсинге одного токена
+                # The only way to set multiple cells while parsing single token
                 context.set_cell(token.in_cell, str(i))
                 token.in_cell.column += 1
             token.in_cell.column = token.matrix.matrix[0].column + 1
