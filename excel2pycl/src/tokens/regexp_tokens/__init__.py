@@ -159,6 +159,10 @@ class XKeywordToken(RegexpBaseToken):
     regexp = r'X'
 
 
+class SearchKeywordToken(RegexpBaseToken):
+    regexp = r'SEARCH'
+
+
 class SKeywordToken(RegexpBaseToken):
     regexp = r'S'
 
@@ -210,6 +214,11 @@ class DivOperatorToken(RegexpBaseToken):
 
 class AmpersandToken(RegexpBaseToken):
     regexp = r'&'
+
+
+
+class CountBlankKeywordToken(RegexpBaseToken):
+    regexp = r'COUNTBLANK'
 
 
 class PatternToken(RegexpBaseToken):
