@@ -15,7 +15,7 @@ from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, LeftKeywordToke
     CountBlankKeywordToken, \
     SearchKeywordToken, \
     XKeywordToken, MatchKeywordToken, SKeywordToken, AddreKeywordToken, CountKeywordToken, PatternToken, \
-    NetworkDaysKeywordToken, ColumnKeywordToken
+    NetworkDaysKeywordToken, ToKeywordToken, ColumnKeywordToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
@@ -719,6 +719,10 @@ class ColumnControlConstructionToken(CompositeBaseToken):
         return self.value[2] if len(self.value) > 2 and isinstance(self.value[2], MatrixOfCellIdentifiersToken) else None
 
 
+class TodayControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[ToKeywordToken, DayKeywordToken, BracketStartToken, BracketFinishToken]]
+
+
 class ControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[IfControlConstructionToken], [SumControlConstructionToken], [SumIfControlConstructionToken],
                    [VlookupControlConstructionToken], [AverageControlConstructionToken],
@@ -729,7 +733,7 @@ class ControlConstructionToken(CompositeBaseToken):
                    [IfErrorControlConstructionToken], [DateControlConstructionToken], [MatchControlConstructionToken],
                    [XMatchControlConstructionToken], [LeftControlConstructionToken], [MidControlConstructionToken],
                    [RightControlConstructionToken], [AverageIfsControlConstructionToken],
-                   [CountBlankControlConstructionToken],
+                   [CountBlankControlConstructionToken], [TodayControlConstructionToken],
                    [SearchControlConstructionToken],
                    [AddressControlConstructionToken], [CountIfsControlConstructionToken],
                    [CountControlConstructionToken], [NetworkDaysControlConstructionToken],
@@ -748,7 +752,7 @@ class ControlConstructionToken(CompositeBaseToken):
                                             EDateControlConstructionToken, MatchControlConstructionToken,
                                             XMatchControlConstructionToken, LeftControlConstructionToken,
                                             MidControlConstructionToken, RightControlConstructionToken,
-                                            CountBlankControlConstructionToken,
+                                            CountBlankControlConstructionToken, TodayControlConstructionToken,
                                             AverageIfsControlConstructionToken, SearchControlConstructionToken,
                                             CountIfsControlConstructionToken,
                                             AddressControlConstructionToken, CountControlConstructionToken,

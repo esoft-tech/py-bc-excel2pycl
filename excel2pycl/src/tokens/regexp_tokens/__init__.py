@@ -282,3 +282,7 @@ class AddreKeywordToken(RegexpBaseToken):
 
 class CountKeywordToken(RegexpBaseToken):
     regexp = r'COUNT'
+
+
+class ToKeywordToken(RegexpBaseToken):
+    regexp = r'TO'

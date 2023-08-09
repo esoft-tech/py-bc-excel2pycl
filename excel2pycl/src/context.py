@@ -580,6 +580,10 @@ class ExcelInPython:
 
     def exec_function_in(self, cell_uid: str):
         return self._cell_preprocessor(cell_uid)
+    
+    @staticmethod
+    def _today() -> datetime.date:
+        return datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
 
         
     def _count_blank(self, flatten_list: list):

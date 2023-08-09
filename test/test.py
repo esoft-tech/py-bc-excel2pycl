@@ -621,5 +621,41 @@ class TestTokens(unittest.TestCase):
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='Column token array arg down')
 
+    def test_today_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('today', 0, 2), Cell('today', 0, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='TODAY token down')
+
+    def test_today_subtract_date_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('today', 2, 2), Cell('today', 2, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='TODAY subtract date token down')
+
+    def test_today_get_day_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('today', 2, 2), Cell('today', 2, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='TODAY get day token down')
+
+    def test_today_get_month_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('today', 3, 2), Cell('today', 3, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='TODAY get month token down')
+
+    def test_compare_dates(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('today', 4, 2), Cell('today', 4, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='date compare down')
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -613,6 +613,10 @@ class AbstractExcelInPython(ABC):
     def exec_function_in(self, cell_uid: str):
         return self._cell_preprocessor(cell_uid)
 
+    @staticmethod
+    def _today() -> datetime.date:
+        return datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+
     class EmptyCell(int):
         def __eq__(self, other):
             empty_cell_equal_values = ['', 0, None, False]
