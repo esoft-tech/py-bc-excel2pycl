@@ -14,7 +14,7 @@ from excel2pycl.src.tokens import IfControlConstructionToken, ControlConstructio
     CountBlankControlConstructionToken, \
     SearchControlConstructionToken, TodayControlConstructionToken, \
     AverageIfsControlConstructionToken, AddressControlConstructionToken, CountIfsControlConstructionToken, \
-    NetworkDaysControlConstructionToken, CountControlConstructionToken
+    NetworkDaysControlConstructionToken, CountControlConstructionToken, ColumnControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
@@ -55,6 +55,7 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
         from excel2pycl.src.translators.networkdays_cc_token_translator import \
             NetworkDaysControlConstructionTokenTranslator
         from excel2pycl.src.translators.count_cc_token_translator import CountControlConstructionTokenTranslator
+        from excel2pycl.src.translators.column_cc_token_translator import ColumnControlConstructionTokenTranslator
 
         translate_functions = {
             IfControlConstructionToken.__name__: IfControlConstructionTokenTranslator.translate,
@@ -86,6 +87,7 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             CountControlConstructionToken.__name__: CountControlConstructionTokenTranslator.translate,
             AddressControlConstructionToken.__name__: AddressControlConstructionTokenTranslator.translate,
             CountIfsControlConstructionToken.__name__: CountIfsControlConstructionTokenTranslator.translate,
+            ColumnControlConstructionToken.__name__: ColumnControlConstructionTokenTranslator.translate,
             TodayControlConstructionToken.__name__: TodayControlConstructionTokenTranslator.translate,
             NetworkDaysControlConstructionToken.__name__: NetworkDaysControlConstructionTokenTranslator.translate
         }
