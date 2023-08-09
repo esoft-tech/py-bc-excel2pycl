@@ -13,9 +13,8 @@ class SumIfsControlConstructionTokenTranslator(AbstractTranslator):
         from excel2pycl.src.translators.iterable_range_of_cell_identifier_with_condition_token_translator import \
             IterableRangeOfCellIdentifierWithConditionTokenTranslator
         sum_range = MatrixOfCellIdentifiersTokenTranslator.translate(token.sum_range, excel, context)
-        sum_condition = LambdaTokenTranslator.translate(token.sum_condition, excel, context)
         conditions = IterableRangeOfCellIdentifierWithConditionTokenTranslator.translate(
             token.conditions, excel, context
         )
 
-        return context.set_sub_cell(token.in_cell, f'self._sumifs({sum_range}, {sum_condition} *{conditions})')
+        return context.set_sub_cell(token.in_cell, f'self._sumifs({sum_range}, *{conditions})')

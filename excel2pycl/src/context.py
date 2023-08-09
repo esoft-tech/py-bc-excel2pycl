@@ -579,8 +579,6 @@ class ExcelInPython:
         class Undefined:
             pass
 
-        # Если ячейка в диапазоне критериев пуста, SUMIFS обрабатывает ее как значение 0.
-        _when_cell_is_empty_cast_to_zero = lambda l: [0 if isinstance(i, self.EmptyCell) else i for i in l]
         # Ячейки в диапазоне, содержащие значение TRUE, оцениваются как 1; ячейки в диапазоне,
         # содержащие значение FALSE, оцениваются как 0 (ноль).
         _when_bool_cast_to_int = lambda l: [int(i) if isinstance(i, bool) else i for i in l]
@@ -592,8 +590,8 @@ class ExcelInPython:
             if not range_and_criteria_zip or len(range_and_criteria_zip[-1]) == 2:
                 i = self._flatten_list(i)
                 if len(sum_range) != len(i):
-                    raise self.ExcelInPythonException('Invalid averageifs range size')
-                range_and_criteria_zip.append([_when_bool_cast_to_int(_when_cell_is_empty_cast_to_zero(i))])
+                    raise self.ExcelInPythonException('Invalid sumifs range size')
+                range_and_criteria_zip.append([_when_bool_cast_to_int(self._when_cell_is_empty_cast_to_zero(i))])
             else:
                 range_and_criteria_zip[-1].append(i)
 
@@ -603,8 +601,8 @@ class ExcelInPython:
                     sum_range[i] = Undefined()
 
         sum_range = _when_bool_cast_to_int([i for i in sum_range if not isinstance(i, Undefined)])
-        return self._sum(sum_range)
 
+        return self._sum(sum_range)
 
     def _cell_preprocessor(self, cell_uid: str):
         return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))

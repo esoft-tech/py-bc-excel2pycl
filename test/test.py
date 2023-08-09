@@ -593,6 +593,62 @@ class TestTokens(unittest.TestCase):
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNTIFS pattern text condition down')
 
+    def test_sumifs_one_condition(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('sumifs', 3, 0), Cell('sumifs', 4, 0)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='SUMIFS one condition down')
+
+    def test_sumifs_one_condition(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('sumifs', 3, 0), Cell('sumifs', 4, 0)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='SUMIFS one condition down')
+
+    def test_sumifs_several_conditions(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('sumifs', 3, 1), Cell('sumifs', 4, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='SUMIFS several condition down')
+
+    def test_sumifs_starts_with_letter(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('sumifs', 3, 2), Cell('sumifs', 4, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='SUMIFS starts with letter down')
+
+    def test_sumifs_with_boolean_fields(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('sumifs', 3, 3), Cell('sumifs', 4, 3)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='SUMIFS with boolean fields down')
+
+    def test_sumifs_several_conditions_in_one_range(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('sumifs', 3, 4), Cell('sumifs', 4, 4)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='SUMIFS several conditions in one range down')
+
+    def test_sumifs_more_than(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('sumifs', 3, 5), Cell('sumifs', 4, 5)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='SUMIFS more than down')
+
+    def test_sumifs_less_than(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('sumifs', 3, 6), Cell('sumifs', 4, 6)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='SUMIFS less than down')
+
 
 if __name__ == '__main__':
     unittest.main()

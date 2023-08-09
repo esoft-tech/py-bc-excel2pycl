@@ -227,10 +227,6 @@ class PatternToken(RegexpBaseToken):
     regexp = r'\"(.*(?<![~])[?*]+.*)\"'
 
 
-class PatternToken(RegexpBaseToken):
-    regexp = r'\"(.*(?<![~])[?*]+.*)\"'
-
-
 # TODO добавить условие для локализации
 class LiteralToken(RegexpBaseToken):
     regexp = r'\"(.*?)\"|(\d+)((\.)(\d+))?(e(-?\d+))?|(TRUE(\(\))?)|(FALSE(\(\))?)'

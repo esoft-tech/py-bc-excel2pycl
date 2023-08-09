@@ -699,17 +699,9 @@ class SumIfsControlConstructionToken(CompositeBaseToken):
             SumKeywordToken, IfKeywordToken, SKeywordToken,
             BracketStartToken,
             MatrixOfCellIdentifiersToken, SeparatorToken,
-            LambdaToken, SeparatorToken,
             IterableRangeOfCellIdentifierWithConditionToken,
             BracketFinishToken
-        ],
-        # [
-        #     SumKeywordToken, IfKeywordToken, SKeywordToken,
-        #     BracketStartToken,
-        #     MatrixOfCellIdentifiersToken, SeparatorToken,
-        #     LambdaToken,
-        #     BracketFinishToken
-        # ]
+        ]
     ]
 
     @property
@@ -717,16 +709,8 @@ class SumIfsControlConstructionToken(CompositeBaseToken):
         return self.value[4]
 
     @property
-    def sum_condition(self) -> LambdaToken:
-        return self.value[8]
-
-    # @property
-    # def conditions(self) -> IterableRangeOfCellIdentifierWithConditionToken:
-    #     return self.value[6]
-
-    @property
     def conditions(self) -> IterableRangeOfCellIdentifierWithConditionToken:
-        return self.value[8] if len(self.value) > 8 else None
+        return self.value[6]
 
 
 class ControlConstructionToken(CompositeBaseToken):
@@ -741,7 +725,7 @@ class ControlConstructionToken(CompositeBaseToken):
                    [RightControlConstructionToken], [AverageIfsControlConstructionToken],
                    [SearchControlConstructionToken],
                    [AddressControlConstructionToken], [CountIfsControlConstructionToken],
-                   [CountControlConstructionToken], [NetworkDaysControlConstructionToken]
+                   [CountControlConstructionToken], [NetworkDaysControlConstructionToken],
                    [SumIfsControlConstructionToken]]
 
     @property

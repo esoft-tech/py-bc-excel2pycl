@@ -179,4 +179,23 @@ def create_test_table(file_name):
     for row in data:
         ws_mid.append(row)
 
+    ws_mid = wb.create_sheet('sumifs')
+
+    data = [
+        ['Quantity Sold', 'Product', 'Salesperson', '=SUMIFS($A$2:$A$9, $C$2:$C$9, "Tom")', 52],
+        [5, 'Apples', 'Tom', '=SUMIFS($A$2:$A$9, $C$2:$C$9, "Tom", B2:B9, "Bananas")', 22],
+        [3, 'Apples', 'Sarah', '=SUMIFS($A$2:$A$9, $B$2:$B$9, "A*")', 26],
+        [15, 'Artichokes', 'Tom', '=SUMIFS($A$2:$A$11, $C$2:$C$11, "Tom", B2:B11, "Bananas")', 23],
+        [3, 'Artichokes', 'Sarah', '=SUMIFS($A$2:$A$9, $A$13:$A$20, "Tom")', 0],
+        [22, 'Bananas', 'Tom', '=SUMIFS($A$2:$A$11, C2:C11, "Sarah", C2:C11, "Tom")', 0],
+        [12, 'Bananas', 'Sarah', '=SUMIFS($A$2:$A$9, $A$2:$A$9, ">10")', 82],
+        [10, 'Carrots', 'Tom', '=SUMIFS($A$2:$A$9, $A$2:$A$9, "<10")', 11],
+        [33, 'Carrots', 'Sarah'],
+        [True, 'Bananas', 'Tom'],
+        [False, 'Artichokes', 'Tom'],
+    ]
+
+    for row in data:
+        ws_mid.append(row)
+
     wb.save(file_name)
