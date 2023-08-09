@@ -1,3 +1,4 @@
+import re
 from abc import ABC
 import datetime
 import calendar
@@ -54,8 +55,33 @@ class AbstractExcelInPython(ABC):
             return err_value
 
     @staticmethod
-    def _only_numeric_list(flatten_list: list):
-        return [i for i in flatten_list if type(i) in [float, int]]
+    def _only_numeric_list(flatten_list: list, with_string_digits: bool = False):
+        return [
+            i
+            for i in flatten_list
+            if type(i) in [float, int] or (with_string_digits and isinstance(i, str) and i.isdigit())
+        ]
+
+    @staticmethod
+    def _only_bool_list(flatten_list: list):
+        return [i for i in flatten_list if isinstance(i, bool)]
+
+    @staticmethod
+    def _only_datetime_list(flatten_list: list):
+        return [i for i in flatten_list if isinstance(i, datetime.datetime)]
+
+    @staticmethod
+    def _regexp(pattern: str):
+        pattern_flags = r'(?<![~])[?]+|[*]+'
+        for item in re.finditer(pattern_flags, pattern):
+            match item:
+                case item if '?' in item.group():
+                    pattern = pattern.replace(item.group(), '.' + '{{' + str(item.span()[1]-item.span()[0]) + '}}', 1)
+                case item if '*' in item.group():
+                    pattern = pattern.replace(item.group(), '.*', 1)
+        pattern = re.sub(r'(?<=~)[?*]', r'\\\\\g<0>', pattern)
+        pattern = re.sub(r'[\[\]]', r'\\\\\g<0>', pattern)
+        return pattern
 
     @staticmethod
     def _binary_search(arr: list, lookup_value: any, reverse: bool = False):
@@ -106,6 +132,20 @@ class AbstractExcelInPython(ABC):
 
     def _average(self, flatten_list: list):
         return self._sum(flatten_list) / len(self._only_numeric_list(flatten_list))
+
+    def _count(self, matrices: list[list], args: list, args_cells: list):
+        flattened_matrices = self._flatten_list(matrices)
+        return len(
+            self._only_numeric_list(
+                flattened_matrices + args_cells
+            ) + self._only_bool_list(  # false и true учитываются
+                args
+            ) + self._only_numeric_list(
+                args, with_string_digits=True
+            ) + self._only_datetime_list(
+                flattened_matrices + args_cells + args
+            )
+        )
 
     def _match(self, lookup_value, lookup_array: list, match_type: int = 0):
         lookup_value_type = int if isinstance(lookup_value, self.EmptyCell) else type(lookup_value)
@@ -350,12 +390,66 @@ class AbstractExcelInPython(ABC):
 
         return text[start_num - 1:start_num + num_chars - 1]
 
+    @staticmethod
+    def _address(row: int, col: int, *args) -> str:
+        from string import ascii_uppercase
+
+        def get_col():
+            array = []
+
+            def get_col_recursive(letters, _col):
+                parent = _col // len(letters)
+                child = _col % len(letters)
+
+                if parent > len(letters):
+                    array.append(get_col_recursive(letters, parent))
+                return (letters[parent - 1] if parent < len(letters) and parent else '') + (
+                    letters[child - 1] if child else '')
+
+            array.append(get_col_recursive(ascii_uppercase, col))
+            return ''.join(array)
+
+        if not args:
+            return '$' + get_col() + '$' + str(row)
+
+        ref_type, *args = args
+        col_value = ''
+        match ref_type:
+            case '1':
+                col_value = '$' + get_col() + '$' + str(row)
+            case '2':
+                col_value = get_col() + '$' + str(row)
+            case '3':
+                col_value = '$' + get_col() + str(row)
+            case '4':
+                col_value = get_col() + str(row)
+
+        if args:
+            a1_type, *args = args
+            if a1_type == 'False':
+                col_value = 'R' + str(row) + 'C' + str(col)
+                match ref_type:
+                    case '2':
+                        col_value = 'R' + str(row) + 'C' + '[' + str(col) + ']'
+                    case '3':
+                        col_value = 'R' + '[' + str(row) + ']' + 'C' + str(col)
+                    case '4':
+                        col_value = 'R' + '[' + str(row) + ']' + 'C' + '[' + str(col) + ']'
+
+        if args:
+            sheet_name, *args = args
+            col_value = sheet_name + '!' + col_value
+
+        return col_value
+
+    def _when_cell_is_empty_cast_to_zero(self, iterable: list):
+        return [0 if isinstance(i, self.EmptyCell) else i for i in iterable]
+
     def _averageifs(self, average_range: list[list], *range_and_criteria):
         class Undefined:
             pass
 
         # Если ячейка в диапазоне критериев пуста, AVERAGEIFS обрабатывает ее как значение 0.
-        _when_cell_is_empty_cast_to_zero = lambda l: [0 if isinstance(i, self.EmptyCell) else i for i in l]
         # Ячейки в диапазоне, содержащие значение TRUE, оцениваются как 1; ячейки в диапазоне,
         # содержащие значение FALSE, оцениваются как 0 (ноль).
         _when_bool_cast_to_int = lambda l: [int(i) if isinstance(i, bool) else i for i in l]
@@ -378,7 +472,7 @@ class AbstractExcelInPython(ABC):
                 i = self._flatten_list(i)
                 if len(average_range) != len(i):
                     raise self.ExcelInPythonException('Invalid averageifs range size')
-                range_and_criteria_zip.append([_when_bool_cast_to_int(_when_cell_is_empty_cast_to_zero(i))])
+                range_and_criteria_zip.append([_when_bool_cast_to_int(self._when_cell_is_empty_cast_to_zero(i))])
             else:
                 range_and_criteria_zip[-1].append(i)
 
@@ -394,6 +488,28 @@ class AbstractExcelInPython(ABC):
 
         return self._average(average_range)
 
+    def _countifs(self, count_range: list[list], count_condition: callable, *range_n_criteria):
+        # Если ячейка в диапазоне критериев пуста, COUNTIFS обрабатывает ее как значение 0.
+
+        count_range = self._flatten_list(count_range)
+
+        range_and_criteria_zip = []
+        for i in range_n_criteria:
+            if not range_and_criteria_zip or len(range_and_criteria_zip[-1]) == 2:
+                i = self._flatten_list(i)
+                if len(count_range) != len(i):
+                    raise self.ExcelInPythonException('Invalid countifs range size')
+                range_and_criteria_zip.append([self._when_cell_is_empty_cast_to_zero(i)])
+            else:
+                range_and_criteria_zip[-1].append(i)
+
+        for [_range, criteria] in range_and_criteria_zip:
+            for i in range(len(_range)):
+                if not criteria(_range[i]):
+                    count_range[i] = None
+        count_range = [i if count_condition(i) else None for i in count_range]
+        return len(list(filter(None, count_range)))
+
     def _right(self, text, num_chars):
         if num_chars is None:
             return text[len(text) - 1]
@@ -404,6 +520,61 @@ class AbstractExcelInPython(ABC):
         if len(text) < num_chars:
             return text
         return text[len(text) - num_chars:]
+
+
+    def _count_blank(self, flatten_list: list):
+        err_value = self._find_error_in_list(flatten_list)
+        if err_value:
+            return err_value
+
+        empty = [elem for elem in flatten_list if elem is None or elem == '']
+        return len(empty)
+
+    def _search(self, find_text: str, within_text: str, start_num: int | None):
+        start_num = start_num if start_num else 1
+        if start_num and (start_num > len(within_text) or start_num <= 0):
+            return '#VALUE!'
+
+        pattern = r'([^~][?*]|^[?*])'
+        if len(re.findall(pattern, find_text)) == 0:
+            find_text = find_text.replace('~?', '?') \
+                .replace('~*', '*')
+
+            result = within_text.find(find_text, start_num - 1) + 1
+            return result if result else '#VALUE!'
+
+        find_text = find_text \
+            .replace('?', '(.)') \
+            .replace('*', '(.*)') \
+            .replace('~(.*)', r'\*') \
+            .replace('~(.)', r'\?')
+
+        result = re.finditer(find_text, within_text, re.I)
+
+        if result is None:
+            return '#VALUE!'
+
+        find_elem = None
+        for i in result:
+            if i.span(0)[0] + 1 < start_num:
+                continue
+            find_elem = i
+            break
+        # исключаем поиск по regex вроде \d
+        if find_elem:
+            sequences = find_elem.groups(0)
+            found_text = find_elem.group(0)
+            find_text = find_text.replace('(.*)', '(.)') \
+                .replace(r'\?', '?') \
+                .replace(r'\.', '.')
+            for sequence in sequences:
+                find_text = find_text.replace('(.)', sequence, 1)
+
+            if found_text.lower() != find_text.lower():
+                return '#VALUE!'
+
+        return find_elem.span(0)[0] + 1 if find_elem else '#VALUE!'
+
 
     def _network_days(self, date_start: datetime.datetime, date_end: datetime.datetime,
                       holidays: list[datetime.datetime] = None):
@@ -434,6 +605,7 @@ class AbstractExcelInPython(ABC):
             start = start + datetime.timedelta(days=1)
 
         return work_days_count * multiple
+
 
     def _cell_preprocessor(self, cell_uid: str):
         return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))

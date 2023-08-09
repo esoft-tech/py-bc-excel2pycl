@@ -159,6 +159,10 @@ class XKeywordToken(RegexpBaseToken):
     regexp = r'X'
 
 
+class SearchKeywordToken(RegexpBaseToken):
+    regexp = r'SEARCH'
+
+
 class SKeywordToken(RegexpBaseToken):
     regexp = r'S'
 
@@ -212,6 +216,22 @@ class AmpersandToken(RegexpBaseToken):
     regexp = r'&'
 
 
+
+class CountBlankKeywordToken(RegexpBaseToken):
+    regexp = r'COUNTBLANK'
+
+
+class PatternToken(RegexpBaseToken):
+    """
+    Parses excel pattern system
+    ? - stands for single symbol
+    * - stands for sequence of symbols
+    ~ - cancels pattern effect if placed before ? or * (cancels effect only for next symbol, but not for all)
+    Would be useful to recognize argument in function e.g =COUNTIFS(A3:B3; "???le") or =COUNTIFS(A4:B7; "a*")
+    """
+    regexp = r'\"(.*(?<![~])[?*]+.*)\"'
+
+
 # TODO добавить условие для локализации
 class LiteralToken(RegexpBaseToken):
     regexp = r'\"(.*?)\"|(\d+)((\.)(\d+))?(e(-?\d+))?|(TRUE(\(\))?)|(FALSE(\(\))?)'
@@ -250,6 +270,14 @@ class BracketFinishToken(RegexpBaseToken):
 
 class WhitespaceToken(RegexpBaseToken):
     regexp = r'[\s\n\t]+'
+
+
+class AddreKeywordToken(RegexpBaseToken):
+    regexp = r'ADDRE'
+
+
+class CountKeywordToken(RegexpBaseToken):
+    regexp = r'COUNT'
 
 
 class ToKeywordToken(RegexpBaseToken):
