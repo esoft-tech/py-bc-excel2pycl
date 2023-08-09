@@ -52,7 +52,7 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
         from excel2pycl.src.translators.networkdays_cc_token_translator import \
             NetworkDaysControlConstructionTokenTranslator
         from excel2pycl.src.translators.count_cc_token_translator import CountControlConstructionTokenTranslator
-        from excel2pycl.src.translators.sumifs_cc_token_tranlator import SumIfsControlConstructionTokenTranslator
+        from excel2pycl.src.translators.sumifs_cc_token_translator import SumIfsControlConstructionTokenTranslator
 
         translate_functions = {
             IfControlConstructionToken.__name__: IfControlConstructionTokenTranslator.translate,

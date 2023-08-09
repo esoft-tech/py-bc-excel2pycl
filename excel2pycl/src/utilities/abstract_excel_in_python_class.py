@@ -511,9 +511,6 @@ class AbstractExcelInPython(ABC):
         return len(list(filter(None, count_range)))
 
     def _sumifs(self, sum_range: list[list], *range_and_criteria):
-        class Undefined:
-            pass
-
         # Ячейки в диапазоне, содержащие значение TRUE, оцениваются как 1; ячейки в диапазоне,
         # содержащие значение FALSE, оцениваются как 0 (ноль).
         _when_bool_cast_to_int = lambda l: [int(i) if isinstance(i, bool) else i for i in l]
@@ -533,9 +530,9 @@ class AbstractExcelInPython(ABC):
         for [_range, criteria] in range_and_criteria_zip:
             for i in range(len(_range)):
                 if not criteria(_range[i]):
-                    sum_range[i] = Undefined()
+                    sum_range[i] = None
 
-        sum_range = _when_bool_cast_to_int([i for i in sum_range if not isinstance(i, Undefined)])
+        sum_range = _when_bool_cast_to_int([i for i in sum_range if i is not None])
 
         return self._sum(sum_range)
 

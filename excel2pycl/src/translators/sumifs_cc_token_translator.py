@@ -2,7 +2,6 @@ from excel2pycl.src.context import Context
 from excel2pycl.src.excel import Excel
 from excel2pycl.src.tokens import SumIfsControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
-from excel2pycl.src.translators.lambda_token_translator import LambdaTokenTranslator
 
 
 class SumIfsControlConstructionTokenTranslator(AbstractTranslator):
