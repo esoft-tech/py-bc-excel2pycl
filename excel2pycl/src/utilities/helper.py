@@ -1,6 +1,5 @@
 from excel2pycl.src.context import Context
 from excel2pycl.src.excel import Excel
-from excel2pycl.src.tokens import OperandToken
 from excel2pycl.src.tokens.composite_base_token import CompositeBaseToken
 from excel2pycl.src.translators.expression_token_translator import ExpressionTokenTranslator
 
