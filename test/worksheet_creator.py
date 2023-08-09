@@ -1,6 +1,6 @@
 from openpyxl import Workbook
 from openpyxl.worksheet.table import Table, TableStyleInfo
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 
 def create_test_table(file_name):
@@ -174,6 +174,39 @@ def create_test_table(file_name):
          '=ADDRESS(3;6;2;FALSE)', '=ADDRESS(3;7;2;FALSE;"mid")', '=ADDRESS(3;8;1;TRUE;"[WorkBook1]ASD")',
          '=ADDRESS(3;704)'],
         ['$A$3', 'B$3', '$C3', 'D3', '$E$3', 'R3C[6]', "'mid'!R3C[7]", "'[WorkBook1]ASD'!$H$3", '$AAB$3'],
+    ]
+
+    for row in data:
+        ws_mid.append(row)
+
+    ws_mid = wb.create_sheet('today')
+    data = [
+        ['TODAY normal', 'TODAY ADD DAY', 'TODAY subtract today from date', 'Get DAY from TODAY',
+         'Get MONTH from TODAY', 'Compare TODAY and TODAY'],
+        ['=TODAY()', '=TODAY() + 5', '=DATE(2024; 5; 24) - TODAY()', '=DAY(TODAY())',
+         '=MONTH(TODAY())', '=TODAY() = TODAY()'],
+        [
+            date.today(),
+            date.today() + timedelta(days=5),
+            date(2024, 5, 24) - date.today(),
+            date.today().day,
+            date.today().month,
+            date.today() == date.today()
+        ]
+    ]
+
+    for row in data:
+        ws_mid.append(row)
+
+    ws_mid = wb.create_sheet('column')
+
+    data = [
+        ['COLUMN no args'],
+        [1, 2, 3, 4, 5, 3],
+        ['=COLUMN()'],
+        ['=COLUMN(B3)'],
+        ['=COLUMN(C3:E3)'],
+        ['=COLUMN(C3:C7)']
     ]
 
     for row in data:

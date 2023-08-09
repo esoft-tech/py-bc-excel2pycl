@@ -593,12 +593,68 @@ class TestTokens(unittest.TestCase):
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNTIFS pattern text condition down')
 
-    def test_sumifs_one_condition(self):
+    def test_column_no_args_token(self):
         cell_values = Executor() \
             .set_executed_class(class_file=self.translation_file_path) \
-            .get_cells([Cell('sumifs', 3, 0), Cell('sumifs', 4, 0)])
+            .get_cells([Cell('column', 0, 1), Cell('column', 0, 2)])
 
-        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='SUMIFS one condition down')
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='Column token no args down')
+
+    def test_column_cell_arg_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('column', 1, 1), Cell('column', 0, 3)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='Column token cell arg down')
+
+    def test_column_matrix_arg_token(self):
+        cells = Executor().set_executed_class(class_file=self.translation_file_path)
+        expected = cells.get_cells([Cell('column', 2, 1), Cell('column', 3, 1), Cell('column', 4, 1)])
+        actual = cells.get_cells([Cell('column', 0, 4), Cell('column', 1, 4), Cell('column', 2, 4)])
+
+        self.assertEqual([cell.value for cell in expected], [cell.value for cell in actual], msg='Column token matrix arg down')
+
+    def test_column_array_arg_token(self):
+        cell_values = Executor()\
+            .set_executed_class(class_file=self.translation_file_path)\
+            .get_cells([Cell('column', 5, 1), Cell('column', 0, 5)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='Column token array arg down')
+
+    def test_today_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('today', 0, 2), Cell('today', 0, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='TODAY token down')
+
+    def test_today_subtract_date_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('today', 2, 2), Cell('today', 2, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='TODAY subtract date token down')
+
+    def test_today_get_day_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('today', 2, 2), Cell('today', 2, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='TODAY get day token down')
+
+    def test_today_get_month_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('today', 3, 2), Cell('today', 3, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='TODAY get month token down')
+
+    def test_compare_dates(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('today', 4, 2), Cell('today', 4, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='date compare down')
 
     def test_sumifs_one_condition(self):
         cell_values = Executor() \

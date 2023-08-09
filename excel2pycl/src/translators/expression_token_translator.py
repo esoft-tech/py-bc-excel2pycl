@@ -1,10 +1,13 @@
 from excel2pycl.src.context import Context
 from excel2pycl.src.excel import Excel
-from excel2pycl.src.tokens import ExpressionToken, AmpersandToken
+from excel2pycl.src.tokens import ExpressionToken, AmpersandToken, DateControlConstructionToken, \
+    TodayControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
 class ExpressionTokenTranslator(AbstractTranslator):
+    _DATE_TOKENS = [DateControlConstructionToken, TodayControlConstructionToken]
+
     @classmethod
     def translate(cls, token: ExpressionToken, excel: Excel, context: Context) -> str:
         from excel2pycl.src.translators.operand_token_translator import OperandTokenTranslator

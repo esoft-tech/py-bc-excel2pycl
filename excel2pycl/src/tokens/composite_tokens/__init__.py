@@ -12,9 +12,10 @@ from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, LeftKeywordToke
     DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, VlookupKeywordToken, \
     AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken, YearKeywordToken, \
     DateKeywordToken, DifKeywordToken, EoKeywordToken, MonthKeywordToken, EKeywordToken, \
+    CountBlankKeywordToken, \
     SearchKeywordToken, \
     XKeywordToken, MatchKeywordToken, SKeywordToken, AddreKeywordToken, CountKeywordToken, PatternToken, \
-    NetworkDaysKeywordToken
+    NetworkDaysKeywordToken, ToKeywordToken, ColumnKeywordToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
@@ -609,6 +610,15 @@ class AverageIfsControlConstructionToken(CompositeBaseToken):
         return self.value[6]
 
 
+class CountBlankControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[CountBlankKeywordToken, BracketStartToken,
+                    IterableExpressionToken, BracketFinishToken]]
+
+    @property
+    def expressions(self):
+        return self.value[2].expressions
+
+
 class CountIfsControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [
@@ -693,6 +703,26 @@ class CountControlConstructionToken(CompositeBaseToken):
         ]
 
 
+class ColumnControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [
+        [ColumnKeywordToken, BracketStartToken, BracketFinishToken],
+        [ColumnKeywordToken, BracketStartToken, CellIdentifierToken, BracketFinishToken],
+        [ColumnKeywordToken, BracketStartToken, MatrixOfCellIdentifiersToken, BracketFinishToken]
+    ]
+
+    @property
+    def cell(self):
+        return self.value[2] if len(self.value) > 2 and isinstance(self.value[2], CellIdentifierToken) else None
+
+    @property
+    def matrix(self):
+        return self.value[2] if len(self.value) > 2 and isinstance(self.value[2], MatrixOfCellIdentifiersToken) else None
+
+
+class TodayControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[ToKeywordToken, DayKeywordToken, BracketStartToken, BracketFinishToken]]
+
+
 class SumIfsControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [
@@ -723,10 +753,11 @@ class ControlConstructionToken(CompositeBaseToken):
                    [IfErrorControlConstructionToken], [DateControlConstructionToken], [MatchControlConstructionToken],
                    [XMatchControlConstructionToken], [LeftControlConstructionToken], [MidControlConstructionToken],
                    [RightControlConstructionToken], [AverageIfsControlConstructionToken],
+                   [CountBlankControlConstructionToken], [TodayControlConstructionToken],
                    [SearchControlConstructionToken],
                    [AddressControlConstructionToken], [CountIfsControlConstructionToken],
                    [CountControlConstructionToken], [NetworkDaysControlConstructionToken],
-                   [SumIfsControlConstructionToken]]
+                   [ColumnControlConstructionToken], [SumIfsControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,
@@ -741,10 +772,12 @@ class ControlConstructionToken(CompositeBaseToken):
                                             EDateControlConstructionToken, MatchControlConstructionToken,
                                             XMatchControlConstructionToken, LeftControlConstructionToken,
                                             MidControlConstructionToken, RightControlConstructionToken,
+                                            CountBlankControlConstructionToken, TodayControlConstructionToken,
                                             AverageIfsControlConstructionToken, SearchControlConstructionToken,
-                                            AverageIfsControlConstructionToken, CountIfsControlConstructionToken,
+                                            CountIfsControlConstructionToken,
                                             AddressControlConstructionToken, CountControlConstructionToken,
-                                            NetworkDaysControlConstructionToken, SumIfsControlConstructionToken]:
+                                            NetworkDaysControlConstructionToken, ColumnControlConstructionToken,
+                                            SumIfsControlConstructionToken]:
         return self.value[0]
 
 
