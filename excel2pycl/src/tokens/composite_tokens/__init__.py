@@ -15,7 +15,7 @@ from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, LeftKeywordToke
     CountBlankKeywordToken, \
     SearchKeywordToken, \
     XKeywordToken, MatchKeywordToken, SKeywordToken, AddreKeywordToken, CountKeywordToken, PatternToken, \
-    NetworkDaysKeywordToken
+    NetworkDaysKeywordToken, ColumnKeywordToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
@@ -703,6 +703,22 @@ class CountControlConstructionToken(CompositeBaseToken):
         ]
 
 
+class ColumnControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [
+        [ColumnKeywordToken, BracketStartToken, BracketFinishToken],
+        [ColumnKeywordToken, BracketStartToken, CellIdentifierToken, BracketFinishToken],
+        [ColumnKeywordToken, BracketStartToken, MatrixOfCellIdentifiersToken, BracketFinishToken]
+    ]
+
+    @property
+    def cell(self):
+        return self.value[2] if len(self.value) > 2 and isinstance(self.value[2], CellIdentifierToken) else None
+
+    @property
+    def matrix(self):
+        return self.value[2] if len(self.value) > 2 and isinstance(self.value[2], MatrixOfCellIdentifiersToken) else None
+
+
 class ControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[IfControlConstructionToken], [SumControlConstructionToken], [SumIfControlConstructionToken],
                    [VlookupControlConstructionToken], [AverageControlConstructionToken],
@@ -716,7 +732,8 @@ class ControlConstructionToken(CompositeBaseToken):
                    [CountBlankControlConstructionToken],
                    [SearchControlConstructionToken],
                    [AddressControlConstructionToken], [CountIfsControlConstructionToken],
-                   [CountControlConstructionToken], [NetworkDaysControlConstructionToken]]
+                   [CountControlConstructionToken], [NetworkDaysControlConstructionToken],
+                   [ColumnControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,
@@ -735,7 +752,7 @@ class ControlConstructionToken(CompositeBaseToken):
                                             AverageIfsControlConstructionToken, SearchControlConstructionToken,
                                             CountIfsControlConstructionToken,
                                             AddressControlConstructionToken, CountControlConstructionToken,
-                                            NetworkDaysControlConstructionToken]:
+                                            NetworkDaysControlConstructionToken, ColumnControlConstructionToken]:
         return self.value[0]
 
 

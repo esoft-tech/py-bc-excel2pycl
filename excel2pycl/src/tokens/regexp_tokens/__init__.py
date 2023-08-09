@@ -272,6 +272,10 @@ class WhitespaceToken(RegexpBaseToken):
     regexp = r'[\s\n\t]+'
 
 
+class ColumnKeywordToken(RegexpBaseToken):
+    regexp = r'COLUMN'
+
+
 class AddreKeywordToken(RegexpBaseToken):
     regexp = r'ADDRE'
 
