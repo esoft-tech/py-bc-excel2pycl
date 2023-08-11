@@ -1,4 +1,5 @@
 from typing import Union
+from collections.abc import Iterable
 
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.tokens.composite_base_token import CompositeBaseToken
@@ -12,7 +13,8 @@ from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, LeftKeywordToke
     DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, VlookupKeywordToken, \
     AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken, YearKeywordToken, \
     DateKeywordToken, DifKeywordToken, EoKeywordToken, MonthKeywordToken, EKeywordToken, \
-    XKeywordToken, MatchKeywordToken, SKeywordToken, CountKeywordToken, PatternToken, NetworkDaysKeywordToken
+    XKeywordToken, MatchKeywordToken, SKeywordToken, CountKeywordToken, PatternToken, NetworkDaysKeywordToken, \
+    IndexKeywordToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
@@ -612,6 +614,56 @@ class CountIfsControlConstructionToken(CompositeBaseToken):
         return self.value[8] if len(self.value) > 8 else None
 
 
+class IterableMatrixOfCellIdentifiersToken(RecursiveCompositeBaseToken):
+    _TOKEN_SETS = [
+        [BracketStartToken, MatrixOfCellIdentifiersToken, SeparatorToken, CLS, BracketFinishToken],
+        [MatrixOfCellIdentifiersToken, SeparatorToken, CLS],
+        [MatrixOfCellIdentifiersToken]
+    ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, *kwargs)
+        self._matrix_list = []
+
+    @property
+    def matrix_list(self):
+        if not self._matrix_list:
+            if len(self.value) == 5:
+                self._matrix_list = [self.value[1]] + self.value[3].matrix_list
+            elif len(self.value) == 3:
+                self._matrix_list = [self.value[0]] + self.value[2].matrix_list
+            else:
+                self._matrix_list = [self.value[0]]
+        return self._matrix_list
+
+
+class IndexControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [
+        [IndexKeywordToken, BracketStartToken, IterableMatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken,
+         SeparatorToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken],
+        [IndexKeywordToken, BracketStartToken, IterableMatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken,
+         SeparatorToken, ExpressionToken, BracketFinishToken],
+        [IndexKeywordToken, BracketStartToken, IterableMatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken,
+         BracketFinishToken],
+    ]
+
+    @property
+    def matrix_list(self):
+        return self.value[2].matrix_list
+
+    @property
+    def row_number(self) -> ExpressionToken:
+        return self.value[4]
+
+    @property
+    def column_number(self) -> ExpressionToken:
+        return self.value[6] if len(self.value) >= 8 else None
+
+    @property
+    def area_number(self) -> ExpressionToken:
+        return self.value[8] if len(self.value) == 10 else None
+
+
 class ControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[IfControlConstructionToken], [SumControlConstructionToken], [SumIfControlConstructionToken],
                    [VlookupControlConstructionToken], [AverageControlConstructionToken],
@@ -622,7 +674,8 @@ class ControlConstructionToken(CompositeBaseToken):
                    [IfErrorControlConstructionToken], [DateControlConstructionToken], [MatchControlConstructionToken],
                    [XMatchControlConstructionToken], [LeftControlConstructionToken], [MidControlConstructionToken],
                    [RightControlConstructionToken], [AverageIfsControlConstructionToken],
-                   [CountIfsControlConstructionToken], [NetworkDaysControlConstructionToken]]
+                   [CountIfsControlConstructionToken], [NetworkDaysControlConstructionToken],
+                   [IndexControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,

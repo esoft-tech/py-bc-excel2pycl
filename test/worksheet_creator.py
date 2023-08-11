@@ -130,7 +130,7 @@ def create_test_table(file_name):
     for row in data:
         ws_mid.append(row)
 
-    ws_mid = wb.create_sheet('countifs')
+    ws_countifs = wb.create_sheet('countifs')
 
     data = [
         ['COUNTIFS text condition', 'COUNTIFS cell condition', 'COUNTIFS lambda condition',
@@ -145,6 +145,19 @@ def create_test_table(file_name):
     ]
 
     for row in data:
-        ws_mid.append(row)
+        ws_countifs.append(row)
+
+    ws_index = wb.create_sheet('index')
+
+    data = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9],
+        ['=INDEX(A1:C1;2)', '=INDEX(A1:A3;2)', '=INDEX(A1:C3;2;2)', '=INDEX((A1:C1; A1:A3; A1:C3);3;3;3)'],
+        ['=INDEX(A1:C3;0;0)']
+    ]
+
+    for row in data:
+        ws_index.append(row)
 
     wb.save(file_name)

@@ -486,7 +486,7 @@ class ExcelInPython:
         additional_days = []
         if holidays:
             for row in holidays:
-                additional_days_in_row = [day.date() for day in row if isinstance(day, datetime.datetime)] \
+                additional_days_in_row = [day.date() for day in row if isinstance(day, datetime.datetime)] \\
                     if row is not None else []
                 additional_days += additional_days_in_row
 
@@ -496,6 +496,26 @@ class ExcelInPython:
             start = start + datetime.timedelta(days=1)
 
         return work_days_count * multiple
+    
+    def _index(self, matrix_list: list, row_number: int, column_number: int | None, area_number: int):
+        if area_number > len(matrix_list):
+            return '#REF!'
+
+        array = matrix_list[area_number - 1] if isinstance(matrix_list, tuple) else matrix_list
+        if len(array) == 1 and column_number is None:
+            column_number = row_number
+            row_number = None
+
+        try:
+            row = [array[row_number - 1]] if row_number else array
+            value = [col[column_number - 1] if column_number else col for col in row]
+        except IndexError:
+            return '#REF!'
+
+        if isinstance(value[0], list) and len(value[0]) == 1:
+            value = [row[0] for row in value]
+
+        return value[0] if len(value) == 1 else value
 
     def _cell_preprocessor(self, cell_uid: str):
         return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))
