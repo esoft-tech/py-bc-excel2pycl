@@ -648,7 +648,7 @@ class IndexControlConstructionToken(CompositeBaseToken):
     ]
 
     @property
-    def matrix_list(self):
+    def matrix_list(self) -> Iterable:
         return self.value[2].matrix_list
 
     @property
