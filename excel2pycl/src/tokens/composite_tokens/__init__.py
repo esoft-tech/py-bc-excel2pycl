@@ -13,8 +13,8 @@ from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, LeftKeywordToke
     DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, VlookupKeywordToken, \
     AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken, YearKeywordToken, \
     DateKeywordToken, DifKeywordToken, EoKeywordToken, MonthKeywordToken, EKeywordToken, \
-    XKeywordToken, MatchKeywordToken, SKeywordToken, CountKeywordToken, PatternToken, NetworkDaysKeywordToken, \
-    IndexKeywordToken
+    CountBlankKeywordToken, SearchKeywordToken, XKeywordToken, MatchKeywordToken, SKeywordToken, AddreKeywordToken, \
+    CountKeywordToken, PatternToken, NetworkDaysKeywordToken, ToKeywordToken, ColumnKeywordToken, IndexKeywordToken
 
 
 class SumIfKeywordToken(CompositeBaseToken):
@@ -375,6 +375,33 @@ class LeftControlConstructionToken(CompositeBaseToken):
         return self.value[4] if len(self.value) == 6 else None
 
 
+class SearchControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [
+        [
+            SearchKeywordToken, BracketStartToken, ExpressionToken,
+            SeparatorToken, ExpressionToken, BracketFinishToken
+        ],
+        [
+            SearchKeywordToken, BracketStartToken, ExpressionToken,
+            SeparatorToken, ExpressionToken,
+            SeparatorToken, ExpressionToken,
+            BracketFinishToken
+        ]
+    ]
+
+    @property
+    def find_text(self) -> ExpressionToken:
+        return self.value[2]
+
+    @property
+    def within_text(self) -> ExpressionToken:
+        return self.value[4]
+
+    @property
+    def start_num(self) -> ExpressionToken:
+        return self.value[6] if len(self.value) == 8 else None
+
+
 class MidControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[MidKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken]]
 
@@ -582,6 +609,15 @@ class AverageIfsControlConstructionToken(CompositeBaseToken):
         return self.value[6]
 
 
+class CountBlankControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[CountBlankKeywordToken, BracketStartToken,
+                    IterableExpressionToken, BracketFinishToken]]
+
+    @property
+    def expressions(self):
+        return self.value[2].expressions
+
+
 class CountIfsControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [
@@ -612,6 +648,78 @@ class CountIfsControlConstructionToken(CompositeBaseToken):
     @property
     def conditions(self) -> IterableRangeOfCellIdentifierWithConditionToken:
         return self.value[8] if len(self.value) > 8 else None
+
+
+class AddressControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [
+        [AddreKeywordToken, SKeywordToken, SKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken,
+         ExpressionToken, BracketFinishToken],
+        [AddreKeywordToken, SKeywordToken, SKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken,
+         ExpressionToken, SeparatorToken, IterableExpressionToken, BracketFinishToken]
+    ]
+
+    @property
+    def row(self) -> ExpressionToken:
+        return self.value[4]
+
+    @property
+    def col(self) -> ExpressionToken:
+        return self.value[6]
+
+    @property
+    def expressions(self):
+        return self.value[8].expressions if len(self.value) > 8 else []
+
+
+class CountControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [
+        [CountKeywordToken, BracketStartToken, IterableExpressionToken,
+         BracketFinishToken]
+    ]
+
+    @property
+    def matrices(self) -> list[MatrixOfCellIdentifiersToken]:
+        return [
+            expression.left_operand.matrix
+            for expression in self.value[2].expressions
+            if hasattr(expression.left_operand, 'matrix') and expression.left_operand.matrix is not None
+        ]
+
+    @property
+    def arg_cells(self) -> list[CellIdentifierToken]:
+        return [
+            expression.left_operand.value[0]
+            for expression in self.value[2].expressions
+            if isinstance(expression.left_operand.value[0], CellIdentifierToken)
+        ]
+
+    @property
+    def expressions(self):
+        return [
+            expression
+            for expression in self.value[2].expressions
+            if isinstance(expression.left_operand.value[0], LiteralToken)
+        ]
+
+
+class ColumnControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [
+        [ColumnKeywordToken, BracketStartToken, BracketFinishToken],
+        [ColumnKeywordToken, BracketStartToken, CellIdentifierToken, BracketFinishToken],
+        [ColumnKeywordToken, BracketStartToken, MatrixOfCellIdentifiersToken, BracketFinishToken]
+    ]
+
+    @property
+    def cell(self):
+        return self.value[2] if len(self.value) > 2 and isinstance(self.value[2], CellIdentifierToken) else None
+
+    @property
+    def matrix(self):
+        return self.value[2] if len(self.value) > 2 and isinstance(self.value[2], MatrixOfCellIdentifiersToken) else None
+
+
+class TodayControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[ToKeywordToken, DayKeywordToken, BracketStartToken, BracketFinishToken]]
 
 
 class IterableMatrixOfCellIdentifiersToken(RecursiveCompositeBaseToken):
@@ -674,8 +782,11 @@ class ControlConstructionToken(CompositeBaseToken):
                    [IfErrorControlConstructionToken], [DateControlConstructionToken], [MatchControlConstructionToken],
                    [XMatchControlConstructionToken], [LeftControlConstructionToken], [MidControlConstructionToken],
                    [RightControlConstructionToken], [AverageIfsControlConstructionToken],
-                   [CountIfsControlConstructionToken], [NetworkDaysControlConstructionToken],
-                   [IndexControlConstructionToken]]
+                   [CountBlankControlConstructionToken], [TodayControlConstructionToken],
+                   [SearchControlConstructionToken],
+                   [AddressControlConstructionToken], [CountIfsControlConstructionToken],
+                   [CountControlConstructionToken], [NetworkDaysControlConstructionToken],
+                   [ColumnControlConstructionToken], [IndexControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,
@@ -690,8 +801,12 @@ class ControlConstructionToken(CompositeBaseToken):
                                             EDateControlConstructionToken, MatchControlConstructionToken,
                                             XMatchControlConstructionToken, LeftControlConstructionToken,
                                             MidControlConstructionToken, RightControlConstructionToken,
-                                            AverageIfsControlConstructionToken, CountIfsControlConstructionToken,
-                                            NetworkDaysControlConstructionToken]:
+                                            CountBlankControlConstructionToken, TodayControlConstructionToken,
+                                            AverageIfsControlConstructionToken, SearchControlConstructionToken,
+                                            CountIfsControlConstructionToken,
+                                            AddressControlConstructionToken, CountControlConstructionToken,
+                                            NetworkDaysControlConstructionToken, ColumnControlConstructionToken,
+                                            IndexControlConstructionToken]:
         return self.value[0]
 
 

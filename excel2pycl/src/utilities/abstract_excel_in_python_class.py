@@ -55,8 +55,20 @@ class AbstractExcelInPython(ABC):
             return err_value
 
     @staticmethod
-    def _only_numeric_list(flatten_list: list):
-        return [i for i in flatten_list if type(i) in [float, int]]
+    def _only_numeric_list(flatten_list: list, with_string_digits: bool = False):
+        return [
+            i
+            for i in flatten_list
+            if type(i) in [float, int] or (with_string_digits and isinstance(i, str) and i.isdigit())
+        ]
+
+    @staticmethod
+    def _only_bool_list(flatten_list: list):
+        return [i for i in flatten_list if isinstance(i, bool)]
+
+    @staticmethod
+    def _only_datetime_list(flatten_list: list):
+        return [i for i in flatten_list if isinstance(i, datetime.datetime)]
 
     @staticmethod
     def _regexp(pattern: str):
@@ -120,6 +132,20 @@ class AbstractExcelInPython(ABC):
 
     def _average(self, flatten_list: list):
         return self._sum(flatten_list) / len(self._only_numeric_list(flatten_list))
+
+    def _count(self, matrices: list[list], args: list, args_cells: list):
+        flattened_matrices = self._flatten_list(matrices)
+        return len(
+            self._only_numeric_list(
+                flattened_matrices + args_cells
+            ) + self._only_bool_list(  # false и true учитываются
+                args
+            ) + self._only_numeric_list(
+                args, with_string_digits=True
+            ) + self._only_datetime_list(
+                flattened_matrices + args_cells + args
+            )
+        )
 
     def _match(self, lookup_value, lookup_array: list, match_type: int = 0):
         lookup_value_type = int if isinstance(lookup_value, self.EmptyCell) else type(lookup_value)
@@ -364,6 +390,58 @@ class AbstractExcelInPython(ABC):
 
         return text[start_num - 1:start_num + num_chars - 1]
 
+    @staticmethod
+    def _address(row: int, col: int, *args) -> str:
+        from string import ascii_uppercase
+
+        def get_col():
+            array = []
+
+            def get_col_recursive(letters, _col):
+                parent = _col // len(letters)
+                child = _col % len(letters)
+
+                if parent > len(letters):
+                    array.append(get_col_recursive(letters, parent))
+                return (letters[parent - 1] if parent < len(letters) and parent else '') + (
+                    letters[child - 1] if child else '')
+
+            array.append(get_col_recursive(ascii_uppercase, col))
+            return ''.join(array)
+
+        if not args:
+            return '$' + get_col() + '$' + str(row)
+
+        ref_type, *args = args
+        col_value = ''
+        match ref_type:
+            case '1':
+                col_value = '$' + get_col() + '$' + str(row)
+            case '2':
+                col_value = get_col() + '$' + str(row)
+            case '3':
+                col_value = '$' + get_col() + str(row)
+            case '4':
+                col_value = get_col() + str(row)
+
+        if args:
+            a1_type, *args = args
+            if a1_type == 'False':
+                col_value = 'R' + str(row) + 'C' + str(col)
+                match ref_type:
+                    case '2':
+                        col_value = 'R' + str(row) + 'C' + '[' + str(col) + ']'
+                    case '3':
+                        col_value = 'R' + '[' + str(row) + ']' + 'C' + str(col)
+                    case '4':
+                        col_value = 'R' + '[' + str(row) + ']' + 'C' + '[' + str(col) + ']'
+
+        if args:
+            sheet_name, *args = args
+            col_value = sheet_name + '!' + col_value
+
+        return col_value
+
     def _when_cell_is_empty_cast_to_zero(self, iterable: list):
         return [0 if isinstance(i, self.EmptyCell) else i for i in iterable]
 
@@ -443,6 +521,59 @@ class AbstractExcelInPython(ABC):
             return text
         return text[len(text) - num_chars:]
 
+    def _count_blank(self, flatten_list: list):
+        err_value = self._find_error_in_list(flatten_list)
+        if err_value:
+            return err_value
+
+        empty = [elem for elem in flatten_list if elem is None or elem == '']
+        return len(empty)
+
+    def _search(self, find_text: str, within_text: str, start_num: int | None):
+        start_num = start_num if start_num else 1
+        if start_num and (start_num > len(within_text) or start_num <= 0):
+            return '#VALUE!'
+
+        pattern = r'([^~][?*]|^[?*])'
+        if len(re.findall(pattern, find_text)) == 0:
+            find_text = find_text.replace('~?', '?') \
+                .replace('~*', '*')
+
+            result = within_text.find(find_text, start_num - 1) + 1
+            return result if result else '#VALUE!'
+
+        find_text = find_text \
+            .replace('?', '(.)') \
+            .replace('*', '(.*)') \
+            .replace('~(.*)', r'\*') \
+            .replace('~(.)', r'\?')
+
+        result = re.finditer(find_text, within_text, re.I)
+
+        if result is None:
+            return '#VALUE!'
+
+        find_elem = None
+        for i in result:
+            if i.span(0)[0] + 1 < start_num:
+                continue
+            find_elem = i
+            break
+        # исключаем поиск по regex вроде \d
+        if find_elem:
+            sequences = find_elem.groups(0)
+            found_text = find_elem.group(0)
+            find_text = find_text.replace('(.*)', '(.)') \
+                .replace(r'\?', '?') \
+                .replace(r'\.', '.')
+            for sequence in sequences:
+                find_text = find_text.replace('(.)', sequence, 1)
+
+            if found_text.lower() != find_text.lower():
+                return '#VALUE!'
+
+        return find_elem.span(0)[0] + 1 if find_elem else '#VALUE!'
+
     def _network_days(self, date_start: datetime.datetime, date_end: datetime.datetime,
                       holidays: list[datetime.datetime] = None):
         # Большая загадка как вычисляется значение если на входе не даты - поэтому я решила просто кидать '#VALUE!'
@@ -498,6 +629,10 @@ class AbstractExcelInPython(ABC):
 
     def exec_function_in(self, cell_uid: str):
         return self._cell_preprocessor(cell_uid)
+
+    @staticmethod
+    def _today() -> datetime.date:
+        return datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
 
     class EmptyCell(int):
         def __eq__(self, other):

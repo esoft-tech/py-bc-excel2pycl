@@ -163,6 +163,10 @@ class XKeywordToken(RegexpBaseToken):
     regexp = r'X'
 
 
+class SearchKeywordToken(RegexpBaseToken):
+    regexp = r'SEARCH'
+
+
 class SKeywordToken(RegexpBaseToken):
     regexp = r'S'
 
@@ -216,6 +220,11 @@ class AmpersandToken(RegexpBaseToken):
     regexp = r'&'
 
 
+
+class CountBlankKeywordToken(RegexpBaseToken):
+    regexp = r'COUNTBLANK'
+
+
 class PatternToken(RegexpBaseToken):
     """
     Parses excel pattern system
@@ -267,5 +276,17 @@ class WhitespaceToken(RegexpBaseToken):
     regexp = r'[\s\n\t]+'
 
 
+class ColumnKeywordToken(RegexpBaseToken):
+    regexp = r'COLUMN'
+
+
+class AddreKeywordToken(RegexpBaseToken):
+    regexp = r'ADDRE'
+
+
 class CountKeywordToken(RegexpBaseToken):
     regexp = r'COUNT'
+
+
+class ToKeywordToken(RegexpBaseToken):
+    regexp = r'TO'

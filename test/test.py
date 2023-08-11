@@ -229,27 +229,27 @@ class TestTokens(unittest.TestCase):
         cell_values = self.executor.get_cells([Cell('left', 1, 1), Cell('left', 1, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='LEFT token are OK')
-        
+
     def test_left_bt_len_token(self):
         cell_values = self.executor.get_cells([Cell('left', 2, 1), Cell('left', 2, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='LEFT token are OK')
-        
+
     def test_left_eq_len_token(self):
         cell_values = self.executor.get_cells([Cell('left', 3, 1), Cell('left', 3, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='LEFT token are OK')
-        
+
     def test_left_1_arg_token(self):
         cell_values = self.executor.get_cells([Cell('left', 4, 1), Cell('left', 4, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='LEFT token are OK')
-        
+
     def test_left_neg_arg_token(self):
         cell_values = self.executor.get_cells([Cell('left', 5, 1), Cell('left', 5, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='LEFT token are OK')
-        
+
     def test_right_normal_token(self):
         cell_values = self.executor.get_cells([Cell('right', 0, 1), Cell('right', 0, 2)])
 
@@ -259,17 +259,17 @@ class TestTokens(unittest.TestCase):
         cell_values = self.executor.get_cells([Cell('right', 1, 1), Cell('right', 1, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='right token are OK')
-        
+
     def test_right_bt_len_token(self):
         cell_values = self.executor.get_cells([Cell('right', 2, 1), Cell('right', 2, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='right token are OK')
-        
+
     def test_right_eq_len_token(self):
         cell_values = self.executor.get_cells([Cell('right', 3, 1), Cell('right', 3, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='right token are OK')
-        
+
     def test_right_1_arg_token(self):
         cell_values = self.executor.get_cells([Cell('right', 4, 1), Cell('right', 4, 2)])
 
@@ -279,7 +279,7 @@ class TestTokens(unittest.TestCase):
         cell_values = self.executor.get_cells([Cell('right', 5, 1), Cell('right', 5, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='right token are OK')
-        
+
     def test_mid_normal_token(self):
         cell_values = self.executor.get_cells([Cell('mid', 0, 1), Cell('mid', 0, 2)])
 
@@ -289,22 +289,22 @@ class TestTokens(unittest.TestCase):
         cell_values = self.executor.get_cells([Cell('mid', 1, 1), Cell('mid', 1, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='MID token are OK')
-        
+
     def test_mid_bt_start_pos_token(self):
         cell_values = self.executor.get_cells([Cell('mid', 2, 1), Cell('mid', 2, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='MID token are OK')
-        
+
     def test_mid_eq_start_pos_token(self):
         cell_values = self.executor.get_cells([Cell('mid', 3, 1), Cell('mid', 3, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='MID token are OK')
-        
+
     def test_mid_eq_len_token(self):
         cell_values = self.executor.get_cells([Cell('mid', 4, 1), Cell('mid', 4, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='MID token are OK')
-        
+
     def test_mid_sec_arg_err_token(self):
         cell_values = self.executor.get_cells([Cell('mid', 5, 1), Cell('mid', 5, 2)])
 
@@ -314,6 +314,83 @@ class TestTokens(unittest.TestCase):
         cell_values = self.executor.get_cells([Cell('mid', 6, 1), Cell('mid', 6, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='MID token are OK')
+
+    def test_count_token(self):
+        cell_values = self.executor.get_cells([Cell('count', 0, 2), Cell('count', 0, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNT token with range argument down')
+
+    def test_count_token_single_cell_arg(self):
+        cell_values = self.executor.get_cells([Cell('count', 0, 3), Cell('count', 1, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNT token with single cell argument down')
+
+    def test_count_token_num_and_string_digits(self):
+        cell_values = self.executor.get_cells([Cell('count', 0, 4), Cell('count', 2, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNT token with string digits down')
+
+    def test_count_token_range_and_arg_sequence(self):
+        cell_values = self.executor.get_cells([Cell('count', 0, 5), Cell('count', 3, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNT token with argument sequence down')
+
+    def test_count_token_range_and_arg_sequence_with_bool_and_string_digit(self):
+        cell_values = self.executor.get_cells([Cell('count', 0, 6), Cell('count', 4, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNT token with bool in argument down')
+
+    def test_count_with_date(self):
+        cell_values = self.executor.get_cells([Cell('count', 0, 7), Cell('count', 5, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNT token with date in array down')
+
+    def test_address_absolute_token(self):
+        cell_values = self.executor.get_cells([Cell('address', 0, 2), Cell('address', 0, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS absolute down')
+
+    def test_address_absolute_huge_token(self):
+        cell_values = self.executor.get_cells([Cell('address', 8, 2), Cell('address', 8, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS absolute huge down')
+
+    def test_address_relative_col_token(self):
+        cell_values = self.executor.get_cells([Cell('address', 1, 2), Cell('address', 1, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS absolute row, relative col down')
+
+    def test_address_relative_row_token(self):
+        cell_values = self.executor.get_cells([Cell('address', 2, 2), Cell('address', 2, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS absolute col, relative row down')
+
+    def test_address_relative_token(self):
+        cell_values = Executor() \
+            .set_executed_class(class_file=self.translation_file_path) \
+            .get_cells([Cell('address', 3, 2), Cell('address', 3, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS relative down')
+
+    def test_address_absolute_strict_token(self):
+        cell_values = self.executor.get_cells([Cell('address', 4, 2), Cell('address', 4, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS absolute strict down')
+
+    def test_address_rc_type_col_relative_token(self):
+        cell_values = self.executor.get_cells([Cell('address', 5, 2), Cell('address', 5, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS RC type col relative down')
+
+    def test_address_rc_type_col_relative_link_sheet_token(self):
+        cell_values = self.executor.get_cells([Cell('address', 6, 2), Cell('address', 6, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS RC type col relative link sheet down')
+
+    def test_address_absoute_link_sheet_n_workbook_token(self):
+        cell_values = self.executor.get_cells([Cell('address', 7, 2), Cell('address', 7, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='ADDRESS absolute link sheet & workbook down')
 
     def test_countifs_text_condition(self):
         cell_values = self.executor.get_cells([Cell('countifs', 0, 2), Cell('countifs', 0, 1)])
@@ -344,6 +421,52 @@ class TestTokens(unittest.TestCase):
         cell_values = self.executor.get_cells([Cell('countifs', 5, 2), Cell('countifs', 5, 1)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='COUNTIFS pattern text condition down')
+
+    def test_column_no_args_token(self):
+        cell_values = self.executor.get_cells([Cell('column', 0, 1), Cell('column', 0, 2)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='Column token no args down')
+
+    def test_column_cell_arg_token(self):
+        cell_values = self.executor.get_cells([Cell('column', 1, 1), Cell('column', 0, 3)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='Column token cell arg down')
+
+    def test_column_matrix_arg_token(self):
+        expected = self.executor.get_cells([Cell('column', 2, 1), Cell('column', 3, 1), Cell('column', 4, 1)])
+        actual = self.executor.get_cells([Cell('column', 0, 4), Cell('column', 1, 4), Cell('column', 2, 4)])
+
+        self.assertEqual([cell.value for cell in expected], [cell.value for cell in actual], msg='Column token matrix arg down')
+
+    def test_column_array_arg_token(self):
+        cell_values = self.executor.get_cells([Cell('column', 5, 1), Cell('column', 0, 5)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='Column token array arg down')
+
+    def test_today_token(self):
+        cell_values = self.executor.get_cells([Cell('today', 0, 2), Cell('today', 0, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='TODAY token down')
+
+    def test_today_subtract_date_token(self):
+        cell_values = self.executor.get_cells([Cell('today', 2, 2), Cell('today', 2, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='TODAY subtract date token down')
+
+    def test_today_get_day_token(self):
+        cell_values = self.executor.get_cells([Cell('today', 2, 2), Cell('today', 2, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='TODAY get day token down')
+
+    def test_today_get_month_token(self):
+        cell_values = self.executor.get_cells([Cell('today', 3, 2), Cell('today', 3, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='TODAY get month token down')
+
+    def test_compare_dates(self):
+        cell_values = self.executor.get_cells([Cell('today', 4, 2), Cell('today', 4, 1)])
+
+        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='date compare down')
 
     def test_index_row_with_row_index_only(self):
         cell_values = self.executor.get_cells([Cell('index', 0, 3), Cell('index', 1, 0)])

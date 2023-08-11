@@ -1,7 +1,6 @@
-from datetime import datetime
 from openpyxl import Workbook
 from openpyxl.worksheet.table import Table, TableStyleInfo
-from datetime import datetime
+from datetime import datetime, date, timedelta
 
 
 def create_test_table(file_name):
@@ -130,6 +129,24 @@ def create_test_table(file_name):
     for row in data:
         ws_mid.append(row)
 
+    ws_mid = wb.create_sheet('count')
+
+    data = [
+        ['COUNT normal', 'COUNT single cell', 'COUNT num & string digits', 'COUNT range & arg sequence',
+         'COUNT range & arg sequence with bool & string digits & single cells'],
+        ['=COUNT(B3:I3)', '=COUNT(B4; C4)', '=COUNT(B5:H5)', '=COUNT(B6:H6; 2; 3)',
+         '=COUNT(B7:H7; TRUE; FALSE; "asd"; "2"; I7; J7)', '=COUNT(B8:H8)'],
+        [2, 'Hello', 1, 2, 'Hello World', 'Hello World', '#NUM!', '#VALUE!', '#DIV/0'],
+        [1, 1, 'Hello World', 'Hello World', 'Hello World', 'Hello World', 'Hello World', 'Hello World'],
+        [2, 1, 2, 'Hello World', '4', '6', 'Hello World', 'Hello World'],
+        [3, 1, '2', 'Hello World', '4', '6', 'Hello World', 'Hello World'],
+        [5, 1, '2', 'Hello World', '4', '6', 'Hello World', '0', 2, '23'],
+        [2, 1, '2', datetime(2022, 10, 10), '4', '6', 'Hello World', '0'],
+    ]
+
+    for row in data:
+        ws_mid.append(row)
+
     ws_countifs = wb.create_sheet('countifs')
 
     data = [
@@ -146,6 +163,54 @@ def create_test_table(file_name):
 
     for row in data:
         ws_countifs.append(row)
+
+    ws_address = wb.create_sheet('address')
+
+    data = [
+        ['ADDRESS absolute', 'ADDRESS absolute row, relative col', 'ADDRESS absolute col, relative row',
+         'ADDRESS relative', 'ADDRESS absolute strict', 'ADDRESS RC type col relative',
+         'ADDRESS RC type col relative link sheet', 'ADDRESS absolute link sheet & workbook', 'ADDRESS HUGE'],
+        ['=ADDRESS(3;1)', '=ADDRESS(3;2;2)', '=ADDRESS(3;3;3)', '=ADDRESS(3;4;4)', '=ADDRESS(3;5;1)',
+         '=ADDRESS(3;6;2;FALSE)', '=ADDRESS(3;7;2;FALSE;"mid")', '=ADDRESS(3;8;1;TRUE;"[WorkBook1]ASD")',
+         '=ADDRESS(3;704)'],
+        ['$A$3', 'B$3', '$C3', 'D3', '$E$3', 'R3C[6]', "'mid'!R3C[7]", "'[WorkBook1]ASD'!$H$3", '$AAB$3'],
+    ]
+
+    for row in data:
+        ws_address.append(row)
+
+    ws_today = wb.create_sheet('today')
+    data = [
+        ['TODAY normal', 'TODAY ADD DAY', 'TODAY subtract today from date', 'Get DAY from TODAY',
+         'Get MONTH from TODAY', 'Compare TODAY and TODAY'],
+        ['=TODAY()', '=TODAY() + 5', '=DATE(2024; 5; 24) - TODAY()', '=DAY(TODAY())',
+         '=MONTH(TODAY())', '=TODAY() = TODAY()'],
+        [
+            date.today(),
+            date.today() + timedelta(days=5),
+            date(2024, 5, 24) - date.today(),
+            date.today().day,
+            date.today().month,
+            date.today() == date.today()
+        ]
+    ]
+
+    for row in data:
+        ws_today.append(row)
+
+    ws_column = wb.create_sheet('column')
+
+    data = [
+        ['COLUMN no args'],
+        [1, 2, 3, 4, 5, 3],
+        ['=COLUMN()'],
+        ['=COLUMN(B3)'],
+        ['=COLUMN(C3:E3)'],
+        ['=COLUMN(C3:C7)']
+    ]
+
+    for row in data:
+        ws_column.append(row)
 
     ws_index = wb.create_sheet('index')
 
