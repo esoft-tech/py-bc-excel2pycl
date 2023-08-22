@@ -14,7 +14,8 @@ from excel2pycl.src.tokens import IfControlConstructionToken, ControlConstructio
     CountBlankControlConstructionToken, \
     SearchControlConstructionToken, TodayControlConstructionToken, \
     AverageIfsControlConstructionToken, AddressControlConstructionToken, CountIfsControlConstructionToken, \
-    NetworkDaysControlConstructionToken, CountControlConstructionToken, ColumnControlConstructionToken
+    NetworkDaysControlConstructionToken, CountControlConstructionToken, ColumnControlConstructionToken, \
+    SumIfsControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
@@ -56,6 +57,7 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             NetworkDaysControlConstructionTokenTranslator
         from excel2pycl.src.translators.count_cc_token_translator import CountControlConstructionTokenTranslator
         from excel2pycl.src.translators.column_cc_token_translator import ColumnControlConstructionTokenTranslator
+        from excel2pycl.src.translators.sumifs_cc_token_translator import SumIfsControlConstructionTokenTranslator
 
         translate_functions = {
             IfControlConstructionToken.__name__: IfControlConstructionTokenTranslator.translate,
@@ -89,7 +91,8 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             CountIfsControlConstructionToken.__name__: CountIfsControlConstructionTokenTranslator.translate,
             ColumnControlConstructionToken.__name__: ColumnControlConstructionTokenTranslator.translate,
             TodayControlConstructionToken.__name__: TodayControlConstructionTokenTranslator.translate,
-            NetworkDaysControlConstructionToken.__name__: NetworkDaysControlConstructionTokenTranslator.translate
+            NetworkDaysControlConstructionToken.__name__: NetworkDaysControlConstructionTokenTranslator.translate,
+            SumIfsControlConstructionToken.__name__: SumIfsControlConstructionTokenTranslator.translate
         }
 
         sub_token = token.control_construction

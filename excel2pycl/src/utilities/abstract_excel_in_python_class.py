@@ -510,6 +510,32 @@ class AbstractExcelInPython(ABC):
         count_range = [i if count_condition(i) else None for i in count_range]
         return len(list(filter(None, count_range)))
 
+    def _sumifs(self, sum_range: list[list], *range_and_criteria):
+        # Ячейки в диапазоне, содержащие значение TRUE, оцениваются как 1; ячейки в диапазоне,
+        # содержащие значение FALSE, оцениваются как 0 (ноль).
+        _when_bool_cast_to_int = lambda l: [int(i) if isinstance(i, bool) else i for i in l]
+
+        sum_range = self._flatten_list(sum_range)
+
+        range_and_criteria_zip = []
+        for i in range_and_criteria:
+            if not range_and_criteria_zip or len(range_and_criteria_zip[-1]) == 2:
+                i = self._flatten_list(i)
+                if len(sum_range) != len(i):
+                    raise self.ExcelInPythonException('Invalid sumifs range size')
+                range_and_criteria_zip.append([_when_bool_cast_to_int(self._when_cell_is_empty_cast_to_zero(i))])
+            else:
+                range_and_criteria_zip[-1].append(i)
+
+        for [_range, criteria] in range_and_criteria_zip:
+            for i in range(len(_range)):
+                if not criteria(_range[i]):
+                    sum_range[i] = None
+
+        sum_range = _when_bool_cast_to_int([i for i in sum_range if i is not None])
+
+        return self._sum(sum_range)
+
     def _right(self, text, num_chars):
         if num_chars is None:
             return text[len(text) - 1]

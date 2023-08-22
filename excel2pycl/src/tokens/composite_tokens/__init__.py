@@ -723,6 +723,26 @@ class TodayControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[ToKeywordToken, DayKeywordToken, BracketStartToken, BracketFinishToken]]
 
 
+class SumIfsControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [
+        [
+            SumKeywordToken, IfKeywordToken, SKeywordToken,
+            BracketStartToken,
+            MatrixOfCellIdentifiersToken, SeparatorToken,
+            IterableRangeOfCellIdentifierWithConditionToken,
+            BracketFinishToken
+        ]
+    ]
+
+    @property
+    def sum_range(self) -> MatrixOfCellIdentifiersToken:
+        return self.value[4]
+
+    @property
+    def conditions(self) -> IterableRangeOfCellIdentifierWithConditionToken:
+        return self.value[6]
+
+
 class ControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[IfControlConstructionToken], [SumControlConstructionToken], [SumIfControlConstructionToken],
                    [VlookupControlConstructionToken], [AverageControlConstructionToken],
@@ -737,7 +757,7 @@ class ControlConstructionToken(CompositeBaseToken):
                    [SearchControlConstructionToken],
                    [AddressControlConstructionToken], [CountIfsControlConstructionToken],
                    [CountControlConstructionToken], [NetworkDaysControlConstructionToken],
-                   [ColumnControlConstructionToken]]
+                   [ColumnControlConstructionToken], [SumIfsControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,
@@ -756,7 +776,8 @@ class ControlConstructionToken(CompositeBaseToken):
                                             AverageIfsControlConstructionToken, SearchControlConstructionToken,
                                             CountIfsControlConstructionToken,
                                             AddressControlConstructionToken, CountControlConstructionToken,
-                                            NetworkDaysControlConstructionToken, ColumnControlConstructionToken]:
+                                            NetworkDaysControlConstructionToken, ColumnControlConstructionToken,
+                                            SumIfsControlConstructionToken]:
         return self.value[0]
 
 
