@@ -15,7 +15,7 @@ class Excel:
         self._titles = {title: worksheet_number for title, worksheet_number
                         in zip(worksheets['titles'], range(len(worksheets['titles'])))}
         self._suspicious_cells = worksheets['suspicious_cells']
-        self._sheets_ranges = worksheets['sheets_ranges']
+        self._sheets_size = worksheets['sheets_size']
 
     def is_safe(self):
         """
@@ -137,14 +137,14 @@ class Excel:
         worksheets_data = []
         worksheets_titles = []
         suspicious_cells = {}
-        sheets_ranges = []
+        sheets_size = []
         wb = load_workbook(filename=path)
-        for index, worksheet in enumerate(wb.worksheets):
+        for worksheet in wb.worksheets:
             worksheets_titles.append(worksheet.title)
             worksheet_data = []
             last_column = worksheet.max_column
             last_row = worksheet.max_row
-            sheets_ranges.append({'last_column': last_column, 'last_row': last_row})
+            sheets_size.append({'last_column': last_column, 'last_row': last_row})
             for row_number in range(1, last_row + 1):
                 rows_data = []
                 for column_number in range(1, last_column + 1):
@@ -160,7 +160,7 @@ class Excel:
             'data': worksheets_data,
             'titles': wb.sheetnames,
             'suspicious_cells': suspicious_cells,
-            'sheets_ranges': sheets_ranges,
+            'sheets_size': sheets_size,
         })
 
     def get_cells(self) -> List[Cell]:
@@ -181,5 +181,5 @@ class Excel:
     def get_titles(self) -> Dict[str, int]:
         return self._titles
 
-    def get_sheets_ranges(self) -> list[Dict[str, int]]:
-        return self._sheets_ranges
+    def get_sheets_size(self) -> list[Dict[str, int]]:
+        return self._sheets_size

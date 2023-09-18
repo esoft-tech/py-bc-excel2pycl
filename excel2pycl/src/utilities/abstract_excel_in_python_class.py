@@ -5,7 +5,7 @@ import calendar
 
 from dateutil import parser as date_parser
 from dateutil.relativedelta import relativedelta
-from typing import Dict, List, Literal
+from typing import Dict, List, Literal, Any
 from math import trunc
 
 
@@ -16,12 +16,12 @@ class AbstractExcelInPython(ABC):
     def __init__(self, arguments: List = None):
         if arguments is None:
             arguments = []
-        self._arguments = {}
+        self._arguments: Dict[str, Any] = {}
         self.set_arguments(arguments)
-        self._titles = {}
-        self._sheets_ranges = []
+        self._titles: Dict[str, int] = {}
+        self._sheets_size: List[Dict[str, int]] = []
 
-    def set_arguments(self, arguments: List):
+    def set_arguments(self, arguments: List) -> None:
         self._arguments = {
             **self._arguments,
             **{i['uid']: i['value'] for i in arguments}
@@ -30,8 +30,8 @@ class AbstractExcelInPython(ABC):
     def get_titles(self) -> Dict[str, int]:
         return self._titles
 
-    def get_sheets_ranges(self) -> List[Dict[str, int]]:
-        return self._sheets_ranges
+    def get_sheets_size(self) -> List[Dict[str, int]]:
+        return self._sheets_size
 
     def _parse_date_obj(self, date: str | datetime.datetime) -> datetime.datetime | None:
         if isinstance(date, datetime.datetime):
@@ -635,10 +635,12 @@ class AbstractExcelInPython(ABC):
 
         return work_days_count * multiple
 
-
     def _cell_preprocessor(self, cell_uid: str):
-        method_name = self.__dict__.get(cell_uid, self.__class__.__dict__.get(cell_uid))
-        return self._arguments.get(cell_uid, method_name(self) if method_name else self.EmptyCell())
+        # Ищем метод расчета значения ячейки среди методов и аттрибутов экземпляра и класса
+        method = self.__dict__.get(cell_uid, self.__class__.__dict__.get(cell_uid))
+        # Ищем значение значение ячейки среди установленных в ручную через set_cells, если не находим, считаем результат
+        # с помощью найденного выше метода, если же не найден и метод, возвращаем "пустую ячейку"
+        return self._arguments.get(cell_uid, method(self) if method else self.EmptyCell())
 
     def exec_function_in(self, cell_uid: str):
         return self._cell_preprocessor(cell_uid)

@@ -9,10 +9,10 @@ class Context:
     """
 
     def __init__(self):
-        self._cell_translations = {}
+        self._cell_translations: Dict[str, str] = {}
         self._sub_cell_translations: Dict[str, List] = {}
         self._titles: Dict[str, int] = {}
-        self._sheets_ranges: List[Dict[str, int]] = []
+        self._sheets_size: List[Dict[str, int]] = []
 
     @property
     def __class_template(self) -> str:
@@ -21,7 +21,7 @@ class Context:
 from dateutil import parser as date_parser
 from dateutil.relativedelta import relativedelta
 from math import trunc
-from typing import Dict, List, Literal
+from typing import Dict, List, Literal, Any
 import calendar
 import re
 
@@ -32,10 +32,10 @@ class ExcelInPython:
     def __init__(self, arguments: List = None):
         if arguments is None:
             arguments = []
-        self._arguments = {{}}
+        self._arguments: Dict[str, Any] = {{}}
         self.set_arguments(arguments)
-        self._titles = {titles}
-        self._sheets_ranges = {sheets_ranges}
+        self._titles: Dict[str, int] = {titles}
+        self._sheets_size: List[Dict[str, int]] = {sheets_size}
 
     def set_arguments(self, arguments: List):
         self._arguments = {{
@@ -46,8 +46,8 @@ class ExcelInPython:
     def get_titles(self) -> Dict[str, int]:
         return self._titles
         
-    def get_sheets_ranges(self) -> List[Dict[str, int]]:
-        return self._sheets_ranges
+    def get_sheets_size(self) -> List[Dict[str, int]]:
+        return self._sheets_size
 
     class EmptyCell(int):
         def __eq__(self, other):
@@ -607,8 +607,11 @@ class ExcelInPython:
         return self._sum(sum_range)
 
     def _cell_preprocessor(self, cell_uid: str):
-        method_name = self.__dict__.get(cell_uid, self.__class__.__dict__.get(cell_uid))
-        return self._arguments.get(cell_uid, method_name(self) if method_name else self.EmptyCell())
+        # Ищем метод расчета значения ячейки среди методов и аттрибутов экземпляра и класса
+        method = self.__dict__.get(cell_uid, self.__class__.__dict__.get(cell_uid))
+        # Ищем значение значение ячейки среди установленных в ручную через set_cells, если не находим, считаем результат
+        # с помощью найденного выше метода, если же не найден и метод, возвращаем "пустую ячейку"
+        return self._arguments.get(cell_uid, method(self) if method else self.EmptyCell())
 
     def exec_function_in(self, cell_uid: str):
         return self._cell_preprocessor(cell_uid)
@@ -688,7 +691,7 @@ class ExcelInPython:
 
     def __build_class(self, functions: Dict) -> str:
         return self.__class_template.format(functions=self.__build_functions(functions), titles=self._titles,
-                                            sheets_ranges=self._sheets_ranges)
+                                            sheets_size=self._sheets_size)
 
     @staticmethod
     def _get_cell_function_name(cell: Cell) -> str:
