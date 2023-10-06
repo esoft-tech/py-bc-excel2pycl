@@ -5,7 +5,7 @@ import calendar
 
 from dateutil import parser as date_parser
 from dateutil.relativedelta import relativedelta
-from typing import Dict, Literal
+from typing import Dict, List, Literal, Any
 from math import trunc
 
 
@@ -13,14 +13,15 @@ class AbstractExcelInPython(ABC):
     class ExcelInPythonException(Exception):
         pass
 
-    def __init__(self, arguments: list = None):
+    def __init__(self, arguments: List = None):
         if arguments is None:
             arguments = []
-        self._arguments = {}
+        self._arguments: Dict[str, Any] = {}
         self.set_arguments(arguments)
-        self._titles = {}
+        self._titles: Dict[str, int] = {}
+        self._sheets_size: List[Dict[str, int]] = []
 
-    def set_arguments(self, arguments: list):
+    def set_arguments(self, arguments: List) -> None:
         self._arguments = {
             **self._arguments,
             **{i['uid']: i['value'] for i in arguments}
@@ -28,6 +29,9 @@ class AbstractExcelInPython(ABC):
 
     def get_titles(self) -> Dict[str, int]:
         return self._titles
+
+    def get_sheets_size(self) -> List[Dict[str, int]]:
+        return self._sheets_size
 
     def _parse_date_obj(self, date: str | datetime.datetime) -> datetime.datetime | None:
         if isinstance(date, datetime.datetime):
@@ -38,7 +42,7 @@ class AbstractExcelInPython(ABC):
         except (date_parser.ParserError, TypeError):
             return None
 
-    def _flatten_list(self, subject: list) -> list:
+    def _flatten_list(self, subject: List) -> List:
         result = []
         for i in subject:
             if type(i) == list:
@@ -48,14 +52,14 @@ class AbstractExcelInPython(ABC):
 
         return result
 
-    def _find_error_in_list(self, flatten_list: list):
+    def _find_error_in_list(self, flatten_list: List):
         for err_value in filter(lambda cell: cell in ['#NUM!', '#DIV/0!',
                                                       '#N/A', '#NAME?', ' #NULL!',
                                                       '#REF!', '#VALUE!'], flatten_list):
             return err_value
 
     @staticmethod
-    def _only_numeric_list(flatten_list: list, with_string_digits: bool = False):
+    def _only_numeric_list(flatten_list: List, with_string_digits: bool = False):
         return [
             i
             for i in flatten_list
@@ -63,11 +67,11 @@ class AbstractExcelInPython(ABC):
         ]
 
     @staticmethod
-    def _only_bool_list(flatten_list: list):
+    def _only_bool_list(flatten_list: List):
         return [i for i in flatten_list if isinstance(i, bool)]
 
     @staticmethod
-    def _only_datetime_list(flatten_list: list):
+    def _only_datetime_list(flatten_list: List):
         return [i for i in flatten_list if isinstance(i, datetime.datetime)]
 
     @staticmethod
@@ -84,7 +88,7 @@ class AbstractExcelInPython(ABC):
         return pattern
 
     @staticmethod
-    def _binary_search(arr: list, lookup_value: any, reverse: bool = False):
+    def _binary_search(arr: List, lookup_value: any, reverse: bool = False):
         first = 0
         last = len(arr) - 1
         next_smallest = last if reverse else first
@@ -127,13 +131,13 @@ class AbstractExcelInPython(ABC):
 
         return (exact, next_smallest, next_largest)
 
-    def _sum(self, flatten_list: list):
+    def _sum(self, flatten_list: List):
         return sum(self._only_numeric_list(flatten_list))
 
-    def _average(self, flatten_list: list):
+    def _average(self, flatten_list: List):
         return self._sum(flatten_list) / len(self._only_numeric_list(flatten_list))
 
-    def _count(self, matrices: list[list], args: list, args_cells: list):
+    def _count(self, matrices: List[List], args: List, args_cells: List):
         flattened_matrices = self._flatten_list(matrices)
         return len(
             self._only_numeric_list(
@@ -147,7 +151,7 @@ class AbstractExcelInPython(ABC):
             )
         )
 
-    def _match(self, lookup_value, lookup_array: list, match_type: int = 0):
+    def _match(self, lookup_value, lookup_array: List, match_type: int = 0):
         lookup_value_type = int if isinstance(lookup_value, self.EmptyCell) else type(lookup_value)
 
         match match_type:
@@ -177,7 +181,7 @@ class AbstractExcelInPython(ABC):
                     else:
                         return last_valid_index
 
-    def _xmatch(self, lookup_value, lookup_array: list, match_mode: int = 0, search_mode: int = 1):
+    def _xmatch(self, lookup_value, lookup_array: List, match_mode: int = 0, search_mode: int = 1):
         # TODO wildcard match
         output_value = 0
         match match_mode:
@@ -200,7 +204,7 @@ class AbstractExcelInPython(ABC):
             case _:
                 return '#ERROR!'
 
-    def _vlookup(self, lookup_value, table_array: list, col_index_num: int, range_lookup: bool = False):
+    def _vlookup(self, lookup_value, table_array: List, col_index_num: int, range_lookup: bool = False):
         if not isinstance(range_lookup, (bool, int)):
             return '#ERROR!'
 
@@ -229,7 +233,7 @@ class AbstractExcelInPython(ABC):
 
         return '#N/A'
 
-    def _sum_if(self, range_: list, criteria: callable, sum_range: list = None):
+    def _sum_if(self, range_: List, criteria: callable, sum_range: List = None):
         result = 0
         range_, sum_range = self._flatten_list(range_), self._flatten_list(sum_range)
         for i in range(len(range_)):
@@ -330,20 +334,20 @@ class AbstractExcelInPython(ABC):
             return '#VALUE!'
         return start_date + relativedelta(months=trunc(months))
 
-    def _or(self, flatten_list: list):
+    def _or(self, flatten_list: List):
         return any(flatten_list)
 
-    def _and(self, flatten_list: list):
+    def _and(self, flatten_list: List):
         return all(flatten_list)
 
-    def _min(self, flatten_list: list):
+    def _min(self, flatten_list: List):
         err_value = self._find_error_in_list(flatten_list)
         if err_value:
             return err_value
 
         return min(self._only_numeric_list(flatten_list))
 
-    def _max(self, flatten_list: list):
+    def _max(self, flatten_list: List):
         err_value = self._find_error_in_list(flatten_list)
         if err_value:
             return err_value
@@ -442,10 +446,10 @@ class AbstractExcelInPython(ABC):
 
         return col_value
 
-    def _when_cell_is_empty_cast_to_zero(self, iterable: list):
+    def _when_cell_is_empty_cast_to_zero(self, iterable: List):
         return [0 if isinstance(i, self.EmptyCell) else i for i in iterable]
 
-    def _averageifs(self, average_range: list[list], *range_and_criteria):
+    def _averageifs(self, average_range: List[List], *range_and_criteria):
         class Undefined:
             pass
 
@@ -465,7 +469,7 @@ class AbstractExcelInPython(ABC):
         except:
             return '#DIV0!'
 
-        # list[list[criteria_range, criteria]]
+        # List[List[criteria_range, criteria]]
         range_and_criteria_zip = []
         for i in range_and_criteria:
             if not range_and_criteria_zip or len(range_and_criteria_zip[-1]) == 2:
@@ -488,7 +492,7 @@ class AbstractExcelInPython(ABC):
 
         return self._average(average_range)
 
-    def _countifs(self, count_range: list[list], count_condition: callable, *range_n_criteria):
+    def _countifs(self, count_range: List[List], count_condition: callable, *range_n_criteria):
         # Если ячейка в диапазоне критериев пуста, COUNTIFS обрабатывает ее как значение 0.
 
         count_range = self._flatten_list(count_range)
@@ -510,6 +514,32 @@ class AbstractExcelInPython(ABC):
         count_range = [i if count_condition(i) else None for i in count_range]
         return len(list(filter(None, count_range)))
 
+    def _sumifs(self, sum_range: List[List], *range_and_criteria):
+        # Ячейки в диапазоне, содержащие значение TRUE, оцениваются как 1; ячейки в диапазоне,
+        # содержащие значение FALSE, оцениваются как 0 (ноль).
+        _when_bool_cast_to_int = lambda l: [int(i) if isinstance(i, bool) else i for i in l]
+
+        sum_range = self._flatten_list(sum_range)
+
+        range_and_criteria_zip = []
+        for i in range_and_criteria:
+            if not range_and_criteria_zip or len(range_and_criteria_zip[-1]) == 2:
+                i = self._flatten_list(i)
+                if len(sum_range) != len(i):
+                    raise self.ExcelInPythonException('Invalid sumifs range size')
+                range_and_criteria_zip.append([_when_bool_cast_to_int(self._when_cell_is_empty_cast_to_zero(i))])
+            else:
+                range_and_criteria_zip[-1].append(i)
+
+        for [_range, criteria] in range_and_criteria_zip:
+            for i in range(len(_range)):
+                if not criteria(_range[i]):
+                    sum_range[i] = None
+
+        sum_range = _when_bool_cast_to_int([i for i in sum_range if i is not None])
+
+        return self._sum(sum_range)
+
     def _right(self, text, num_chars):
         if num_chars is None:
             return text[len(text) - 1]
@@ -521,7 +551,7 @@ class AbstractExcelInPython(ABC):
             return text
         return text[len(text) - num_chars:]
 
-    def _count_blank(self, flatten_list: list):
+    def _count_blank(self, flatten_list: List):
         err_value = self._find_error_in_list(flatten_list)
         if err_value:
             return err_value
@@ -575,7 +605,7 @@ class AbstractExcelInPython(ABC):
         return find_elem.span(0)[0] + 1 if find_elem else '#VALUE!'
 
     def _network_days(self, date_start: datetime.datetime, date_end: datetime.datetime,
-                      holidays: list[datetime.datetime] = None):
+                      holidays: List[datetime.datetime] = None):
         # Большая загадка как вычисляется значение если на входе не даты - поэтому я решила просто кидать '#VALUE!'
         if not isinstance(date_start, datetime.datetime) or not isinstance(date_end, datetime.datetime):
             return '#VALUE!'
@@ -630,7 +660,11 @@ class AbstractExcelInPython(ABC):
         return value[0] if len(value) == 1 else value
 
     def _cell_preprocessor(self, cell_uid: str):
-        return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))
+        # Ищем метод расчета значения ячейки среди методов и аттрибутов экземпляра и класса
+        method = self.__dict__.get(cell_uid, self.__class__.__dict__.get(cell_uid))
+        # Ищем значение значение ячейки среди установленных в ручную через set_cells, если не находим, считаем результат
+        # с помощью найденного выше метода, если же не найден и метод, возвращаем "пустую ячейку"
+        return self._arguments.get(cell_uid, method(self) if method else self.EmptyCell())
 
     def exec_function_in(self, cell_uid: str):
         return self._cell_preprocessor(cell_uid)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Optional, Set, Dict
+from typing import List, Optional, Set, Dict, Union
 
 from excel2pycl.src.handle_cell import handle_cell
 from excel2pycl.src.utilities.abstract_excel_in_python_class import AbstractExcelInPython
@@ -18,6 +18,7 @@ class Executor:
         self._executed_instance: Optional[AbstractExcelInPython] = None
         self._cells: Set[Cell] = set()
         self._titles: Dict[str, int] = {}
+        self._sheets_size: List[Dict[str, int]] = []
 
     def set_executed_class(self, class_object: AbstractExcelInPython.__class__ = None,
                            class_file: str = None) -> Executor:
@@ -42,6 +43,7 @@ class Executor:
             raise E2PyclExecutorException('There is no data to get an instance of an excel in python object.')
 
         self._titles = self._executed_instance.get_titles()
+        self._sheets_size = self._executed_instance.get_sheets_size()
 
         return self
 
@@ -109,3 +111,29 @@ class Executor:
             List[Cell].
         """
         return [self.get_cell(cell) for cell in cells]
+
+    def get_sheet(self, sheet: Union[int, str]) -> List[List[Cell]]:
+        """
+        Calculates the value of the passed worksheet cells in the ExcelInPython
+        object and writes them to the passed instance of the cells.
+        Returns the list of cell lists with the recorded values.
+
+        Args:
+            sheet (Union[int, str]): Index or name of the worksheet which cell values we want to get.
+
+        Returns:
+            List[List[Cell]].
+        """
+        if type(sheet) is str:
+            sheet = self._titles[sheet]
+
+        cells = []
+        sheet_size = self._sheets_size[sheet]
+
+        for row in range(sheet_size.get('last_row', 0)):
+            row_cells = []
+            for column in range(sheet_size.get('last_column', 0)):
+                row_cells.append(self.get_cell(Cell(title=sheet, row=row, column=column)))
+            cells.append(row_cells)
+
+        return cells

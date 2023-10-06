@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 from excel2pycl.src.cell import Cell
 
@@ -9,9 +9,10 @@ class Context:
     """
 
     def __init__(self):
-        self._cell_translations = {}
-        self._sub_cell_translations: Dict[str, list] = {}
+        self._cell_translations: Dict[str, str] = {}
+        self._sub_cell_translations: Dict[str, List] = {}
         self._titles: Dict[str, int] = {}
+        self._sheets_size: List[Dict[str, int]] = []
 
     @property
     def __class_template(self) -> str:
@@ -20,7 +21,7 @@ class Context:
 from dateutil import parser as date_parser
 from dateutil.relativedelta import relativedelta
 from math import trunc
-from typing import Dict, Literal
+from typing import Dict, List, Literal, Any
 import calendar
 import re
 
@@ -28,21 +29,25 @@ class ExcelInPython:
     class ExcelInPythonException(Exception):
         pass
         
-    def __init__(self, arguments: list = None):
+    def __init__(self, arguments: List = None):
         if arguments is None:
             arguments = []
-        self._arguments = {{}}
+        self._arguments: Dict[str, Any] = {{}}
         self.set_arguments(arguments)
-        self._titles = {titles}
+        self._titles: Dict[str, int] = {titles}
+        self._sheets_size: List[Dict[str, int]] = {sheets_size}
 
-    def set_arguments(self, arguments: list):
+    def set_arguments(self, arguments: List):
         self._arguments = {{
             **self._arguments,
             **{{i['uid']: i['value'] for i in arguments}}
         }}
 
-    def get_titles(self) -> dict:
+    def get_titles(self) -> Dict[str, int]:
         return self._titles
+        
+    def get_sheets_size(self) -> List[Dict[str, int]]:
+        return self._sheets_size
 
     class EmptyCell(int):
         def __eq__(self, other):
@@ -60,7 +65,7 @@ class ExcelInPython:
         except (date_parser.ParserError, TypeError):
             return None
 
-    def _flatten_list(self, subject: list) -> list:
+    def _flatten_list(self, subject: List) -> List:
         result = []
         for i in subject:
             if type(i) == list:
@@ -70,14 +75,14 @@ class ExcelInPython:
 
         return result
 
-    def _find_error_in_list(self, flatten_list: list):
+    def _find_error_in_list(self, flatten_list: List):
         for err_value in filter(lambda cell: cell in ['#NUM!', '#DIV/0!',
                                                       '#N/A', '#NAME?', ' #NULL!',
                                                       '#REF!', '#VALUE!'], flatten_list):
             return err_value
 
     @staticmethod
-    def _only_numeric_list(flatten_list: list, with_string_digits: bool = False):
+    def _only_numeric_list(flatten_list: List, with_string_digits: bool = False):
         return [
             i 
             for i in flatten_list
@@ -85,11 +90,11 @@ class ExcelInPython:
         ]
 
     @staticmethod
-    def _only_bool_list(flatten_list: list):
+    def _only_bool_list(flatten_list: List):
         return [i for i in flatten_list if isinstance(i, bool)]
     
     @staticmethod
-    def _only_datetime_list(flatten_list: list):
+    def _only_datetime_list(flatten_list: List):
         return [i for i in flatten_list if isinstance(i, datetime.datetime)]
         
     @staticmethod
@@ -106,7 +111,7 @@ class ExcelInPython:
         return pattern
 
     @staticmethod
-    def _binary_search(arr: list, lookup_value: any, reverse: bool = False):
+    def _binary_search(arr: List, lookup_value: any, reverse: bool = False):
         first = 0
         last = len(arr) - 1
         next_smallest = last if reverse else first
@@ -149,13 +154,13 @@ class ExcelInPython:
 
         return (exact, next_smallest, next_largest)
 
-    def _sum(self, flatten_list: list):
+    def _sum(self, flatten_list: List):
         return sum(self._only_numeric_list(flatten_list))
 
-    def _average(self, flatten_list: list):
+    def _average(self, flatten_list: List):
         return self._sum(flatten_list) / len(self._only_numeric_list(flatten_list))
     
-    def _count(self, matrices: list[list], args: list, args_cells: list):
+    def _count(self, matrices: List[List], args: List, args_cells: List):
         flattened_matrices = self._flatten_list(matrices)
         return len(
             self._only_numeric_list(
@@ -169,7 +174,7 @@ class ExcelInPython:
             )
         )
 
-    def _match(self, lookup_value, lookup_array: list, match_type: int = 0):
+    def _match(self, lookup_value, lookup_array: List, match_type: int = 0):
         lookup_value_type = int if isinstance(lookup_value, self.EmptyCell) else type(lookup_value)
 
         match match_type:
@@ -199,7 +204,7 @@ class ExcelInPython:
                     else:
                         return last_valid_index
 
-    def _xmatch(self, lookup_value, lookup_array: list, match_mode: int = 0, search_mode: int = 1):
+    def _xmatch(self, lookup_value, lookup_array: List, match_mode: int = 0, search_mode: int = 1):
         # TODO wildcard match
         output_value = 0
         match match_mode:
@@ -222,7 +227,7 @@ class ExcelInPython:
             case _:
                 return '#ERROR!'
 
-    def _vlookup(self, lookup_value, table_array: list, col_index_num: int, range_lookup: bool = False):
+    def _vlookup(self, lookup_value, table_array: List, col_index_num: int, range_lookup: bool = False):
         if not isinstance(range_lookup, (bool, int)):
             return '#ERROR!'
 
@@ -251,7 +256,7 @@ class ExcelInPython:
 
         return '#N/A'
 
-    def _sum_if(self, range_: list, criteria: callable, sum_range: list = None):
+    def _sum_if(self, range_: List, criteria: callable, sum_range: List = None):
         result = 0
         range_, sum_range = self._flatten_list(range_), self._flatten_list(sum_range)
         for i in range(len(range_)):
@@ -437,20 +442,20 @@ class ExcelInPython:
             return text
         return text[len(text) - num_chars:]
 
-    def _or(self, flatten_list: list):
+    def _or(self, flatten_list: List):
         return any(flatten_list)
 
-    def _and(self, flatten_list: list):
+    def _and(self, flatten_list: List):
         return all(flatten_list)
 
-    def _min(self, flatten_list: list):
+    def _min(self, flatten_list: List):
         err_value = self._find_error_in_list(flatten_list)
         if err_value:
             return err_value
 
         return min(self._only_numeric_list(flatten_list))
 
-    def _max(self, flatten_list: list):
+    def _max(self, flatten_list: List):
         err_value = self._find_error_in_list(flatten_list)
         if err_value:
             return err_value
@@ -476,10 +481,10 @@ class ExcelInPython:
         except ZeroDivisionError:
             return when_error
     
-    def _when_cell_is_empty_cast_to_zero(self, iterable: list):
+    def _when_cell_is_empty_cast_to_zero(self, iterable: List):
         return [0 if isinstance(i, self.EmptyCell) else i for i in iterable]
         
-    def _averageifs(self, average_range: list[list], *range_and_criteria):
+    def _averageifs(self, average_range: List[List], *range_and_criteria):
         class Undefined:
             pass
 
@@ -500,7 +505,7 @@ class ExcelInPython:
         except:
             return '#DIV0!'
 
-        # list[list[criteria_range, criteria]]
+        # List[List[criteria_range, criteria]]
         range_and_criteria_zip = []
         for i in range_and_criteria:
             if not range_and_criteria_zip or len(range_and_criteria_zip[-1]) == 2:
@@ -523,7 +528,7 @@ class ExcelInPython:
 
         return self._average(average_range)
     
-    def _countifs(self, count_range: list[list], count_condition: callable, *range_n_criteria):
+    def _countifs(self, count_range: List[List], count_condition: callable, *range_n_criteria):
         # Если ячейка в диапазоне критериев пуста, COUNTIFS обрабатывает ее как значение 0.
 
         count_range = self._flatten_list(count_range)
@@ -546,7 +551,7 @@ class ExcelInPython:
         return len(list(filter(None, count_range)))
         
     def _network_days(self, date_start: datetime.datetime, date_end: datetime.datetime,
-                      holidays: list[datetime.datetime] = None):
+                      holidays: List[datetime.datetime] = None):
         # Большая загадка как вычисляется значение если на входе не даты - поэтому я решила просто кидать '#VALUE!'
         if not isinstance(date_start, datetime.datetime) or not isinstance(date_end, datetime.datetime):
             return '#VALUE!'
@@ -574,7 +579,33 @@ class ExcelInPython:
             start = start + datetime.timedelta(days=1)
 
         return work_days_count * multiple
-    
+        
+    def _sumifs(self, sum_range: List[List], *range_and_criteria):
+        # Ячейки в диапазоне, содержащие значение TRUE, оцениваются как 1; ячейки в диапазоне,
+        # содержащие значение FALSE, оцениваются как 0 (ноль).
+        _when_bool_cast_to_int = lambda l: [int(i) if isinstance(i, bool) else i for i in l]
+
+        sum_range = self._flatten_list(sum_range)
+
+        range_and_criteria_zip = []
+        for i in range_and_criteria:
+            if not range_and_criteria_zip or len(range_and_criteria_zip[-1]) == 2:
+                i = self._flatten_list(i)
+                if len(sum_range) != len(i):
+                    raise self.ExcelInPythonException('Invalid sumifs range size')
+                range_and_criteria_zip.append([_when_bool_cast_to_int(self._when_cell_is_empty_cast_to_zero(i))])
+            else:
+                range_and_criteria_zip[-1].append(i)
+
+        for [_range, criteria] in range_and_criteria_zip:
+            for i in range(len(_range)):
+                if not criteria(_range[i]):
+                    sum_range[i] = None
+
+        sum_range = _when_bool_cast_to_int([i for i in sum_range if i is not None])
+
+        return self._sum(sum_range)
+
     def _index(self, matrix_list: list, row_number: int, column_number: int | None, area_number: int):
         if area_number > len(matrix_list):
             return '#REF!'
@@ -601,7 +632,11 @@ class ExcelInPython:
         return value[0] if len(value) == 1 else value
 
     def _cell_preprocessor(self, cell_uid: str):
-        return self._arguments.get(cell_uid, self.__dict__.get(cell_uid, self.__class__.__dict__[cell_uid])(self))
+        # Ищем метод расчета значения ячейки среди методов и аттрибутов экземпляра и класса
+        method = self.__dict__.get(cell_uid, self.__class__.__dict__.get(cell_uid))
+        # Ищем значение значение ячейки среди установленных в ручную через set_cells, если не находим, считаем результат
+        # с помощью найденного выше метода, если же не найден и метод, возвращаем "пустую ячейку"
+        return self._arguments.get(cell_uid, method(self) if method else self.EmptyCell())
 
     def exec_function_in(self, cell_uid: str):
         return self._cell_preprocessor(cell_uid)
@@ -611,7 +646,7 @@ class ExcelInPython:
         return datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
 
         
-    def _count_blank(self, flatten_list: list):
+    def _count_blank(self, flatten_list: List):
         err_value = self._find_error_in_list(flatten_list)
         if err_value:
             return err_value
@@ -676,11 +711,12 @@ class ExcelInPython:
     def __build_function(self, name: str, code: str) -> str:
         return self.__function_template.format(name=name, code=code)
 
-    def __build_functions(self, functions: dict) -> str:
+    def __build_functions(self, functions: Dict) -> str:
         return '\n\n'.join([self.__build_function(name, code) for name, code in functions.items()])
 
-    def __build_class(self, functions: dict) -> str:
-        return self.__class_template.format(functions=self.__build_functions(functions), titles=self._titles)
+    def __build_class(self, functions: Dict) -> str:
+        return self.__class_template.format(functions=self.__build_functions(functions), titles=self._titles,
+                                            sheets_size=self._sheets_size)
 
     @staticmethod
     def _get_cell_function_name(cell: Cell) -> str:
@@ -716,7 +752,7 @@ class ExcelInPython:
 
         return self._get_cell_with_cell_preprocessor(self._get_sub_cell_function_name(cell=cell, sub_number=sub_number))
 
-    def _get_divided_sub_cell_translations(self) -> dict:
+    def _get_divided_sub_cell_translations(self) -> Dict:
         result = {}
         for cell_prefix, sub_cell_expressions in self._sub_cell_translations.items():
             for sub_cell_expression, sub_cell_index in zip(sub_cell_expressions, range(len(sub_cell_expressions))):

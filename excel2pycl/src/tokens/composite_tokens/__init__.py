@@ -722,6 +722,26 @@ class TodayControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[ToKeywordToken, DayKeywordToken, BracketStartToken, BracketFinishToken]]
 
 
+class SumIfsControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [
+        [
+            SumKeywordToken, IfKeywordToken, SKeywordToken,
+            BracketStartToken,
+            MatrixOfCellIdentifiersToken, SeparatorToken,
+            IterableRangeOfCellIdentifierWithConditionToken,
+            BracketFinishToken
+        ]
+    ]
+
+    @property
+    def sum_range(self) -> MatrixOfCellIdentifiersToken:
+        return self.value[4]
+
+    @property
+    def conditions(self) -> IterableRangeOfCellIdentifierWithConditionToken:
+        return self.value[6]
+
+
 class IterableMatrixOfCellIdentifiersToken(RecursiveCompositeBaseToken):
     _TOKEN_SETS = [
         [BracketStartToken, MatrixOfCellIdentifiersToken, SeparatorToken, CLS, BracketFinishToken],
@@ -786,7 +806,8 @@ class ControlConstructionToken(CompositeBaseToken):
                    [SearchControlConstructionToken],
                    [AddressControlConstructionToken], [CountIfsControlConstructionToken],
                    [CountControlConstructionToken], [NetworkDaysControlConstructionToken],
-                   [ColumnControlConstructionToken], [IndexControlConstructionToken]]
+                   [ColumnControlConstructionToken], [SumIfsControlConstructionToken],
+                   [IndexControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,
@@ -806,7 +827,7 @@ class ControlConstructionToken(CompositeBaseToken):
                                             CountIfsControlConstructionToken,
                                             AddressControlConstructionToken, CountControlConstructionToken,
                                             NetworkDaysControlConstructionToken, ColumnControlConstructionToken,
-                                            IndexControlConstructionToken]:
+                                            SumIfsControlConstructionToken, IndexControlConstructionToken]:
         return self.value[0]
 
 
