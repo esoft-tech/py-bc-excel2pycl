@@ -606,7 +606,7 @@ class ExcelInPython:
 
         return self._sum(sum_range)
 
-    def _index(self, matrix_list: list, row_number: int, column_number: int | None, area_number: int):
+    def _index(self, matrix_list: tuple | list, row_number: int, column_number: int | None, area_number: int):
         if area_number > len(matrix_list):
             return '#REF!'
 

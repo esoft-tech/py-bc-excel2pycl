@@ -92,7 +92,7 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             TodayControlConstructionToken.__name__: TodayControlConstructionTokenTranslator.translate,
             NetworkDaysControlConstructionToken.__name__: NetworkDaysControlConstructionTokenTranslator.translate,
             SumIfsControlConstructionToken.__name__: SumIfsControlConstructionTokenTranslator.translate,
-            IndexControlConstructionToken.__name__: IndexControlConstructionTokenTranslator.translate
+            IndexControlConstructionToken.__name__: IndexControlConstructionTokenTranslator.translate,
         }
 
         sub_token = token.control_construction
