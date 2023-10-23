@@ -147,7 +147,7 @@ def create_test_table(file_name):
     for row in data:
         ws_mid.append(row)
 
-    ws_mid = wb.create_sheet('countifs')
+    ws_countifs = wb.create_sheet('countifs')
 
     data = [
         ['COUNTIFS text condition', 'COUNTIFS cell condition', 'COUNTIFS lambda condition',
@@ -162,9 +162,9 @@ def create_test_table(file_name):
     ]
 
     for row in data:
-        ws_mid.append(row)
+        ws_countifs.append(row)
 
-    ws_mid = wb.create_sheet('address')
+    ws_address = wb.create_sheet('address')
 
     data = [
         ['ADDRESS absolute', 'ADDRESS absolute row, relative col', 'ADDRESS absolute col, relative row',
@@ -177,9 +177,9 @@ def create_test_table(file_name):
     ]
 
     for row in data:
-        ws_mid.append(row)
+        ws_address.append(row)
 
-    ws_mid = wb.create_sheet('today')
+    ws_today = wb.create_sheet('today')
     data = [
         ['TODAY normal', 'TODAY ADD DAY', 'TODAY subtract today from date', 'Get DAY from TODAY',
          'Get MONTH from TODAY', 'Compare TODAY and TODAY'],
@@ -196,9 +196,9 @@ def create_test_table(file_name):
     ]
 
     for row in data:
-        ws_mid.append(row)
+        ws_today.append(row)
 
-    ws_mid = wb.create_sheet('column')
+    ws_column = wb.create_sheet('column')
 
     data = [
         ['COLUMN no args'],
@@ -210,7 +210,20 @@ def create_test_table(file_name):
     ]
 
     for row in data:
-        ws_mid.append(row)
+        ws_column.append(row)
+
+    ws_index = wb.create_sheet('index')
+
+    data = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9],
+        ['=INDEX(A1:C1;2)', '=INDEX(A1:A3;2)', '=INDEX(A1:C3;2;2)', '=INDEX((A1:C1; A1:A3; A1:C3);3;3;3)'],
+        ['=INDEX(A1:C3;0;0)']
+    ]
+
+    for row in data:
+        ws_index.append(row)
 
     ws_mid = wb.create_sheet('sumifs')
 

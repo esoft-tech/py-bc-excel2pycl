@@ -604,7 +604,6 @@ class AbstractExcelInPython(ABC):
 
         return find_elem.span(0)[0] + 1 if find_elem else '#VALUE!'
 
-
     def _network_days(self, date_start: datetime.datetime, date_end: datetime.datetime,
                       holidays: List[datetime.datetime] = None):
         # Большая загадка как вычисляется значение если на входе не даты - поэтому я решила просто кидать '#VALUE!'
@@ -634,6 +633,31 @@ class AbstractExcelInPython(ABC):
             start = start + datetime.timedelta(days=1)
 
         return work_days_count * multiple
+
+    def _index(self, matrix_list: tuple | list, row_number: int, column_number: int | None, area_number: int):
+        if area_number > len(matrix_list):
+            return '#REF!'
+
+        # Если пришел кортеж, значит имеем дело с несколькими диапазонами, берем заданный в area_number, по умолчанию 1
+        array = matrix_list[area_number - 1] if isinstance(matrix_list, tuple) else matrix_list
+
+        # Если диапазон - строка и указан только номер строки, считаем его номером столбца
+        if len(array) == 1 and column_number is None:
+            column_number = row_number
+            row_number = None
+
+        try:
+            # Если не указаны номер столбца/строки, берем значения из всех столбцов/строк
+            row = [array[row_number - 1]] if row_number else array
+            value = [col[column_number - 1] if column_number else col for col in row]
+        except IndexError:
+            return '#REF!'
+
+        # Для диапазона типа столбец значения будут в конструкции [[x], [y], [z]], приводим к аналогу строки - [x, y, z]
+        if isinstance(value[0], list) and len(value[0]) == 1:
+            value = [row[0] for row in value]
+
+        return value[0] if len(value) == 1 else value
 
     def _cell_preprocessor(self, cell_uid: str):
         # Ищем метод расчета значения ячейки среди методов и аттрибутов экземпляра и класса

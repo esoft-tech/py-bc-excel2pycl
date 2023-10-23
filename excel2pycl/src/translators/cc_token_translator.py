@@ -7,15 +7,13 @@ from excel2pycl.src.tokens import IfControlConstructionToken, ControlConstructio
     YearControlConstructionToken, MonthControlConstructionToken, DayControlConstructionToken, \
     IfErrorControlConstructionToken, \
     DateControlConstructionToken, \
-    DateDifControlConstructionToken, \
-    EoMonthControlConstructionToken, \
-    EDateControlConstructionToken, MatchControlConstructionToken, XMatchControlConstructionToken, \
-    LeftControlConstructionToken, MidControlConstructionToken, RightControlConstructionToken, \
-    CountBlankControlConstructionToken, \
-    SearchControlConstructionToken, TodayControlConstructionToken, \
-    AverageIfsControlConstructionToken, AddressControlConstructionToken, CountIfsControlConstructionToken, \
-    NetworkDaysControlConstructionToken, CountControlConstructionToken, ColumnControlConstructionToken, \
-    SumIfsControlConstructionToken
+    DateDifControlConstructionToken, EoMonthControlConstructionToken, EDateControlConstructionToken, \
+    MatchControlConstructionToken, XMatchControlConstructionToken, LeftControlConstructionToken, \
+    MidControlConstructionToken, RightControlConstructionToken, CountBlankControlConstructionToken, \
+    SearchControlConstructionToken, TodayControlConstructionToken, AverageIfsControlConstructionToken, \
+    AddressControlConstructionToken, CountIfsControlConstructionToken, NetworkDaysControlConstructionToken, \
+    CountControlConstructionToken, ColumnControlConstructionToken, SumIfsControlConstructionToken, \
+    IndexControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
@@ -58,6 +56,7 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
         from excel2pycl.src.translators.count_cc_token_translator import CountControlConstructionTokenTranslator
         from excel2pycl.src.translators.column_cc_token_translator import ColumnControlConstructionTokenTranslator
         from excel2pycl.src.translators.sumifs_cc_token_translator import SumIfsControlConstructionTokenTranslator
+        from excel2pycl.src.translators.index_cc_token_translator import IndexControlConstructionTokenTranslator
 
         translate_functions = {
             IfControlConstructionToken.__name__: IfControlConstructionTokenTranslator.translate,
@@ -92,7 +91,8 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             ColumnControlConstructionToken.__name__: ColumnControlConstructionTokenTranslator.translate,
             TodayControlConstructionToken.__name__: TodayControlConstructionTokenTranslator.translate,
             NetworkDaysControlConstructionToken.__name__: NetworkDaysControlConstructionTokenTranslator.translate,
-            SumIfsControlConstructionToken.__name__: SumIfsControlConstructionTokenTranslator.translate
+            SumIfsControlConstructionToken.__name__: SumIfsControlConstructionTokenTranslator.translate,
+            IndexControlConstructionToken.__name__: IndexControlConstructionTokenTranslator.translate,
         }
 
         sub_token = token.control_construction

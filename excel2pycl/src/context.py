@@ -569,7 +569,7 @@ class ExcelInPython:
         additional_days = []
         if holidays:
             for row in holidays:
-                additional_days_in_row = [day.date() for day in row if isinstance(day, datetime.datetime)] \
+                additional_days_in_row = [day.date() for day in row if isinstance(day, datetime.datetime)] \\
                     if row is not None else []
                 additional_days += additional_days_in_row
 
@@ -605,6 +605,31 @@ class ExcelInPython:
         sum_range = _when_bool_cast_to_int([i for i in sum_range if i is not None])
 
         return self._sum(sum_range)
+
+    def _index(self, matrix_list: tuple | list, row_number: int, column_number: int | None, area_number: int):
+        if area_number > len(matrix_list):
+            return '#REF!'
+
+        # Если пришел кортеж, значит имеем дело с несколькими диапазонами, берем заданный в area_number, по умолчанию 1
+        array = matrix_list[area_number - 1] if isinstance(matrix_list, tuple) else matrix_list
+        
+        # Если диапазон - строка и указан только номер строки, считаем его номером столбца
+        if len(array) == 1 and column_number is None:
+            column_number = row_number
+            row_number = None
+
+        try:
+            # Если не указаны номер столбца/строки, берем значения из всех столбцов/строк
+            row = [array[row_number - 1]] if row_number else array
+            value = [col[column_number - 1] if column_number else col for col in row]
+        except IndexError:
+            return '#REF!'
+
+        # Для диапазона типа столбец значения будут в конструкции [[x], [y], [z]], приводим к аналогу строки - [x, y, z]
+        if isinstance(value[0], list) and len(value[0]) == 1:
+            value = [row[0] for row in value]
+
+        return value[0] if len(value) == 1 else value
 
     def _cell_preprocessor(self, cell_uid: str):
         # Ищем метод расчета значения ячейки среди методов и аттрибутов экземпляра и класса

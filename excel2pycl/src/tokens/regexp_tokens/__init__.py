@@ -95,6 +95,10 @@ class MatchKeywordToken(RegexpBaseToken):
     regexp = r'MATCH'
 
 
+class IndexKeywordToken(RegexpBaseToken):
+    regexp = r'INDEX'
+
+
 class DateKeywordToken(RegexpBaseToken):
     regexp = r'DATE'
 
@@ -169,7 +173,7 @@ class SKeywordToken(RegexpBaseToken):
 
 # TODO добавить условие для локализации
 class SeparatorToken(RegexpBaseToken):
-    regexp = r';|,'
+    regexp = r';|,|~'
 
 
 class NotEqOperatorToken(RegexpBaseToken):
