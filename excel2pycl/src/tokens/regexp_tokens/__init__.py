@@ -5,7 +5,7 @@ from excel2pycl.src.tokens.regexp_base_token import RegexpBaseToken
 
 class MatrixOfCellIdentifiersToken(RegexpBaseToken):
     # TODO Consider the possibility of a matrix like A:A
-    regexp = r'((\'(.*?)\'|(\w*?))!)?\$?([A-Z]+)(\$?(\d+))?:\$?([A-Z]+)(\$?(\d+))?'
+    regexp = r'((\'([^!]*?)\'|(\w*?))!)?\$?([A-Z]+)(\$?(\d+))?:\$?([A-Z]+)(\$?(\d+))?'
     last_match_regexp = r'([^\d].*)?'
     value_range = [0, -1]
 

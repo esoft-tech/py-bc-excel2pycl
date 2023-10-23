@@ -188,8 +188,11 @@ class LambdaToken(CompositeBaseToken):
 
 
 class IfControlConstructionToken(CompositeBaseToken):
-    _TOKEN_SETS = [[IfKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, ExpressionToken, SeparatorToken,
-                    ExpressionToken, BracketFinishToken]]
+    _TOKEN_SETS = [
+        [IfKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, ExpressionToken, SeparatorToken,
+         ExpressionToken, BracketFinishToken],
+        [IfKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken]
+    ]
 
     @property
     def condition(self) -> ExpressionToken:
@@ -201,7 +204,7 @@ class IfControlConstructionToken(CompositeBaseToken):
 
     @property
     def when_false(self) -> ExpressionToken:
-        return self.value[6]
+        return self.value[6] if len(self.value) == 8 else None
 
 
 class IfErrorControlConstructionToken(CompositeBaseToken):
