@@ -21,7 +21,7 @@ class Context:
 from dateutil import parser as date_parser
 from dateutil.relativedelta import relativedelta
 from math import trunc
-from typing import Dict, List, Literal, Any
+from typing import Dict, List, Literal, Any, Callable
 import calendar
 import re
 
@@ -227,7 +227,7 @@ class ExcelInPython:
             case _:
                 return '#ERROR!'
 
-    def _vlookup(self, lookup_value, table_array: List, col_index_num: int, range_lookup: bool | int = False):
+    def _vlookup(self, lookup_value: str | int | float, table_array: List, col_index_num: int, range_lookup: bool | int = False):
         if not isinstance(range_lookup, (bool, int)):
             return '#ERROR!'
 
@@ -252,7 +252,7 @@ class ExcelInPython:
 
         return last_valid_value
 
-    def _sum_if(self, range_: List, criteria: callable, sum_range: List = None):
+    def _sum_if(self, range_: List, criteria: Callable, sum_range: List = None):
         result = 0
         range_, sum_range = self._flatten_list(range_), self._flatten_list(sum_range)
         for i in range(len(range_)):
@@ -524,7 +524,7 @@ class ExcelInPython:
 
         return self._average(average_range)
     
-    def _countifs(self, count_range: List[List], count_condition: callable, *range_n_criteria):
+    def _countifs(self, count_range: List[List], count_condition: Callable, *range_n_criteria):
         # Если ячейка в диапазоне критериев пуста, COUNTIFS обрабатывает ее как значение 0.
 
         count_range = self._flatten_list(count_range)
