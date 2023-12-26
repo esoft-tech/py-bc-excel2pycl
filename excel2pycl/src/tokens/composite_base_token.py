@@ -1,4 +1,5 @@
 from excel2pycl.src.cell import Cell
+from excel2pycl.src.exceptions import E2PyclParserException
 from excel2pycl.src.tokens.base_token import BaseToken
 
 
@@ -16,6 +17,7 @@ class CompositeBaseToken(BaseToken):
 
     @classmethod
     def get(cls, expression: list, in_cell: Cell):
+        control_construction_flag = False
         for tokens in cls.get_token_sets():
             new_expression_part = []
             _expression = expression.copy()
@@ -23,6 +25,7 @@ class CompositeBaseToken(BaseToken):
                 if not len(_expression):
                     break
                 elif token == _expression[0].__class__:
+                    control_construction_flag = issubclass(cls, ControlConstructionBaseToken)
                     new_expression_part.append(_expression[0])
                     _expression = _expression[1:]
                 elif token in CompositeBaseToken.subclasses():
@@ -36,4 +39,11 @@ class CompositeBaseToken(BaseToken):
             if len(new_expression_part) == len(tokens) and len(new_expression_part):
                 return cls(new_expression_part, in_cell), _expression
 
+        if control_construction_flag:
+            raise E2PyclParserException(f'{cls.__name__} has an incorrect structure')
+
         return None, expression
+
+
+class ControlConstructionBaseToken(CompositeBaseToken):
+    pass
