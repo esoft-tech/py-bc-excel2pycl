@@ -4,41 +4,17 @@ from collections.abc import Iterable
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.tokens.composite_base_token import CompositeBaseToken, ControlConstructionBaseToken
 from excel2pycl.src.tokens.recursive_composite_base_token import RecursiveCompositeBaseToken, CLS
-from excel2pycl.src.tokens.regexp_tokens import DayKeywordToken, LeftKeywordToken, MaxKeywordToken, MidKeywordToken, \
-    MinKeywordToken, \
-    ErrorKeywordToken, RightKeywordToken, SumKeywordToken, IfKeywordToken, CellIdentifierToken, \
-    CellIdentifierRangeToken, \
-    MatrixOfCellIdentifiersToken, EqOperatorToken, NotEqOperatorToken, GtOperatorToken, GtOrEqualOperatorToken, \
-    LtOperatorToken, LtOrEqualOperatorToken, PlusOperatorToken, MinusOperatorToken, MultiplicationOperatorToken, \
-    DivOperatorToken, LiteralToken, BracketStartToken, BracketFinishToken, SeparatorToken, VlookupKeywordToken, \
-    AverageKeywordToken, RoundKeywordToken, OrKeywordToken, AndKeywordToken, AmpersandToken, YearKeywordToken, \
-    DateKeywordToken, DifKeywordToken, EoKeywordToken, MonthKeywordToken, EKeywordToken, \
-    CountBlankKeywordToken, SearchKeywordToken, XKeywordToken, MatchKeywordToken, SKeywordToken, AddreKeywordToken, \
-    CountKeywordToken, PatternToken, NetworkDaysKeywordToken, ToKeywordToken, ColumnKeywordToken, IndexKeywordToken
-
-
-class SumIfKeywordToken(CompositeBaseToken):
-    _TOKEN_SETS = [[SumKeywordToken, IfKeywordToken]]
-
-
-class IfErrorKeywordToken(CompositeBaseToken):
-    _TOKEN_SETS = [[IfKeywordToken, ErrorKeywordToken]]
-
-
-class DateDifKeywordToken(CompositeBaseToken):
-    _TOKEN_SETS = [[DateKeywordToken, DifKeywordToken]]
-
-
-class EoMonthKeywordToken(CompositeBaseToken):
-    _TOKEN_SETS = [[EoKeywordToken, MonthKeywordToken]]
-
-
-class EDateKeywordToken(CompositeBaseToken):
-    _TOKEN_SETS = [[EKeywordToken, DateKeywordToken]]
-
-
-class XMatchKeywordToken(CompositeBaseToken):
-    _TOKEN_SETS = [[XKeywordToken, MatchKeywordToken]]
+from excel2pycl.src.tokens.regexp_tokens import MatrixOfCellIdentifiersToken, CellIdentifierRangeToken, \
+    CellIdentifierToken, PatternToken, LiteralToken, BracketStartToken, BracketFinishToken, \
+    SeparatorToken, NotEqOperatorToken, EqOperatorToken, GtOrEqualOperatorToken, LtOrEqualOperatorToken, \
+    GtOperatorToken, LtOperatorToken, PlusOperatorToken, MinusOperatorToken, MultiplicationOperatorToken, \
+    DivOperatorToken, AmpersandToken, AddressKeywordToken, AndKeywordToken, AverageKeywordToken, \
+    AverageIfSKeywordToken, ColumnKeywordToken, CountKeywordToken, CountBlankKeywordToken, CountIfSKeywordToken, \
+    DayKeywordToken, DateKeywordToken, DateDifKeywordToken, EDateKeywordToken, EoMonthKeywordToken, \
+    IfKeywordToken, IfErrorKeywordToken, IndexKeywordToken, LeftKeywordToken, MatchKeywordToken, MaxKeywordToken, \
+    MidKeywordToken, MinKeywordToken, MonthKeywordToken, NetworkDaysKeywordToken, OrKeywordToken, RightKeywordToken, \
+    RoundKeywordToken, SearchKeywordToken, SumKeywordToken, SumIfKeywordToken, SumIfSKeywordToken, TodayKeywordToken, \
+    VlookupKeywordToken, XMatchKeywordToken, YearKeywordToken
 
 
 class SimilarCellToken(CompositeBaseToken):
@@ -601,15 +577,16 @@ class IterableRangeOfCellIdentifierWithConditionToken(RecursiveCompositeBaseToke
 
 
 class AverageIfsControlConstructionToken(ControlConstructionBaseToken):
-    _TOKEN_SETS = [[AverageKeywordToken, IfKeywordToken, SKeywordToken, BracketStartToken, MatrixOfCellIdentifiersToken, SeparatorToken, IterableRangeOfCellIdentifierWithConditionToken, BracketFinishToken]]
+    _TOKEN_SETS = [[AverageIfSKeywordToken, BracketStartToken, MatrixOfCellIdentifiersToken, SeparatorToken,
+                    IterableRangeOfCellIdentifierWithConditionToken, BracketFinishToken]]
 
     @property
     def average_range(self) -> MatrixOfCellIdentifiersToken:
-        return self.value[4]
+        return self.value[2]
 
     @property
     def conditions(self) -> IterableRangeOfCellIdentifierWithConditionToken:
-        return self.value[6]
+        return self.value[4]
 
 
 class CountBlankControlConstructionToken(ControlConstructionBaseToken):
@@ -624,7 +601,7 @@ class CountBlankControlConstructionToken(ControlConstructionBaseToken):
 class CountIfsControlConstructionToken(ControlConstructionBaseToken):
     _TOKEN_SETS = [
         [
-            CountKeywordToken, IfKeywordToken, SKeywordToken,
+            CountIfSKeywordToken,
             BracketStartToken,
             MatrixOfCellIdentifiersToken, SeparatorToken,
             LambdaToken, SeparatorToken,
@@ -632,7 +609,7 @@ class CountIfsControlConstructionToken(ControlConstructionBaseToken):
             BracketFinishToken
         ],
         [
-            CountKeywordToken, IfKeywordToken, SKeywordToken,
+            CountIfSKeywordToken,
             BracketStartToken,
             MatrixOfCellIdentifiersToken, SeparatorToken,
             LambdaToken,
@@ -642,36 +619,36 @@ class CountIfsControlConstructionToken(ControlConstructionBaseToken):
 
     @property
     def count_range(self) -> MatrixOfCellIdentifiersToken:
-        return self.value[4]
+        return self.value[2]
 
     @property
     def count_condition(self) -> LambdaToken:
-        return self.value[6]
+        return self.value[4]
 
     @property
     def conditions(self) -> IterableRangeOfCellIdentifierWithConditionToken:
-        return self.value[8] if len(self.value) > 8 else None
+        return self.value[6] if len(self.value) > 6 else None
 
 
 class AddressControlConstructionToken(ControlConstructionBaseToken):
     _TOKEN_SETS = [
-        [AddreKeywordToken, SKeywordToken, SKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken,
+        [AddressKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken,
          ExpressionToken, BracketFinishToken],
-        [AddreKeywordToken, SKeywordToken, SKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken,
+        [AddressKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken,
          ExpressionToken, SeparatorToken, IterableExpressionToken, BracketFinishToken]
     ]
 
     @property
     def row(self) -> ExpressionToken:
-        return self.value[4]
+        return self.value[2]
 
     @property
     def col(self) -> ExpressionToken:
-        return self.value[6]
+        return self.value[4]
 
     @property
     def expressions(self):
-        return self.value[8].expressions if len(self.value) > 8 else []
+        return self.value[6].expressions if len(self.value) > 6 else []
 
 
 class CountControlConstructionToken(ControlConstructionBaseToken):
@@ -722,13 +699,13 @@ class ColumnControlConstructionToken(ControlConstructionBaseToken):
 
 
 class TodayControlConstructionToken(ControlConstructionBaseToken):
-    _TOKEN_SETS = [[ToKeywordToken, DayKeywordToken, BracketStartToken, BracketFinishToken]]
+    _TOKEN_SETS = [[TodayKeywordToken, BracketStartToken, BracketFinishToken]]
 
 
 class SumIfsControlConstructionToken(ControlConstructionBaseToken):
     _TOKEN_SETS = [
         [
-            SumKeywordToken, IfKeywordToken, SKeywordToken,
+            SumIfSKeywordToken,
             BracketStartToken,
             MatrixOfCellIdentifiersToken, SeparatorToken,
             IterableRangeOfCellIdentifierWithConditionToken,
@@ -738,11 +715,11 @@ class SumIfsControlConstructionToken(ControlConstructionBaseToken):
 
     @property
     def sum_range(self) -> MatrixOfCellIdentifiersToken:
-        return self.value[4]
+        return self.value[2]
 
     @property
     def conditions(self) -> IterableRangeOfCellIdentifierWithConditionToken:
-        return self.value[6]
+        return self.value[4]
 
 
 class IterableMatrixOfCellIdentifiersToken(RecursiveCompositeBaseToken):
@@ -796,7 +773,7 @@ class IndexControlConstructionToken(ControlConstructionBaseToken):
 
 
 class ControlConstructionToken(CompositeBaseToken):
-    _TOKEN_SETS = [[IfControlConstructionToken], [SumControlConstructionToken], [SumIfControlConstructionToken],
+    _TOKEN_SETS = [[IfControlConstructionToken], [SumIfControlConstructionToken], [SumControlConstructionToken],
                    [VlookupControlConstructionToken], [AverageControlConstructionToken],
                    [RoundControlConstructionToken], [OrControlConstructionToken], [AndControlConstructionToken],
                    [EDateControlConstructionToken], [EoMonthControlConstructionToken],
@@ -813,8 +790,8 @@ class ControlConstructionToken(CompositeBaseToken):
                    [IndexControlConstructionToken]]
 
     @property
-    def control_construction(self) -> Union[IfControlConstructionToken, SumControlConstructionToken,
-                                            SumIfControlConstructionToken, VlookupControlConstructionToken,
+    def control_construction(self) -> Union[IfControlConstructionToken, SumIfControlConstructionToken,
+                                            SumControlConstructionToken, VlookupControlConstructionToken,
                                             AverageControlConstructionToken, RoundControlConstructionToken,
                                             OrControlConstructionToken, AndControlConstructionToken,
                                             YearControlConstructionToken, MonthControlConstructionToken,

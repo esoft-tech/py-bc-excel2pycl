@@ -18,3 +18,14 @@ class RegexpBaseToken(BaseToken):
             return cls(result[0][cls.value_range[0]:cls.value_range[1]], in_cell), result[0][-1]
 
         return None, expression
+
+
+class KeywordBaseToken(RegexpBaseToken):
+    @classmethod
+    def subclasses(cls) -> list:
+        if not cls._SUBCLASSES:
+            subclasses = cls.__subclasses__()
+            subclasses_first_rank = cls._remove_subclasses_lower_rank(subclasses)
+            cls._SUBCLASSES = sorted(list(subclasses_first_rank), key=lambda item: len(item.regexp), reverse=True)
+
+        return cls._SUBCLASSES
