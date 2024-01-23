@@ -2,7 +2,7 @@ from typing import Union
 from collections.abc import Iterable
 
 from excel2pycl.src.cell import Cell
-from excel2pycl.src.tokens.composite_base_token import CompositeBaseToken, ControlConstructionBaseToken
+from excel2pycl.src.tokens.composite_base_token import CompositeBaseToken, CompositeBaseToken
 from excel2pycl.src.tokens.recursive_composite_base_token import RecursiveCompositeBaseToken, CLS
 from excel2pycl.src.tokens.regexp_tokens import MatrixOfCellIdentifiersToken, CellIdentifierRangeToken, \
     CellIdentifierToken, PatternToken, LiteralToken, BracketStartToken, BracketFinishToken, \
@@ -92,7 +92,7 @@ class OperandToken(CompositeBaseToken):
 
     @property
     def control_construction(self):
-        return self.value[0] if self.value[0].__class__ == ControlConstructionToken else None
+        return self.value[0] if self.value[0].__class__ == ControlConstructionCompositeBaseToken else None
 
 
 class OperatorToken(CompositeBaseToken):
@@ -163,7 +163,7 @@ class LambdaToken(CompositeBaseToken):
             self.value) == 3 and self.value[2].__class__ == ExpressionToken else None
 
 
-class IfControlConstructionToken(ControlConstructionBaseToken):
+class IfControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [IfKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, ExpressionToken, SeparatorToken,
          ExpressionToken, BracketFinishToken],
@@ -183,7 +183,7 @@ class IfControlConstructionToken(ControlConstructionBaseToken):
         return self.value[6] if len(self.value) == 8 else None
 
 
-class IfErrorControlConstructionToken(ControlConstructionBaseToken):
+class IfErrorControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[IfErrorKeywordToken,
                     BracketStartToken,
                     ExpressionToken,
@@ -200,7 +200,7 @@ class IfErrorControlConstructionToken(ControlConstructionBaseToken):
         return self.value[4]
 
 
-class SumControlConstructionToken(ControlConstructionBaseToken):
+class SumControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[SumKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]]
 
     @property
@@ -208,7 +208,7 @@ class SumControlConstructionToken(ControlConstructionBaseToken):
         return self.value[2].expressions
 
 
-class SumIfControlConstructionToken(ControlConstructionBaseToken):
+class SumIfControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[SumIfKeywordToken, BracketStartToken, SimilarCellToken, SeparatorToken, LambdaToken,
                     BracketFinishToken],
                    [SumIfKeywordToken, BracketStartToken, SimilarCellToken, SeparatorToken, LambdaToken,
@@ -236,7 +236,7 @@ class SumIfControlConstructionToken(ControlConstructionBaseToken):
                 self.value[6].matrix.matrix[0] if self.value[6].matrix else None) if len(self.value) == 8 else None
 
 
-class VlookupControlConstructionToken(ControlConstructionBaseToken):
+class VlookupControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [VlookupKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken,
          SeparatorToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken],
@@ -260,7 +260,7 @@ class VlookupControlConstructionToken(ControlConstructionBaseToken):
         return self.value[8] if len(self.value) == 10 else None
 
 
-class AverageControlConstructionToken(ControlConstructionBaseToken):
+class AverageControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[AverageKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]]
 
     @property
@@ -268,7 +268,7 @@ class AverageControlConstructionToken(ControlConstructionBaseToken):
         return self.value[2].expressions
 
 
-class RoundControlConstructionToken(ControlConstructionBaseToken):
+class RoundControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[RoundKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken,
                     ExpressionToken, BracketFinishToken]]
 
@@ -281,7 +281,7 @@ class RoundControlConstructionToken(ControlConstructionBaseToken):
         return self.value[4]
 
 
-class DateControlConstructionToken(ControlConstructionBaseToken):
+class DateControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[DateKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken,
                     ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken]]
 
@@ -298,7 +298,7 @@ class DateControlConstructionToken(ControlConstructionBaseToken):
         return self.value[6]
 
 
-class DateDifControlConstructionToken(ControlConstructionBaseToken):
+class DateDifControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[DateDifKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken,
                     ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken]]
 
@@ -315,7 +315,7 @@ class DateDifControlConstructionToken(ControlConstructionBaseToken):
         return self.value[6]
 
 
-class EoMonthControlConstructionToken(ControlConstructionBaseToken):
+class EoMonthControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[EoMonthKeywordToken, BracketStartToken, ExpressionToken,
                     SeparatorToken, ExpressionToken, BracketFinishToken]]
 
@@ -328,7 +328,7 @@ class EoMonthControlConstructionToken(ControlConstructionBaseToken):
         return self.value[4]
 
 
-class EDateControlConstructionToken(ControlConstructionBaseToken):
+class EDateControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[EDateKeywordToken, BracketStartToken, ExpressionToken,
                     SeparatorToken, ExpressionToken, BracketFinishToken]]
 
@@ -341,7 +341,7 @@ class EDateControlConstructionToken(ControlConstructionBaseToken):
         return self.value[4]
 
 
-class LeftControlConstructionToken(ControlConstructionBaseToken):
+class LeftControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[LeftKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken],
                    [LeftKeywordToken, BracketStartToken, ExpressionToken, BracketFinishToken]]
 
@@ -354,7 +354,7 @@ class LeftControlConstructionToken(ControlConstructionBaseToken):
         return self.value[4] if len(self.value) == 6 else None
 
 
-class SearchControlConstructionToken(ControlConstructionBaseToken):
+class SearchControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [
             SearchKeywordToken, BracketStartToken, ExpressionToken,
@@ -381,7 +381,7 @@ class SearchControlConstructionToken(ControlConstructionBaseToken):
         return self.value[6] if len(self.value) == 8 else None
 
 
-class MidControlConstructionToken(ControlConstructionBaseToken):
+class MidControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[MidKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken]]
 
     @property
@@ -397,7 +397,7 @@ class MidControlConstructionToken(ControlConstructionBaseToken):
         return self.value[6]
 
 
-class RightControlConstructionToken(ControlConstructionBaseToken):
+class RightControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[RightKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken],
                    [RightKeywordToken, BracketStartToken, ExpressionToken, BracketFinishToken]]
 
@@ -410,7 +410,7 @@ class RightControlConstructionToken(ControlConstructionBaseToken):
         return self.value[4] if len(self.value) == 6 else None
 
 
-class OrControlConstructionToken(ControlConstructionBaseToken):
+class OrControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[OrKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]]
 
     @property
@@ -418,7 +418,7 @@ class OrControlConstructionToken(ControlConstructionBaseToken):
         return self.value[2].expressions
 
 
-class AndControlConstructionToken(ControlConstructionBaseToken):
+class AndControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[AndKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]]
 
     @property
@@ -426,7 +426,7 @@ class AndControlConstructionToken(ControlConstructionBaseToken):
         return self.value[2].expressions
 
 
-class DayControlConstructionToken(ControlConstructionBaseToken):
+class DayControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[DayKeywordToken, BracketStartToken, ExpressionToken, BracketFinishToken]]
 
     @property
@@ -434,7 +434,7 @@ class DayControlConstructionToken(ControlConstructionBaseToken):
         return self.value[2]
 
 
-class MonthControlConstructionToken(ControlConstructionBaseToken):
+class MonthControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[MonthKeywordToken, BracketStartToken, ExpressionToken, BracketFinishToken]]
 
     @property
@@ -442,7 +442,7 @@ class MonthControlConstructionToken(ControlConstructionBaseToken):
         return self.value[2]
 
 
-class YearControlConstructionToken(ControlConstructionBaseToken):
+class YearControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[YearKeywordToken, BracketStartToken, ExpressionToken, BracketFinishToken]]
 
     @property
@@ -450,7 +450,7 @@ class YearControlConstructionToken(ControlConstructionBaseToken):
         return self.value[2]
 
 
-class MinControlConstructionToken(ControlConstructionBaseToken):
+class MinControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[MinKeywordToken, BracketStartToken,
                     IterableExpressionToken, BracketFinishToken]]
 
@@ -459,7 +459,7 @@ class MinControlConstructionToken(ControlConstructionBaseToken):
         return self.value[2].expressions
 
 
-class MaxControlConstructionToken(ControlConstructionBaseToken):
+class MaxControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[MaxKeywordToken, BracketStartToken,
                     IterableExpressionToken, BracketFinishToken]]
 
@@ -468,7 +468,7 @@ class MaxControlConstructionToken(ControlConstructionBaseToken):
         return self.value[2].expressions
 
 
-class MatchControlConstructionToken(ControlConstructionBaseToken):
+class MatchControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [MatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken,
          SeparatorToken, ExpressionToken, BracketFinishToken],
@@ -488,7 +488,7 @@ class MatchControlConstructionToken(ControlConstructionBaseToken):
         return self.value[6]
 
 
-class XMatchControlConstructionToken(ControlConstructionBaseToken):
+class XMatchControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [XMatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken,
          SeparatorToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken],
@@ -531,7 +531,7 @@ class RangeOfCellIdentifierWithConditionToken(CompositeBaseToken):
         return None if self.condition_lambda is not None else self.value[2]
 
 
-class NetworkDaysControlConstructionToken(ControlConstructionBaseToken):
+class NetworkDaysControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [
             NetworkDaysKeywordToken, BracketStartToken, ExpressionToken,
@@ -576,7 +576,7 @@ class IterableRangeOfCellIdentifierWithConditionToken(RecursiveCompositeBaseToke
         return self._range_of_cell_identifiers_with_conditions
 
 
-class AverageIfsControlConstructionToken(ControlConstructionBaseToken):
+class AverageIfsControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[AverageIfSKeywordToken, BracketStartToken, MatrixOfCellIdentifiersToken, SeparatorToken,
                     IterableRangeOfCellIdentifierWithConditionToken, BracketFinishToken]]
 
@@ -589,7 +589,7 @@ class AverageIfsControlConstructionToken(ControlConstructionBaseToken):
         return self.value[4]
 
 
-class CountBlankControlConstructionToken(ControlConstructionBaseToken):
+class CountBlankControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[CountBlankKeywordToken, BracketStartToken,
                     IterableExpressionToken, BracketFinishToken]]
 
@@ -598,7 +598,7 @@ class CountBlankControlConstructionToken(ControlConstructionBaseToken):
         return self.value[2].expressions
 
 
-class CountIfsControlConstructionToken(ControlConstructionBaseToken):
+class CountIfsControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [
             CountIfSKeywordToken,
@@ -630,7 +630,7 @@ class CountIfsControlConstructionToken(ControlConstructionBaseToken):
         return self.value[6] if len(self.value) > 6 else None
 
 
-class AddressControlConstructionToken(ControlConstructionBaseToken):
+class AddressControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [AddressKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken,
          ExpressionToken, BracketFinishToken],
@@ -651,7 +651,7 @@ class AddressControlConstructionToken(ControlConstructionBaseToken):
         return self.value[6].expressions if len(self.value) > 6 else []
 
 
-class CountControlConstructionToken(ControlConstructionBaseToken):
+class CountControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [CountKeywordToken, BracketStartToken, IterableExpressionToken,
          BracketFinishToken]
@@ -682,7 +682,7 @@ class CountControlConstructionToken(ControlConstructionBaseToken):
         ]
 
 
-class ColumnControlConstructionToken(ControlConstructionBaseToken):
+class ColumnControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [ColumnKeywordToken, BracketStartToken, BracketFinishToken],
         [ColumnKeywordToken, BracketStartToken, CellIdentifierToken, BracketFinishToken],
@@ -698,11 +698,11 @@ class ColumnControlConstructionToken(ControlConstructionBaseToken):
         return self.value[2] if len(self.value) > 2 and isinstance(self.value[2], MatrixOfCellIdentifiersToken) else None
 
 
-class TodayControlConstructionToken(ControlConstructionBaseToken):
+class TodayControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[TodayKeywordToken, BracketStartToken, BracketFinishToken]]
 
 
-class SumIfsControlConstructionToken(ControlConstructionBaseToken):
+class SumIfsControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [
             SumIfSKeywordToken,
@@ -745,7 +745,7 @@ class IterableMatrixOfCellIdentifiersToken(RecursiveCompositeBaseToken):
         return self._matrix_list
 
 
-class IndexControlConstructionToken(ControlConstructionBaseToken):
+class IndexControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [IndexKeywordToken, BracketStartToken, IterableMatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken,
          SeparatorToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken],
@@ -772,7 +772,7 @@ class IndexControlConstructionToken(ControlConstructionBaseToken):
         return self.value[8] if len(self.value) == 10 else None
 
 
-class ControlConstructionToken(CompositeBaseToken):
+class ControlConstructionCompositeBaseToken(CompositeBaseToken):
     _TOKEN_SETS = [[IfControlConstructionToken], [SumIfControlConstructionToken], [SumControlConstructionToken],
                    [VlookupControlConstructionToken], [AverageControlConstructionToken],
                    [RoundControlConstructionToken], [OrControlConstructionToken], [AndControlConstructionToken],
@@ -812,7 +812,7 @@ class ControlConstructionToken(CompositeBaseToken):
 
 
 # Attention!
-OperandToken.add_token_set([ControlConstructionToken])
+OperandToken.add_token_set([ControlConstructionCompositeBaseToken])
 
 
 class EntryPointToken(CompositeBaseToken):

@@ -25,7 +25,15 @@ class CompositeBaseToken(BaseToken):
                 if not len(_expression):
                     break
                 elif token == _expression[0].__class__:
-                    control_construction_flag = issubclass(cls, ControlConstructionBaseToken)
+                    from excel2pycl.src.tokens import ControlConstructionCompositeBaseToken
+                    """
+                    If we encounter a control construction and have not encountered any of its token sets,
+                    we are sure that the structure we are trying to parse contains an error
+                    and further selection of tokens are not needed
+                    """
+                    control_construction_flag = cls in [
+                        token[0] for token in ControlConstructionCompositeBaseToken.get_token_sets()
+                    ]
                     new_expression_part.append(_expression[0])
                     _expression = _expression[1:]
                 elif token in CompositeBaseToken.subclasses():
@@ -43,7 +51,3 @@ class CompositeBaseToken(BaseToken):
             raise E2PyclParserException(f'{cls.__name__} has an incorrect structure')
 
         return None, expression
-
-
-class ControlConstructionBaseToken(CompositeBaseToken):
-    pass

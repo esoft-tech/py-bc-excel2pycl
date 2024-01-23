@@ -20,7 +20,11 @@ class RegexpBaseToken(BaseToken):
         return None, expression
 
 
-class KeywordBaseToken(RegexpBaseToken):
+class KeywordRegexpBaseToken(RegexpBaseToken):
+    """
+    A subtype of regexp token containing the name of the function, allocated for their correct sorting
+    in order to avoid dependence on the order of tokens in the library code
+    """
     @classmethod
     def subclasses(cls) -> list:
         if not cls._SUBCLASSES:

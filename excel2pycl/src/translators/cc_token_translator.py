@@ -1,9 +1,9 @@
 from excel2pycl.src.context import Context
 from excel2pycl.src.excel import Excel
-from excel2pycl.src.tokens import IfControlConstructionToken, ControlConstructionToken, SumIfControlConstructionToken, \
+from excel2pycl.src.tokens import IfControlConstructionToken, ControlConstructionCompositeBaseToken, \
     SumControlConstructionToken, AverageControlConstructionToken, VlookupControlConstructionToken, \
     RoundControlConstructionToken, OrControlConstructionToken, AndControlConstructionToken, \
-    MinControlConstructionToken, MaxControlConstructionToken, \
+    MinControlConstructionToken, MaxControlConstructionToken, SumIfControlConstructionToken, \
     YearControlConstructionToken, MonthControlConstructionToken, DayControlConstructionToken, \
     IfErrorControlConstructionToken, \
     DateControlConstructionToken, \
@@ -19,7 +19,7 @@ from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 class ControlConstructionTokenTranslator(AbstractTranslator):
     @classmethod
-    def translate(cls, token: ControlConstructionToken, excel: Excel, context: Context) -> str:
+    def translate(cls, token: ControlConstructionCompositeBaseToken, excel: Excel, context: Context) -> str:
         from excel2pycl.src.translators.if_cc_token_translator import IfControlConstructionTokenTranslator
         from excel2pycl.src.translators.sum_if_cc_token_translator import SumIfControlConstructionTokenTranslator
         from excel2pycl.src.translators.sum_cc_token_translator import SumControlConstructionTokenTranslator
