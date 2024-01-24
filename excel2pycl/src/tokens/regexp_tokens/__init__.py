@@ -1,6 +1,6 @@
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.exceptions import E2PyclParserException
-from excel2pycl.src.tokens.regexp_base_token import RegexpBaseToken
+from excel2pycl.src.tokens.regexp_base_token import RegexpBaseToken, KeywordRegexpBaseToken
 
 
 class MatrixOfCellIdentifiersToken(RegexpBaseToken):
@@ -67,164 +67,6 @@ class CellIdentifierToken(RegexpBaseToken):
         return self._cell
 
 
-class IfKeywordToken(RegexpBaseToken):
-    regexp = r'IF'
-
-
-class ErrorKeywordToken(RegexpBaseToken):
-    regexp = r'ERROR'
-
-
-class SumKeywordToken(RegexpBaseToken):
-    regexp = r'SUM'
-
-
-class VlookupKeywordToken(RegexpBaseToken):
-    regexp = r'VLOOKUP'
-
-
-class AverageKeywordToken(RegexpBaseToken):
-    regexp = r'AVERAGE'
-
-
-class RoundKeywordToken(RegexpBaseToken):
-    regexp = r'ROUND'
-
-
-class MatchKeywordToken(RegexpBaseToken):
-    regexp = r'MATCH'
-
-
-class IndexKeywordToken(RegexpBaseToken):
-    regexp = r'INDEX'
-
-
-class DateKeywordToken(RegexpBaseToken):
-    regexp = r'DATE'
-
-
-class DifKeywordToken(RegexpBaseToken):
-    regexp = r'DIF'
-
-
-class OrKeywordToken(RegexpBaseToken):
-    regexp = r'OR'
-
-
-class AndKeywordToken(RegexpBaseToken):
-    regexp = r'AND'
-
-
-class MinKeywordToken(RegexpBaseToken):
-    regexp = r'MIN'
-
-
-class MaxKeywordToken(RegexpBaseToken):
-    regexp = r'MAX'
-
-
-class YearKeywordToken(RegexpBaseToken):
-    regexp = r'YEAR'
-
-
-class MonthKeywordToken(RegexpBaseToken):
-    regexp = r'MONTH'
-
-
-class NetworkDaysKeywordToken(RegexpBaseToken):
-    regexp = r'NETWORKDAYS'
-
-
-class DayKeywordToken(RegexpBaseToken):
-    regexp = r'DAY'
-
-
-class EoKeywordToken(RegexpBaseToken):
-    regexp = r'EO'
-
-
-class LeftKeywordToken(RegexpBaseToken):
-    regexp = r'LEFT'
-
-
-class MidKeywordToken(RegexpBaseToken):
-    regexp = r'MID'
-
-
-class RightKeywordToken(RegexpBaseToken):
-    regexp = r'RIGHT'
-
-
-class EKeywordToken(RegexpBaseToken):
-    regexp = r'E'
-
-
-class XKeywordToken(RegexpBaseToken):
-    regexp = r'X'
-
-
-class SearchKeywordToken(RegexpBaseToken):
-    regexp = r'SEARCH'
-
-
-class SKeywordToken(RegexpBaseToken):
-    regexp = r'S'
-
-
-# TODO добавить условие для локализации
-class SeparatorToken(RegexpBaseToken):
-    regexp = r';|,|~'
-
-
-class NotEqOperatorToken(RegexpBaseToken):
-    regexp = r'<>'
-
-
-class EqOperatorToken(RegexpBaseToken):
-    regexp = r'='
-
-
-class GtOrEqualOperatorToken(RegexpBaseToken):
-    regexp = r'>='
-
-
-class LtOrEqualOperatorToken(RegexpBaseToken):
-    regexp = r'<='
-
-
-class GtOperatorToken(RegexpBaseToken):
-    regexp = r'>'
-
-
-class LtOperatorToken(RegexpBaseToken):
-    regexp = r'<'
-
-
-class PlusOperatorToken(RegexpBaseToken):
-    regexp = r'\+'
-
-
-class MinusOperatorToken(RegexpBaseToken):
-    regexp = r'-'
-
-
-class MultiplicationOperatorToken(RegexpBaseToken):
-    regexp = r'\*'
-
-
-class DivOperatorToken(RegexpBaseToken):
-    regexp = r'/'
-
-
-class AmpersandToken(RegexpBaseToken):
-    regexp = r'&'
-
-
-
-class CountBlankKeywordToken(RegexpBaseToken):
-    regexp = r'COUNTBLANK'
-
-
 class PatternToken(RegexpBaseToken):
     """
     Parses excel pattern system
@@ -276,17 +118,186 @@ class WhitespaceToken(RegexpBaseToken):
     regexp = r'[\s\n\t]+'
 
 
-class ColumnKeywordToken(RegexpBaseToken):
+# TODO добавить условие для локализации
+class SeparatorToken(RegexpBaseToken):
+    regexp = r';|,|~'
+
+
+class NotEqOperatorToken(RegexpBaseToken):
+    regexp = r'<>'
+
+
+class GtOrEqualOperatorToken(RegexpBaseToken):
+    regexp = r'>='
+
+
+class LtOrEqualOperatorToken(RegexpBaseToken):
+    regexp = r'<='
+
+
+class EqOperatorToken(RegexpBaseToken):
+    regexp = r'='
+
+
+class GtOperatorToken(RegexpBaseToken):
+    regexp = r'>'
+
+
+class LtOperatorToken(RegexpBaseToken):
+    regexp = r'<'
+
+
+class PlusOperatorToken(RegexpBaseToken):
+    regexp = r'\+'
+
+
+class MinusOperatorToken(RegexpBaseToken):
+    regexp = r'-'
+
+
+class MultiplicationOperatorToken(RegexpBaseToken):
+    regexp = r'\*'
+
+
+class DivOperatorToken(RegexpBaseToken):
+    regexp = r'/'
+
+
+class AmpersandToken(RegexpBaseToken):
+    regexp = r'&'
+
+
+class AddressKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'ADDRESS'
+
+
+class AndKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'AND'
+
+
+class AverageKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'AVERAGE'
+
+
+class AverageIfSKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'AVERAGEIFS'
+
+
+class ColumnKeywordToken(KeywordRegexpBaseToken):
     regexp = r'COLUMN'
 
 
-class AddreKeywordToken(RegexpBaseToken):
-    regexp = r'ADDRE'
-
-
-class CountKeywordToken(RegexpBaseToken):
+class CountKeywordToken(KeywordRegexpBaseToken):
     regexp = r'COUNT'
 
 
-class ToKeywordToken(RegexpBaseToken):
-    regexp = r'TO'
+class CountBlankKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'COUNTBLANK'
+
+
+class CountIfSKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'COUNTIFS'
+
+
+class DayKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'DAY'
+
+
+class DateKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'DATE'
+
+
+class DateDifKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'DATEDIF'
+
+
+class EDateKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'EDATE'
+
+
+class EoMonthKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'EOMONTH'
+
+
+class IfKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'IF'
+
+
+class IfErrorKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'IFERROR'
+
+
+class IndexKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'INDEX'
+
+
+class LeftKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'LEFT'
+
+
+class MatchKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'MATCH'
+
+
+class MaxKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'MAX'
+
+
+class MidKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'MID'
+
+
+class MinKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'MIN'
+
+
+class MonthKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'MONTH'
+
+
+class NetworkDaysKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'NETWORKDAYS'
+
+
+class OrKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'OR'
+
+
+class RightKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'RIGHT'
+
+
+class RoundKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'ROUND'
+
+
+class SearchKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'SEARCH'
+
+
+class SumKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'SUM'
+
+
+class SumIfKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'SUMIF'
+
+
+class SumIfSKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'SUMIFS'
+
+
+class TodayKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'TODAY'
+
+
+class VlookupKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'VLOOKUP'
+
+
+class XMatchKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'XMATCH'
+
+
+class YearKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'YEAR'
