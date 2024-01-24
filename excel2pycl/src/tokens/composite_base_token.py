@@ -31,9 +31,9 @@ class CompositeBaseToken(BaseToken):
                     we are sure that the structure we are trying to parse contains an error
                     and further selection of tokens are not needed
                     """
-                    control_construction_flag = cls in [
+                    control_construction_flag = cls in {
                         token[0] for token in ControlConstructionCompositeBaseToken.get_token_sets()
-                    ]
+                    }
                     new_expression_part.append(_expression[0])
                     _expression = _expression[1:]
                 elif token in CompositeBaseToken.subclasses():
