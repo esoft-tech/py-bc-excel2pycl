@@ -9,13 +9,13 @@ def handle_cell(cell: Cell, titles: Dict[str, int]):
     if cell.has_handled_identifiers():
         return
 
-    if type(cell.title) is str:
+    if isinstance(cell.title, str):
         cell.title = titles[cell.title]
 
-    if type(cell.column) is str:
+    if isinstance(cell.column, str):
         cell.column = column_index_from_string(cell.column) - 1
 
-    if type(cell.row) is str:
+    if isinstance(cell.row, str):
         if cell.row:
             cell.row = int(cell.row) - 1
         else:
