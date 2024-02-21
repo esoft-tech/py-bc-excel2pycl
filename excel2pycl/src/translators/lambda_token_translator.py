@@ -13,7 +13,7 @@ class LambdaTokenTranslator(AbstractTranslator):
 
         literal, expression = token.literal, ExpressionTokenTranslator.translate(
             token.expression, excel, context
-            ) if token.expression else None
+        ) if token.expression else None
 
         condition_symbol = '=='
         condition_value = literal
@@ -31,6 +31,10 @@ class LambdaTokenTranslator(AbstractTranslator):
                     condition_value = parsed_literal[1]
                 else:
                     condition_value = expression
+
+            else:
+                if expression:
+                    condition_value = expression
         else:
             condition_value = expression
 
@@ -47,4 +51,4 @@ class LambdaTokenTranslator(AbstractTranslator):
                            f'else str(x).lower(){condition_symbol}str({condition_value}).lower() '
                            f'if isinstance({condition_value}, str) '
                            f'else x{condition_symbol}{condition_value}'
-            )
+        )
