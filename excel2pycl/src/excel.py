@@ -158,6 +158,7 @@ class Excel:
                     rows_data.append(cell.value)
                 worksheet_data.append(rows_data)
             worksheets_data.append(worksheet_data)
+        wb.close()
 
         return cls({
             'data': worksheets_data,
