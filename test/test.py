@@ -451,10 +451,10 @@ class TestTokens(unittest.TestCase):
     def test_today_subtract_date_token(self):
         cell_values = self.executor.get_cells([Cell('today', 2, 2), Cell('today', 2, 1)])
 
-        self.assertEqual(cell_values[0].value, cell_values[1].value, msg='TODAY subtract date token down')
+        self.assertEqual(cell_values[0].value, cell_values[1].value.days, msg='TODAY subtract date token down')
 
     def test_today_get_day_token(self):
-        cell_values = self.executor.get_cells([Cell('today', 2, 2), Cell('today', 2, 1)])
+        cell_values = self.executor.get_cells([Cell('today', 3, 2), Cell('today', 3, 1)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='TODAY get day token down')
 
