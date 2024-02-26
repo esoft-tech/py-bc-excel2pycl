@@ -474,7 +474,7 @@ class ExcelInPython:
                 return when_error
             else:
                 return cell
-        except ZeroDivisionError:
+        except:
             return when_error
     
     def _when_cell_is_empty_cast_to_zero(self, iterable: List):

@@ -366,7 +366,7 @@ class AbstractExcelInPython(ABC):
                 return when_error
             else:
                 return cell
-        except ZeroDivisionError:
+        except:
             return when_error
 
     def _left(self, text, num_chars):
