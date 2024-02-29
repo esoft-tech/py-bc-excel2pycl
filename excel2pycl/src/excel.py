@@ -116,9 +116,14 @@ class Excel:
         handle_cell(first, self._titles)
         handle_cell(second, self._titles)
 
-        if first.row is None and second.row is None and first.column == second.column:
-            return [[i] for i in self._get_vertical_range(first, second)]
-        elif type(first.row) is int and first.row >= 0 and second.row >= 0:
+        if first.row is None and second.row is None:
+            if first.column == second.column:
+                # A:A range case
+                return [[i] for i in self._get_vertical_range(first, second)]
+            # A:C range case
+            result = list((self._get_vertical_range(Cell(first.title, column_index, None), Cell(first.title, column_index, None)) for column_index in range(first.column, second.column+1)))
+            return result
+        elif isinstance(first.row, int) and first.row >= 0 and second.row >= 0:
             return self._get_matrix(first, second)
         else:
             raise E2PyclParserException('Invalid cell coordinates')
@@ -138,23 +143,22 @@ class Excel:
         worksheets_titles = []
         suspicious_cells = {}
         sheets_size = []
-        wb = load_workbook(filename=path)
+        wb = load_workbook(filename=path, read_only=True)
         for worksheet in wb.worksheets:
             worksheets_titles.append(worksheet.title)
             worksheet_data = []
             last_column = worksheet.max_column
             last_row = worksheet.max_row
             sheets_size.append({'last_column': last_column, 'last_row': last_row})
-            for row_number in range(1, last_row + 1):
+            for row in worksheet.rows:
                 rows_data = []
-                for column_number in range(1, last_column + 1):
-                    column_letter = get_column_letter(column_number)
-                    suspicious_constructions = cls._get_suspicious_constructions(worksheet[f'{column_letter}{row_number}'].value)
-                    if suspicious_constructions:
-                        suspicious_cells[f"'{worksheet.title}'{column_letter}{row_number}"] = suspicious_constructions
-                    rows_data.append(worksheet[f'{column_letter}{row_number}'].value)
+                for index, cell in enumerate(row):
+                    if cell.value and (suspicious_constructions := cls._get_suspicious_constructions(cell.value)):
+                        suspicious_cells[f"'{worksheet.title}'{cell.column_letter}{index+1}"] = suspicious_constructions
+                    rows_data.append(cell.value)
                 worksheet_data.append(rows_data)
             worksheets_data.append(worksheet_data)
+        wb.close()
 
         return cls({
             'data': worksheets_data,
