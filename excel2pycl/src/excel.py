@@ -155,7 +155,7 @@ class Excel:
                         suspicious_cells[f"'{worksheet.title}'{cell.column_letter}{index+1}"] = suspicious_constructions
                     rows_data.append(cell.value)
                 worksheet_data.append(rows_data)
-                sheets_size.append({'last_column': len(rows_data), 'last_row': len(worksheet_data)})
+            sheets_size.append({'last_column': len(rows_data), 'last_row': len(worksheet_data)})
             worksheets_data.append(worksheet_data)
         wb.close()
 
