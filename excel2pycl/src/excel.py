@@ -55,14 +55,16 @@ class Excel:
         handle_cell(second, self._titles)
 
         if first.title != second.title:
-            raise E2PyclParserException('It is impossible to get range if the values are located in different workspaces')
+            raise E2PyclParserException(
+                'It is impossible to get range if the values are located in different workspaces')
 
         if first.column == second.column:
             result = self._get_vertical_range(first, second)
         elif first.row == second.row:
             result = self._get_horizontal_range(first, second)
         else:
-            raise E2PyclParserException('It is impossible to get a range if its values are not located in a straight line')
+            raise E2PyclParserException(
+                'It is impossible to get a range if its values are not located in a straight line')
 
         return result
 
@@ -100,7 +102,8 @@ class Excel:
 
     def _get_matrix(self, first: Cell, second: Cell) -> list:
         if first.title != second.title:
-            raise E2PyclParserException('It is impossible to get matrix if the values are located in different workspaces')
+            raise E2PyclParserException(
+                'It is impossible to get matrix if the values are located in different workspaces')
 
         result = []
         for row in range(first.row, second.row + 1):
@@ -121,7 +124,8 @@ class Excel:
                 # A:A range case
                 return [[i] for i in self._get_vertical_range(first, second)]
             # A:C range case
-            result = list((self._get_vertical_range(Cell(first.title, column_index, None), Cell(first.title, column_index, None)) for column_index in range(first.column, second.column+1)))
+            result = list((self._get_vertical_range(Cell(first.title, column_index, None), Cell(
+                first.title, column_index, None)) for column_index in range(first.column, second.column+1)))
             return result
         elif isinstance(first.row, int) and first.row >= 0 and second.row >= 0:
             return self._get_matrix(first, second)
@@ -148,6 +152,7 @@ class Excel:
             worksheet.reset_dimensions()
             worksheets_titles.append(worksheet.title)
             worksheet_data = []
+            max_row_len = 0
             for row in worksheet.rows:
                 rows_data = []
                 for index, cell in enumerate(row):
@@ -155,7 +160,10 @@ class Excel:
                         suspicious_cells[f"'{worksheet.title}'{cell.column_letter}{index+1}"] = suspicious_constructions
                     rows_data.append(cell.value)
                 worksheet_data.append(rows_data)
-            sheets_size.append({'last_column': len(rows_data), 'last_row': len(worksheet_data)})
+                rows_data_len = len(rows_data)
+                if max_row_len < rows_data_len:
+                    max_row_len = rows_data_len
+            sheets_size.append({'last_column': max_row_len, 'last_row': len(worksheet_data)})
             worksheets_data.append(worksheet_data)
         wb.close()
 
