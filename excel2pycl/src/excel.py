@@ -145,11 +145,9 @@ class Excel:
         sheets_size = []
         wb = load_workbook(filename=path, read_only=True)
         for worksheet in wb.worksheets:
+            worksheet.reset_dimensions()
             worksheets_titles.append(worksheet.title)
             worksheet_data = []
-            last_column = worksheet.max_column
-            last_row = worksheet.max_row
-            sheets_size.append({'last_column': last_column, 'last_row': last_row})
             for row in worksheet.rows:
                 rows_data = []
                 for index, cell in enumerate(row):
@@ -157,6 +155,7 @@ class Excel:
                         suspicious_cells[f"'{worksheet.title}'{cell.column_letter}{index+1}"] = suspicious_constructions
                     rows_data.append(cell.value)
                 worksheet_data.append(rows_data)
+                sheets_size.append({'last_column': len(rows_data), 'last_row': len(worksheet_data)})
             worksheets_data.append(worksheet_data)
         wb.close()
 
