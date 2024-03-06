@@ -153,7 +153,7 @@ class Excel:
             worksheets_titles.append(worksheet.title)
             worksheet_data = []
             max_row_len = 0
-            for row in worksheet.rows:
+            for row in worksheet.iter_rows():
                 rows_data = []
                 for index, cell in enumerate(row):
                     if cell.value and (suspicious_constructions := cls._get_suspicious_constructions(cell.value)):
