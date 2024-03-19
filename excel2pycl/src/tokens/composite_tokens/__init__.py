@@ -14,7 +14,7 @@ from excel2pycl.src.tokens.regexp_tokens import MatrixOfCellIdentifiersToken, Ce
     IfKeywordToken, IfErrorKeywordToken, IndexKeywordToken, LeftKeywordToken, MatchKeywordToken, MaxKeywordToken, \
     MidKeywordToken, MinKeywordToken, MonthKeywordToken, NetworkDaysKeywordToken, OrKeywordToken, RightKeywordToken, \
     RoundKeywordToken, SearchKeywordToken, SumKeywordToken, SumIfKeywordToken, SumIfSKeywordToken, TodayKeywordToken, \
-    VlookupKeywordToken, XMatchKeywordToken, YearKeywordToken
+    VlookupKeywordToken, XMatchKeywordToken, YearKeywordToken, IfsKeywordToken
 
 
 class SimilarCellToken(CompositeBaseToken):
@@ -598,6 +598,15 @@ class CountBlankControlConstructionToken(CompositeBaseToken):
         return self.value[2].expressions
 
 
+class IfsControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[IfsKeywordToken, BracketStartToken,
+                    IterableExpressionToken, BracketFinishToken]]
+
+    @property
+    def expressions(self):
+        return self.value[2].expressions
+
+
 class CountIfsControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [
@@ -782,7 +791,7 @@ class ControlConstructionCompositeBaseToken(CompositeBaseToken):
                    [IfErrorControlConstructionToken], [DateControlConstructionToken], [MatchControlConstructionToken],
                    [XMatchControlConstructionToken], [LeftControlConstructionToken], [MidControlConstructionToken],
                    [RightControlConstructionToken], [AverageIfsControlConstructionToken],
-                   [CountBlankControlConstructionToken], [TodayControlConstructionToken],
+                   [CountBlankControlConstructionToken], [IfsControlConstructionToken], [TodayControlConstructionToken],
                    [SearchControlConstructionToken],
                    [AddressControlConstructionToken], [CountIfsControlConstructionToken],
                    [CountControlConstructionToken], [NetworkDaysControlConstructionToken],
@@ -804,7 +813,7 @@ class ControlConstructionCompositeBaseToken(CompositeBaseToken):
                                             MidControlConstructionToken, RightControlConstructionToken,
                                             CountBlankControlConstructionToken, TodayControlConstructionToken,
                                             AverageIfsControlConstructionToken, SearchControlConstructionToken,
-                                            CountIfsControlConstructionToken,
+                                            CountIfsControlConstructionToken, IfsControlConstructionToken,
                                             AddressControlConstructionToken, CountControlConstructionToken,
                                             NetworkDaysControlConstructionToken, ColumnControlConstructionToken,
                                             SumIfsControlConstructionToken, IndexControlConstructionToken]:

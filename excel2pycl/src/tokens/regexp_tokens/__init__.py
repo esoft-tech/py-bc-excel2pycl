@@ -301,3 +301,7 @@ class XMatchKeywordToken(KeywordRegexpBaseToken):
 
 class YearKeywordToken(KeywordRegexpBaseToken):
     regexp = r'YEAR'
+
+
+class IfsKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'IFS'

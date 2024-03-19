@@ -649,8 +649,20 @@ class ExcelInPython:
         empty = [elem for elem in flatten_list if elem is None or elem == ""]
         return len(empty)
 
-    
-    
+    def _ifs(self, flatten_list: List):
+        err_value = self._find_error_in_list(flatten_list)
+        if err_value:
+            return err_value
+
+        index = 0
+        while index < len(flatten_list):
+            if flatten_list[index]:
+                return flatten_list[index + 1]
+            index += 2
+
+        return '#N/A'
+
+
     def _search(self, find_text: str, within_text: str, start_num: int | None):
         start_num = start_num if start_num else 1
         if start_num and (start_num > len(within_text) or start_num <= 0):
