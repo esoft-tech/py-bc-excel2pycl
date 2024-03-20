@@ -531,20 +531,6 @@ class RangeOfCellIdentifierWithConditionToken(CompositeBaseToken):
         return None if self.condition_lambda is not None else self.value[2]
 
 
-class RangeOfConditionsWithExpressionToken(CompositeBaseToken):
-    _TOKEN_SETS = [
-        [LambdaToken, SeparatorToken, ExpressionToken]
-    ]
-
-    @property
-    def condition_lambda(self) -> LambdaToken:
-        return self.value[0]
-
-    @property
-    def expression(self) -> ExpressionToken:
-        return self.value[2]
-
-
 class NetworkDaysControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [
@@ -570,24 +556,6 @@ class NetworkDaysControlConstructionToken(CompositeBaseToken):
     @property
     def holidays(self) -> MatrixOfCellIdentifiersToken:
         return self.value[6] if len(self.value) == 8 else None
-
-
-class IterableRangeOfConditionsWithExpressionToken(RecursiveCompositeBaseToken):
-    _TOKEN_SETS = [
-        [RangeOfConditionsWithExpressionToken, SeparatorToken, CLS],
-        [RangeOfConditionsWithExpressionToken]
-    ]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, *kwargs)
-        self._range_of_conditions_with_expressions = []
-
-    @property
-    def range_of_conditions_with_expressions(self) -> list[RangeOfCellIdentifierWithConditionToken]:
-        if not self._range_of_conditions_with_expressions:
-            self._range_of_conditions_with_expressions = [
-                self.value[0]] + self.value[2].range_of_conditions_with_expressions if len(self.value) == 3 else [self.value[0]]
-        return self._range_of_conditions_with_expressions
 
 
 class IterableRangeOfCellIdentifierWithConditionToken(RecursiveCompositeBaseToken):
@@ -631,16 +599,12 @@ class CountBlankControlConstructionToken(CompositeBaseToken):
 
 
 class IfsControlConstructionToken(CompositeBaseToken):
-    _TOKEN_SETS = [
-        [
-            IfsKeywordToken, BracketStartToken,
-            IterableRangeOfConditionsWithExpressionToken, BracketFinishToken
-        ]
-    ]
+    _TOKEN_SETS = [[IfsKeywordToken, BracketStartToken,
+                    IterableExpressionToken, BracketFinishToken]]
 
     @property
-    def items(self) -> IterableRangeOfConditionsWithExpressionToken:
-        return self.value[2]
+    def expressions(self):
+        return self.value[2].expressions
 
 
 class CountIfsControlConstructionToken(CompositeBaseToken):

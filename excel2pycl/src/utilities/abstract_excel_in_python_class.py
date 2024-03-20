@@ -547,14 +547,18 @@ class AbstractExcelInPython(ABC):
             return text
         return text[len(text) - num_chars:]
 
-    def _ifs(self, criteria_and_expression: list):
-        index = 0
-        while index < len(criteria_and_expression):
-            if criteria_and_expression[index]:
-                return criteria_and_expression[index + 1]
-            index += 2
-        return '#N/A'
+    def _ifs(self, flatten_list: List):
+        err_value = self._find_error_in_list(flatten_list)
+        if err_value:
+            return err_value
 
+        index = 0
+        while index < len(flatten_list):
+            if flatten_list[index]:
+                return flatten_list[index + 1]
+            index += 2
+
+        return '#N/A'
 
     def _count_blank(self, flatten_list: List):
         err_value = self._find_error_in_list(flatten_list)

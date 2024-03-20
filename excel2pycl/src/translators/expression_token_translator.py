@@ -1,7 +1,7 @@
 from excel2pycl.src.context import Context
 from excel2pycl.src.excel import Excel
 from excel2pycl.src.tokens import ExpressionToken, AmpersandToken, DateControlConstructionToken, \
-    TodayControlConstructionToken, LogicalOperatorToken
+    TodayControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
@@ -29,9 +29,6 @@ class ExpressionTokenTranslator(AbstractTranslator):
             if operator.__class__ is AmpersandToken:
                 left_operand = f'str({left_operand})'
                 right_operand = f'str({right_operand})'
-
-            if operator.__class__ in LogicalOperatorToken:
-
 
             operator = OperatorSubTokenTranslator.translate(operator, excel, context)
 
