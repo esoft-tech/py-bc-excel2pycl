@@ -649,17 +649,12 @@ class ExcelInPython:
         empty = [elem for elem in flatten_list if elem is None or elem == ""]
         return len(empty)
 
-    def _ifs(self, flatten_list: List):
-        err_value = self._find_error_in_list(flatten_list)
-        if err_value:
-            return err_value
-
+    def _ifs(self, criteria_and_expression: list):
         index = 0
-        while index < len(flatten_list):
-            if flatten_list[index]:
-                return flatten_list[index + 1]
+        while index < len(criteria_and_expression):
+            if criteria_and_expression[index]():
+                return criteria_and_expression[index + 1]
             index += 2
-
         return '#N/A'
 
 

@@ -52,3 +52,5 @@ class LambdaTokenTranslator(AbstractTranslator):
                            f'if isinstance({condition_value}, str) '
                            f'else x{condition_symbol}{condition_value}'
         )
+
+
