@@ -42,6 +42,34 @@ class AbstractExcelInPython(ABC):
         except (date_parser.ParserError, TypeError):
             return None
 
+    def _by_operator(self, operator: str, left_operand: Any, right_operand: Any):
+        match operator:
+            case '>=':
+                return left_operand >= right_operand
+            case '>':
+                return left_operand > right_operand
+            case '<=':
+                return left_operand <= right_operand
+            case '<':
+                return left_operand < right_operand
+            case '=':
+                return left_operand == right_operand
+            case '<>':
+                return left_operand != right_operand
+
+    def _especial_compare(self, operator, left_operand: Any, right_operand: Any):
+        try:
+            return self._by_operator(operator, int(left_operand), int(right_operand))
+        except (ValueError, TypeError):
+            try:
+                return self._by_operator(operator, float(left_operand), float(right_operand))
+            except (ValueError, TypeError):
+                try:
+                    return self._by_operator(operator, left_operand, right_operand)
+                except (ValueError, TypeError):
+                    return self._by_operator(operator, str(left_operand), str(right_operand))
+
+
     def _flatten_list(self, subject: List) -> List:
         result = []
         for i in subject:

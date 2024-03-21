@@ -1,7 +1,8 @@
 from excel2pycl.src.context import Context
 from excel2pycl.src.excel import Excel
 from excel2pycl.src.tokens import ExpressionToken, AmpersandToken, DateControlConstructionToken, \
-    TodayControlConstructionToken
+    TodayControlConstructionToken, EqOperatorToken, NotEqOperatorToken, GtOperatorToken, GtOrEqualOperatorToken, \
+    LtOperatorToken, LtOrEqualOperatorToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
@@ -29,6 +30,15 @@ class ExpressionTokenTranslator(AbstractTranslator):
             if operator.__class__ is AmpersandToken:
                 left_operand = f'str({left_operand})'
                 right_operand = f'str({right_operand})'
+
+            # попытка заставить сравнение работать так, как надо
+            logicalTokens = {EqOperatorToken, NotEqOperatorToken, GtOperatorToken, GtOrEqualOperatorToken,
+                             LtOperatorToken,
+                             LtOrEqualOperatorToken}
+
+            if operator.__class__ in logicalTokens and left_operand and right_operand:
+                operator = OperatorSubTokenTranslator.translate(operator, excel, context)
+                return f'self._especial_compare("{operator}", {left_operand}, {right_operand})'
 
             operator = OperatorSubTokenTranslator.translate(operator, excel, context)
 
