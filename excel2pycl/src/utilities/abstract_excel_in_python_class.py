@@ -42,7 +42,7 @@ class AbstractExcelInPython(ABC):
         except (date_parser.ParserError, TypeError):
             return None
 
-    def _by_operator(self, operator: str, left_operand: Any, right_operand: Any):
+    def _by_operator(self, operator: str, left_operand: Any, right_operand: Any) -> bool:
         match operator:
             case '>=':
                 return left_operand >= right_operand
@@ -56,8 +56,9 @@ class AbstractExcelInPython(ABC):
                 return left_operand == right_operand
             case '<>':
                 return left_operand != right_operand
-
-    def _especial_compare(self, operator, left_operand: Any, right_operand: Any):
+            case _:
+                raise self.ExcelInPythonException('unknown operator ' + operator)
+    def _especial_compare(self, operator, left_operand: Any, right_operand: Any) -> bool:
         try:
             return self._by_operator(operator, int(left_operand), int(right_operand))
         except (ValueError, TypeError):
