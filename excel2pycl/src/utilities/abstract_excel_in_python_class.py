@@ -42,6 +42,38 @@ class AbstractExcelInPython(ABC):
         except (date_parser.ParserError, TypeError):
             return None
 
+    def _by_operator(self, operator: str, left_operand: str | int | float | datetime.datetime,
+                     right_operand: str | int | float | datetime.datetime) -> bool:
+        match operator:
+            case '>=':
+                return left_operand >= right_operand
+            case '>':
+                return left_operand > right_operand
+            case '<=':
+                return left_operand <= right_operand
+            case '<':
+                return left_operand < right_operand
+            case '==':
+                return left_operand == right_operand
+            case '!=':
+                return left_operand != right_operand
+            case _:
+                raise self.ExcelInPythonException('unknown operator ' + operator)
+
+    def _compare(self, operator: str, left_operand: str | int | float | datetime.datetime,
+                          right_operand: str | int | float | datetime.datetime) -> bool:
+        try:
+            return self._by_operator(operator, int(left_operand), int(right_operand))
+        except (ValueError, TypeError):
+            try:
+                return self._by_operator(operator, float(left_operand), float(right_operand))
+            except (ValueError, TypeError):
+                try:
+                    return self._by_operator(operator, left_operand, right_operand)
+                except (ValueError, TypeError):
+                    return self._by_operator(operator, str(left_operand), str(right_operand))
+
+
     def _flatten_list(self, subject: List) -> List:
         result = []
         for i in subject:
@@ -546,6 +578,19 @@ class AbstractExcelInPython(ABC):
         if len(text) < num_chars:
             return text
         return text[len(text) - num_chars:]
+
+    def _ifs(self, flatten_list: List):
+        err_value = self._find_error_in_list(flatten_list)
+        if err_value:
+            return err_value
+
+        index = 0
+        while index < len(flatten_list):
+            if flatten_list[index]:
+                return flatten_list[index + 1]
+            index += 2
+
+        return '#N/A'
 
     def _count_blank(self, flatten_list: List):
         err_value = self._find_error_in_list(flatten_list)

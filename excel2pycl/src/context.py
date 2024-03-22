@@ -55,7 +55,7 @@ class ExcelInPython:
             if other in empty_cell_equal_values:
                 return True
             return False
-            
+        
     def _parse_date_obj(self, date: str | datetime.datetime) -> datetime.datetime | None:
         if isinstance(date, datetime.datetime):
             return date
@@ -64,6 +64,39 @@ class ExcelInPython:
             return date_parser.parse(date)
         except (date_parser.ParserError, TypeError):
             return None
+
+    def _by_operator(self, operator: str, left_operand: str | int | float | datetime.datetime, 
+                     right_operand: str | int | float | datetime.datetime) -> bool:
+        match operator:
+            case '>=':
+                return left_operand >= right_operand
+            case '>':
+                return left_operand > right_operand
+            case '<=':
+                return left_operand <= right_operand
+            case '<':
+                return left_operand < right_operand
+            case '==':
+                return left_operand == right_operand
+            case '!=':
+                return left_operand != right_operand
+            case _:
+                raise self.ExcelInPythonException('unknown operator ' + operator)
+
+
+    def _compare(self, operator: str, left_operand: str | int | float | datetime.datetime,
+                          right_operand: str | int | float | datetime.datetime) -> bool:
+        try:
+            return self._by_operator(operator, int(left_operand), int(right_operand))
+        except (ValueError, TypeError):
+            try:
+                return self._by_operator(operator, float(left_operand), float(right_operand))
+            except (ValueError, TypeError):
+                try:
+                    return self._by_operator(operator, left_operand, right_operand)
+                except (ValueError, TypeError):
+                    return self._by_operator(operator, str(left_operand), str(right_operand))
+
 
     def _flatten_list(self, subject: List) -> List:
         result = []
@@ -649,8 +682,20 @@ class ExcelInPython:
         empty = [elem for elem in flatten_list if elem is None or elem == ""]
         return len(empty)
 
-    
-    
+    def _ifs(self, flatten_list: List):
+        err_value = self._find_error_in_list(flatten_list)
+        if err_value:
+            return err_value
+
+        index = 0
+        while index < len(flatten_list):
+            if flatten_list[index]:
+                return flatten_list[index + 1]
+            index += 2
+
+        return '#N/A'
+
+
     def _search(self, find_text: str, within_text: str, start_num: int | None):
         start_num = start_num if start_num else 1
         if start_num and (start_num > len(within_text) or start_num <= 0):
