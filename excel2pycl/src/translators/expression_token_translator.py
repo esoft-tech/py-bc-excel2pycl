@@ -32,11 +32,10 @@ class ExpressionTokenTranslator(AbstractTranslator):
                 right_operand = f'str({right_operand})'
 
             # попытка заставить сравнение работать так, как надо
-            logicalTokens = {EqOperatorToken, NotEqOperatorToken, GtOperatorToken, GtOrEqualOperatorToken,
-                             LtOperatorToken,
-                             LtOrEqualOperatorToken}
+            compare_tokens = {EqOperatorToken, NotEqOperatorToken, GtOperatorToken, GtOrEqualOperatorToken,
+                              LtOperatorToken, LtOrEqualOperatorToken}
 
-            if operator.__class__ in logicalTokens and left_operand and right_operand:
+            if operator.__class__ in compare_tokens and left_operand and right_operand:
                 operator = OperatorSubTokenTranslator.translate(operator, excel, context)
                 return f'self._especial_compare("{operator}", {left_operand}, {right_operand})'
 

@@ -65,7 +65,8 @@ class ExcelInPython:
         except (date_parser.ParserError, TypeError):
             return None
 
-    def _by_operator(self, operator: str, left_operand: Any, right_operand: Any) -> bool:
+    def _by_operator(self, operator: str, left_operand: str | int | float | datetime.datetime, 
+                     right_operand: str | int | float | datetime.datetime) -> bool:
         match operator:
             case '>=':
                 return left_operand >= right_operand
@@ -75,15 +76,16 @@ class ExcelInPython:
                 return left_operand <= right_operand
             case '<':
                 return left_operand < right_operand
-            case '=':
+            case '==':
                 return left_operand == right_operand
-            case '<>':
+            case '!=':
                 return left_operand != right_operand
             case _:
                 raise self.ExcelInPythonException('unknown operator ' + operator)
 
 
-    def _especial_compare(self, operator, left_operand: Any, right_operand: Any) -> bool:
+    def _especial_compare(self, operator: str, left_operand: str | int | float | datetime.datetime,
+                          right_operand: str | int | float | datetime.datetime) -> bool:
         try:
             return self._by_operator(operator, int(left_operand), int(right_operand))
         except (ValueError, TypeError):
