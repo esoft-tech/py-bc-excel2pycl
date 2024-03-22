@@ -60,7 +60,7 @@ class AbstractExcelInPython(ABC):
             case _:
                 raise self.ExcelInPythonException('unknown operator ' + operator)
 
-    def _especial_compare(self, operator: str, left_operand: str | int | float | datetime.datetime,
+    def _compare(self, operator: str, left_operand: str | int | float | datetime.datetime,
                           right_operand: str | int | float | datetime.datetime) -> bool:
         try:
             return self._by_operator(operator, int(left_operand), int(right_operand))

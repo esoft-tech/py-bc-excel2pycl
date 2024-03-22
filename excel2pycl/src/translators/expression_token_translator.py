@@ -37,7 +37,7 @@ class ExpressionTokenTranslator(AbstractTranslator):
 
             if operator.__class__ in compare_tokens and left_operand and right_operand:
                 operator = OperatorSubTokenTranslator.translate(operator, excel, context)
-                return f'self._especial_compare("{operator}", {left_operand}, {right_operand})'
+                return f'self._compare("{operator}", {left_operand}, {right_operand})'
 
             operator = OperatorSubTokenTranslator.translate(operator, excel, context)
 
