@@ -23,10 +23,9 @@ class CellTranslator(AbstractTranslator):
         if not cell.has_handled_identifiers():
             excel.fill_cell(cell)
         if not context.get_cell(cell):
-            if type(cell.value) is str and cell.value.find('=') == 0:
+            if isinstance(cell.value, str) and cell.value.find('=') == 0:
                 from excel2pycl.src.ast_builder import AstBuilder
                 from excel2pycl.src.lexer import Lexer
-
                 lexer = Lexer.parse(cell.value, in_cell=cell)
                 ast = AstBuilder.parse(lexer, in_cell=cell)
                 code = EntryPointTokenTranslator.translate(ast, excel, context)

@@ -13,7 +13,7 @@ class AbstractExcelInPython(ABC):
     class ExcelInPythonException(Exception):
         pass
 
-    def __init__(self, arguments: List = None):
+    def __init__(self, arguments: List | None = None):
         if arguments is None:
             arguments = []
         self._arguments: Dict[str, Any] = {}
@@ -43,22 +43,22 @@ class AbstractExcelInPython(ABC):
             return None
 
     def _by_operator(self, operator: str, left_operand: str | int | float | datetime.datetime,
-                     right_operand: str | int | float | datetime.datetime) -> bool:
-        match operator:
-            case '>=':
-                return left_operand >= right_operand
-            case '>':
-                return left_operand > right_operand
-            case '<=':
-                return left_operand <= right_operand
-            case '<':
-                return left_operand < right_operand
-            case '==':
-                return left_operand == right_operand
-            case '!=':
-                return left_operand != right_operand
-            case _:
-                raise self.ExcelInPythonException('unknown operator ' + operator)
+                        right_operand: str | int | float | datetime.datetime) -> bool:
+            match operator:
+                case '>=':
+                    return left_operand >= right_operand
+                case '>':
+                    return left_operand > right_operand
+                case '<=':
+                    return left_operand <= right_operand
+                case '<':
+                    return left_operand < right_operand
+                case '==':
+                    return left_operand == right_operand
+                case '!=':
+                    return left_operand != right_operand
+                case _:
+                    raise self.ExcelInPythonException('unknown operator ' + operator)
 
     def _compare(self, operator: str, left_operand: str | int | float | datetime.datetime,
                           right_operand: str | int | float | datetime.datetime) -> bool:
@@ -69,6 +69,11 @@ class AbstractExcelInPython(ABC):
                 return self._by_operator(operator, float(left_operand), float(right_operand))
             except (ValueError, TypeError):
                 try:
+                    # удобнее проводить операции над datetime, т.к. если оба типа date, то у них будет одинаковая нулевая часть time
+                    if isinstance(left_operand, datetime.date) and not isinstance(left_operand, datetime.datetime):
+                        left_operand = datetime.datetime(left_operand.year, left_operand.month, left_operand.day)
+                    if isinstance(right_operand, datetime.date) and not isinstance(right_operand, datetime.datetime):
+                        right_operand = datetime.datetime(right_operand.year, right_operand.month, right_operand.day)
                     return self._by_operator(operator, left_operand, right_operand)
                 except (ValueError, TypeError):
                     return self._by_operator(operator, str(left_operand), str(right_operand))
@@ -77,7 +82,7 @@ class AbstractExcelInPython(ABC):
     def _flatten_list(self, subject: List) -> List:
         result = []
         for i in subject:
-            if type(i) == list:
+            if isinstance(i, list):
                 result = result + self._flatten_list(i)
             else:
                 result.append(i)
@@ -355,8 +360,8 @@ class AbstractExcelInPython(ABC):
         last_day_num = calendar.monthrange(result_date.year, result_date.month)[1]
         return datetime.datetime(result_date.year, result_date.month, last_day_num)
 
-    def _edate(self, start_date: datetime, months: float):
-        if not isinstance(start_date, datetime):
+    def _edate(self, start_date: datetime.datetime, months: float):
+        if not isinstance(start_date, datetime.datetime):
             return '#VALUE!'
         if not isinstance(months, (int, float)):
             return '#VALUE!'
@@ -646,7 +651,7 @@ class AbstractExcelInPython(ABC):
         return find_elem.span(0)[0] + 1 if find_elem else '#VALUE!'
 
     def _network_days(self, date_start: datetime.datetime, date_end: datetime.datetime,
-                      holidays: List[datetime.datetime] = None):
+                      holidays: List[List[datetime.datetime]] | None = None):
         # Большая загадка как вычисляется значение если на входе не даты - поэтому я решила просто кидать '#VALUE!'
         if not isinstance(date_start, datetime.datetime) or not isinstance(date_end, datetime.datetime):
             return '#VALUE!'
@@ -715,8 +720,32 @@ class AbstractExcelInPython(ABC):
         return datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
 
     class EmptyCell(int):
-        def __eq__(self, other):
+        def __eq__(self, other: Any) -> bool:
             empty_cell_equal_values = ['', 0, None, False]
             if other in empty_cell_equal_values:
                 return True
+            
+            return isinstance(other, self.__class__)
+        
+        def __lt__(self, other: Any) -> bool:
+            if isinstance(other, (datetime.date, datetime.datetime)):
+                # Ну вот так excel себя чувствует, пустая ячейка меньше любой даты
+                return True
+            if other is None or (not other):
+                return False
+            if isinstance(other, (int, float)):
+                return other > 0
+            
+            if isinstance(other, str):
+                return other != ''
+            
+            return isinstance(other, self.__class__)
+        
+        def __le__(self, other: Any) -> bool:
+            return self.__eq__(other) or self.__lt__(other)
+        
+        def __gt__(self, other: Any) -> bool:
             return False
+        
+        def __ge__(self, other: Any) -> bool:
+            return self.__eq__(other) or self.__gt__(other)
