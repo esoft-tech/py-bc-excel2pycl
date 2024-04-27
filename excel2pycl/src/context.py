@@ -61,15 +61,17 @@ class ExcelInPython:
             if isinstance(other, (datetime.date, datetime.datetime)):
                 # Ну вот так excel себя чувствует, пустая ячейка меньше любой даты
                 return True
-            if other is None or (not other):
-                return False
+            
             if isinstance(other, (int, float)):
                 return other > 0
             
             if isinstance(other, str):
                 return other != ''
             
-            return isinstance(other, self.__class__)
+            if isinstance(other, list):
+                return not other
+            
+            return False
         
         def __le__(self, other: Any) -> bool:
             return self.__eq__(other) or self.__lt__(other)
@@ -89,23 +91,22 @@ class ExcelInPython:
         except (date_parser.ParserError, TypeError):
             return None
 
-    def _by_operator(self, operator: str, left_operand: str | int | float | datetime.datetime,
-                        right_operand: str | int | float | datetime.datetime) -> bool:
-            match operator:
-                case '>=':
-                    return left_operand >= right_operand
-                case '>':
-                    return left_operand > right_operand
-                case '<=':
-                    return left_operand <= right_operand
-                case '<':
-                    return left_operand < right_operand
-                case '==':
-                    return left_operand == right_operand
-                case '!=':
-                    return left_operand != right_operand
-                case _:
-                    raise self.ExcelInPythonException('unknown operator ' + operator)
+    def _by_operator(self, operator: str, left_operand: str | int | float | datetime.datetime, right_operand: str | int | float | datetime.datetime) -> bool:
+        match operator:
+            case '>=':
+                return left_operand >= right_operand
+            case '>':
+                return left_operand > right_operand
+            case '<=':
+                return left_operand <= right_operand
+            case '<':
+                return left_operand < right_operand
+            case '==':
+                return left_operand == right_operand
+            case '!=':
+                return left_operand != right_operand
+            case _:
+                raise self.ExcelInPythonException('unknown operator ' + operator)
 
     def _compare(self, operator: str, left_operand: str | int | float | datetime.datetime,
                           right_operand: str | int | float | datetime.datetime) -> bool:
@@ -116,11 +117,13 @@ class ExcelInPython:
                 return self._by_operator(operator, float(left_operand), float(right_operand))
             except (ValueError, TypeError):
                 try:
-                    # удобнее проводить операции над datetime, т.к. если оба типа date, то у них будет одинаковая нулевая часть time
+                    # Приводим date к datetime для удобного сравнения
                     if isinstance(left_operand, datetime.date) and not isinstance(left_operand, datetime.datetime):
                         left_operand = datetime.datetime(left_operand.year, left_operand.month, left_operand.day)
+                    
                     if isinstance(right_operand, datetime.date) and not isinstance(right_operand, datetime.datetime):
                         right_operand = datetime.datetime(right_operand.year, right_operand.month, right_operand.day)
+                    
                     return self._by_operator(operator, left_operand, right_operand)
                 except (ValueError, TypeError):
                     return self._by_operator(operator, str(left_operand), str(right_operand))
@@ -545,7 +548,6 @@ class ExcelInPython:
         class Undefined:
             pass
 
-        # Если ячейка в диапазоне критериев пуста, AVERAGEIFS обрабатывает ее как значение 0.
         # Ячейки в диапазоне, содержащие значение TRUE, оцениваются как 1; ячейки в диапазоне,
         # содержащие значение FALSE, оцениваются как 0 (ноль).
         _when_bool_cast_to_int = lambda l: [int(i) if isinstance(i, bool) else i for i in l]
