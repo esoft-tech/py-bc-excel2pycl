@@ -132,3 +132,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 */temp/*
+
+# Examples for testing
+examples/*.xlsx
+examples/translated

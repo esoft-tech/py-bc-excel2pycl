@@ -1,65 +1,96 @@
+from typing import Callable, cast
+
 from excel2pycl.src.context import Context
 from excel2pycl.src.excel import Excel
-from excel2pycl.src.tokens import IfControlConstructionToken, ControlConstructionCompositeBaseToken, \
-    SumControlConstructionToken, AverageControlConstructionToken, VlookupControlConstructionToken, \
-    RoundControlConstructionToken, OrControlConstructionToken, AndControlConstructionToken, \
-    MinControlConstructionToken, MaxControlConstructionToken, SumIfControlConstructionToken, \
-    YearControlConstructionToken, MonthControlConstructionToken, DayControlConstructionToken, \
-    IfErrorControlConstructionToken, \
-    DateControlConstructionToken, \
-    DateDifControlConstructionToken, EoMonthControlConstructionToken, EDateControlConstructionToken, \
-    MatchControlConstructionToken, XMatchControlConstructionToken, LeftControlConstructionToken, \
-    MidControlConstructionToken, RightControlConstructionToken, CountBlankControlConstructionToken, \
-    SearchControlConstructionToken, TodayControlConstructionToken, AverageIfsControlConstructionToken, \
-    AddressControlConstructionToken, CountIfsControlConstructionToken, NetworkDaysControlConstructionToken, \
-    CountControlConstructionToken, ColumnControlConstructionToken, SumIfsControlConstructionToken, \
-    IndexControlConstructionToken, IfsControlConstructionToken
+from excel2pycl.src.tokens import (
+    AddressControlConstructionToken,
+    AndControlConstructionToken,
+    AverageControlConstructionToken,
+    AverageIfsControlConstructionToken,
+    ColumnControlConstructionToken,
+    ControlConstructionCompositeBaseToken,
+    CountBlankControlConstructionToken,
+    CountControlConstructionToken,
+    CountIfsControlConstructionToken,
+    DateControlConstructionToken,
+    DateDifControlConstructionToken,
+    DayControlConstructionToken,
+    EDateControlConstructionToken,
+    EoMonthControlConstructionToken,
+    IfControlConstructionToken,
+    IfErrorControlConstructionToken,
+    IfsControlConstructionToken,
+    IndexControlConstructionToken,
+    LeftControlConstructionToken,
+    MatchControlConstructionToken,
+    MaxControlConstructionToken,
+    MidControlConstructionToken,
+    MinControlConstructionToken,
+    MonthControlConstructionToken,
+    NetworkDaysControlConstructionToken,
+    OrControlConstructionToken,
+    RightControlConstructionToken,
+    RoundControlConstructionToken,
+    SearchControlConstructionToken,
+    SumControlConstructionToken,
+    SumIfControlConstructionToken,
+    SumIfsControlConstructionToken,
+    TodayControlConstructionToken,
+    VlookupControlConstructionToken,
+    XMatchControlConstructionToken,
+    YearControlConstructionToken,
+)
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
-class ControlConstructionTokenTranslator(AbstractTranslator):
+class ControlConstructionTokenTranslator(AbstractTranslator[ControlConstructionCompositeBaseToken]):
     @classmethod
     def translate(cls, token: ControlConstructionCompositeBaseToken, excel: Excel, context: Context) -> str:
-        from excel2pycl.src.translators.if_cc_token_translator import IfControlConstructionTokenTranslator
-        from excel2pycl.src.translators.sum_if_cc_token_translator import SumIfControlConstructionTokenTranslator
-        from excel2pycl.src.translators.sum_cc_token_translator import SumControlConstructionTokenTranslator
-        from excel2pycl.src.translators.average_cc_token_translator import AverageControlConstructionTokenTranslator
-        from excel2pycl.src.translators.vlookup_cc_token_translator import VlookupControlConstructionTokenTranslator
-        from excel2pycl.src.translators.round_cc_token_translator import RoundControlConstructionTokenTranslator
-        from excel2pycl.src.translators.or_cc_token_translator import OrControlConstructionTokenTranslator
+        cls.check_token_type(token, ControlConstructionCompositeBaseToken)
+
+        from excel2pycl.src.translators.address_cc_token_translator import AddressControlConstructionTokenTranslator
         from excel2pycl.src.translators.and_cc_token_translator import AndControlConstructionTokenTranslator
-        from excel2pycl.src.translators.min_cc_token_translator import MinControlConstructionTokenTranslator
-        from excel2pycl.src.translators.max_cc_token_translator import MaxControlConstructionTokenTranslator
-        from excel2pycl.src.translators.year_cc_token_translator import YearControlConstructionTokenTranslator
-        from excel2pycl.src.translators.month_cc_token_translator import MonthControlConstructionTokenTranslator
-        from excel2pycl.src.translators.day_cc_token_translator import DayControlConstructionTokenTranslator
-        from excel2pycl.src.translators.iferror_cc_token_translator import IfErrorControlConstructionTokenTranslator
+        from excel2pycl.src.translators.average_cc_token_translator import AverageControlConstructionTokenTranslator
+        from excel2pycl.src.translators.averageifs_cc_token_translator import (
+            AverageIfsControlConstructionTokenTranslator,
+        )
+        from excel2pycl.src.translators.column_cc_token_translator import ColumnControlConstructionTokenTranslator
+        from excel2pycl.src.translators.count_cc_token_translator import CountControlConstructionTokenTranslator
+        from excel2pycl.src.translators.countblank_cc_token_translator import (
+            CountBlankControlConstructionTokenTranslator,
+        )
+        from excel2pycl.src.translators.countifs_cc_token_translator import CountIfsControlConstructionTokenTranslator
         from excel2pycl.src.translators.date_cc_token_translator import DateControlConstructionTokenTranslator
         from excel2pycl.src.translators.date_dif_cc_token_translator import DateDifControlConstructionTokenTranslator
-        from excel2pycl.src.translators.eo_month_cc_token_translator import EoMonthControlConstructionTokenTranslator
+        from excel2pycl.src.translators.day_cc_token_translator import DayControlConstructionTokenTranslator
         from excel2pycl.src.translators.e_date_cc_token_translator import EDateControlConstructionTokenTranslator
-        from excel2pycl.src.translators.match_cc_token_translator import MatchControlConstructionTokenTranslator
-        from excel2pycl.src.translators.xmatch_cc_token_translator import XMatchControlConstructionTokenTranslator
-        from excel2pycl.src.translators.left_cc_token_translator import LeftControlConstructionTokenTranslator
-        from excel2pycl.src.translators.mid_cc_token_translator import MidControlConstructionTokenTranslator
-        from excel2pycl.src.translators.right_cc_token_translator import RightControlConstructionTokenTranslator
-        from excel2pycl.src.translators.averageifs_cc_token_translator import \
-            AverageIfsControlConstructionTokenTranslator
-        from excel2pycl.src.translators.countblank_cc_token_translator import \
-            CountBlankControlConstructionTokenTranslator
-        from excel2pycl.src.translators.search_cc_token_translator import SearchControlConstructionTokenTranslator
-        from excel2pycl.src.translators.today_cc_token_translator import TodayControlConstructionTokenTranslator
-        from excel2pycl.src.translators.countifs_cc_token_translator import CountIfsControlConstructionTokenTranslator
-        from excel2pycl.src.translators.address_cc_token_translator import AddressControlConstructionTokenTranslator
-        from excel2pycl.src.translators.networkdays_cc_token_translator import \
-            NetworkDaysControlConstructionTokenTranslator
-        from excel2pycl.src.translators.count_cc_token_translator import CountControlConstructionTokenTranslator
-        from excel2pycl.src.translators.column_cc_token_translator import ColumnControlConstructionTokenTranslator
-        from excel2pycl.src.translators.sumifs_cc_token_translator import SumIfsControlConstructionTokenTranslator
+        from excel2pycl.src.translators.eo_month_cc_token_translator import EoMonthControlConstructionTokenTranslator
+        from excel2pycl.src.translators.if_cc_token_translator import IfControlConstructionTokenTranslator
+        from excel2pycl.src.translators.iferror_cc_token_translator import IfErrorControlConstructionTokenTranslator
+        from excel2pycl.src.translators.ifs_cc_token_translator import IfsControlConstructionTokenTranslator
         from excel2pycl.src.translators.index_cc_token_translator import IndexControlConstructionTokenTranslator
-        from  excel2pycl.src.translators.ifs_cc_token_translator import IfsControlConstructionTokenTranslator
+        from excel2pycl.src.translators.left_cc_token_translator import LeftControlConstructionTokenTranslator
+        from excel2pycl.src.translators.match_cc_token_translator import MatchControlConstructionTokenTranslator
+        from excel2pycl.src.translators.max_cc_token_translator import MaxControlConstructionTokenTranslator
+        from excel2pycl.src.translators.mid_cc_token_translator import MidControlConstructionTokenTranslator
+        from excel2pycl.src.translators.min_cc_token_translator import MinControlConstructionTokenTranslator
+        from excel2pycl.src.translators.month_cc_token_translator import MonthControlConstructionTokenTranslator
+        from excel2pycl.src.translators.networkdays_cc_token_translator import (
+            NetworkDaysControlConstructionTokenTranslator,
+        )
+        from excel2pycl.src.translators.or_cc_token_translator import OrControlConstructionTokenTranslator
+        from excel2pycl.src.translators.right_cc_token_translator import RightControlConstructionTokenTranslator
+        from excel2pycl.src.translators.round_cc_token_translator import RoundControlConstructionTokenTranslator
+        from excel2pycl.src.translators.search_cc_token_translator import SearchControlConstructionTokenTranslator
+        from excel2pycl.src.translators.sum_cc_token_translator import SumControlConstructionTokenTranslator
+        from excel2pycl.src.translators.sum_if_cc_token_translator import SumIfControlConstructionTokenTranslator
+        from excel2pycl.src.translators.sumifs_cc_token_translator import SumIfsControlConstructionTokenTranslator
+        from excel2pycl.src.translators.today_cc_token_translator import TodayControlConstructionTokenTranslator
+        from excel2pycl.src.translators.vlookup_cc_token_translator import VlookupControlConstructionTokenTranslator
+        from excel2pycl.src.translators.xmatch_cc_token_translator import XMatchControlConstructionTokenTranslator
+        from excel2pycl.src.translators.year_cc_token_translator import YearControlConstructionTokenTranslator
 
-        translate_functions = {
+        translate_functions: dict[str, Callable] = {
             IfControlConstructionToken.__name__: IfControlConstructionTokenTranslator.translate,
             SumIfControlConstructionToken.__name__: SumIfControlConstructionTokenTranslator.translate,
             SumControlConstructionToken.__name__: SumControlConstructionTokenTranslator.translate,
@@ -94,12 +125,12 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             NetworkDaysControlConstructionToken.__name__: NetworkDaysControlConstructionTokenTranslator.translate,
             SumIfsControlConstructionToken.__name__: SumIfsControlConstructionTokenTranslator.translate,
             IndexControlConstructionToken.__name__: IndexControlConstructionTokenTranslator.translate,
-            IfsControlConstructionToken.__name__: IfsControlConstructionTokenTranslator.translate
+            IfsControlConstructionToken.__name__: IfsControlConstructionTokenTranslator.translate,
         }
 
         sub_token = token.control_construction
-        translate_function = translate_functions.get(sub_token.__class__.__name__)
+        translate_function: Callable | None = translate_functions.get(sub_token.__class__.__name__)
         if not translate_function:
-            raise TypeError('Unknown control construction token')
+            raise TypeError("Unknown control construction token")
 
-        return translate_function(sub_token, excel, context)
+        return cast(str, translate_function(sub_token, excel, context))

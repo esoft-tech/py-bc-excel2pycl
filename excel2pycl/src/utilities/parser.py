@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import cast
 
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.context import Context
@@ -10,15 +10,15 @@ from excel2pycl.src.translators import CellTranslator
 
 
 class Parser:
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Simplified model of interaction with the translator.
         """
         self._safety_check: bool = True
-        self._translation: Optional[str] = None
-        self._entrypoint_cell: Optional[Cell] = None
+        self._translation: str | None = None
+        self._entrypoint_cell: Cell | None = None
         self._entrypoint_cell_has_been_changed: bool = True
-        self._excel_file_path: Optional[str] = None
+        self._excel_file_path: str | None = None
         self._excel_file_path_has_been_changed: bool = True
 
     def enable_safety_check(self) -> Parser:
@@ -85,7 +85,7 @@ class Parser:
             return self
 
         if not self._excel_file_path:
-            raise E2PyclParserException('The file path is not set.')
+            raise E2PyclParserException("The file path is not set.")
 
         excel = Excel.parse(self._excel_file_path)
         if self._safety_check:
@@ -117,7 +117,8 @@ class Parser:
             E2PyclSafetyException: If security check is enabled and suspicious fragments are found,
                 an exception will be thrown.
         """
-        return self._translate()._translation
+        # We can cast this because in _translate method _translation property is not None
+        return cast(str, self._translate()._translation)
 
     def write_translation(self, file_path: str) -> Parser:
         """
@@ -136,7 +137,7 @@ class Parser:
         """
         self._translate()
 
-        with open(file_path, 'w', encoding='utf-8') as f:
-            f.write(self._translation)
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(cast(str, self._translation))
 
         return self

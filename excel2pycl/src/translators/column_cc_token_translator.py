@@ -6,11 +6,13 @@ from excel2pycl.src.tokens import ColumnControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
-class ColumnControlConstructionTokenTranslator(AbstractTranslator):
+class ColumnControlConstructionTokenTranslator(AbstractTranslator[ColumnControlConstructionToken]):
     @classmethod
     def translate(cls, token: ColumnControlConstructionToken, excel: Excel, context: Context) -> str:
-        from excel2pycl.src.translators.matrix_of_cell_identifiers_token_translator import \
-            MatrixOfCellIdentifiersTokenTranslator
+        cls.check_token_type(token, ColumnControlConstructionToken)
+        from excel2pycl.src.translators.matrix_of_cell_identifiers_token_translator import (
+            MatrixOfCellIdentifiersTokenTranslator,
+        )
 
         if token.cell:
             return str(column_index_from_string(token.cell.cell.column))

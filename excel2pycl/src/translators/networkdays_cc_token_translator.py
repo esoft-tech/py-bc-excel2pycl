@@ -2,11 +2,12 @@ from excel2pycl.src.context import Context
 from excel2pycl.src.excel import Excel
 from excel2pycl.src.tokens import NetworkDaysControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
-from excel2pycl.src.translators.matrix_of_cell_identifiers_token_translator import \
-    MatrixOfCellIdentifiersTokenTranslator
+from excel2pycl.src.translators.matrix_of_cell_identifiers_token_translator import (
+    MatrixOfCellIdentifiersTokenTranslator,
+)
 
 
-class NetworkDaysControlConstructionTokenTranslator(AbstractTranslator):
+class NetworkDaysControlConstructionTokenTranslator(AbstractTranslator[NetworkDaysControlConstructionToken]):
     @classmethod
     def translate(cls, token: NetworkDaysControlConstructionToken, excel: Excel, context: Context) -> str:
         from excel2pycl.src.translators.expression_token_translator import ExpressionTokenTranslator
@@ -18,4 +19,4 @@ class NetworkDaysControlConstructionTokenTranslator(AbstractTranslator):
         if token.holidays:
             holidays = MatrixOfCellIdentifiersTokenTranslator.translate(token.holidays, excel, context)
 
-        return f'self._network_days({date_start}, {date_end}, {holidays})'
+        return f"self._network_days({date_start}, {date_end}, {holidays})"

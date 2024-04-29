@@ -12,21 +12,28 @@ class OperandTokenTranslator(AbstractTranslator):
 
         if token.cell:
             return CellTranslator.translate(token.cell, excel, context)
-        elif token.range:
-            from excel2pycl.src.translators.cell_identifier_range_token_translator import \
-                CellIdentifierRangeTokenTranslator
+        if token.range:
+            from excel2pycl.src.translators.cell_identifier_range_token_translator import (
+                CellIdentifierRangeTokenTranslator,
+            )
+
             return CellIdentifierRangeTokenTranslator.translate(token.range, excel, context)
-        elif token.matrix:
-            from excel2pycl.src.translators.matrix_of_cell_identifiers_token_translator import \
-                MatrixOfCellIdentifiersTokenTranslator
+        if token.matrix:
+            from excel2pycl.src.translators.matrix_of_cell_identifiers_token_translator import (
+                MatrixOfCellIdentifiersTokenTranslator,
+            )
+
             return MatrixOfCellIdentifiersTokenTranslator.translate(token.matrix, excel, context)
-        elif token.pattern:
+        if token.pattern:
             from excel2pycl.src.translators.pattern_token_translator import PatternTokenTranslator
+
             return PatternTokenTranslator.translate(token.pattern, excel, context)
-        elif token.literal:
-            return token.literal
-        elif token.control_construction:
+        if token.literal:
+            # ToDo: Приведение к строке может сломать всё, но с другой стороны до этого не соблюдался контракт
+            return str(token.literal)
+        if token.control_construction:
             from excel2pycl.src.translators.cc_token_translator import ControlConstructionTokenTranslator
+
             return ControlConstructionTokenTranslator.translate(token.control_construction, excel, context)
-        else:
-            raise E2PyclParserException('Undefined token value')
+
+        raise E2PyclParserException("Undefined token value")

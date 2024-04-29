@@ -4,7 +4,7 @@ from excel2pycl.src.tokens import TodayControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
-class TodayControlConstructionTokenTranslator(AbstractTranslator):
+class TodayControlConstructionTokenTranslator(AbstractTranslator[TodayControlConstructionToken]):
     @classmethod
     def translate(cls, token: TodayControlConstructionToken, excel: Excel, context: Context) -> str:
-        return f'self._today()'
+        return "self._today()"

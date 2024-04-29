@@ -4,9 +4,9 @@ from excel2pycl.src.excel import Excel
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
-class CellTranslator(AbstractTranslator):
+class CellTranslator(AbstractTranslator[Cell]):
     @classmethod
-    def _set_cell_to_context(cls, cell: Cell, excel: Excel, context: Context) -> (Cell, Excel, Context):
+    def _set_cell_to_context(cls, cell: Cell, excel: Excel, context: Context) -> tuple[Cell, Excel, Context]:
         """
         Translates the passed cell from the Excel object and all nested cells.
 
@@ -23,7 +23,7 @@ class CellTranslator(AbstractTranslator):
         if not cell.has_handled_identifiers():
             excel.fill_cell(cell)
         if not context.get_cell(cell):
-            if type(cell.value) is str and cell.value.find('=') == 0:
+            if isinstance(cell.value, str) and cell.value.find("=") == 0:
                 from excel2pycl.src.ast_builder import AstBuilder
                 from excel2pycl.src.lexer import Lexer
 
@@ -31,7 +31,7 @@ class CellTranslator(AbstractTranslator):
                 ast = AstBuilder.parse(lexer, in_cell=cell)
                 code = EntryPointTokenTranslator.translate(ast, excel, context)
             else:
-                code = repr(cell.value) if cell.value is not None else 'self.EmptyCell()'
+                code = repr(cell.value) if cell.value is not None else "self.EmptyCell()"
             context.set_cell(cell, code)
         return cell, excel, context
 
@@ -52,7 +52,7 @@ class CellTranslator(AbstractTranslator):
         return context.get_cell(cell)
 
     @classmethod
-    def translate_file(cls, excel: Excel, context: Context):
+    def translate_file(cls, excel: Excel, context: Context) -> None:
         """
         Translates all cells from an Excel object.
 
