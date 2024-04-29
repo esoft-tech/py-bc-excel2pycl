@@ -827,8 +827,14 @@ class ExcelInPython:
         cell: Cell | None = None,
         sub_number: int | None = None,
         cell_prefix: str | None = None,
-    ) -> str | None:
-        return f"{cell_prefix or cls._get_cell_function_name(cell)}_{sub_number}"
+    ) -> str:
+        if cell_prefix:
+            return f"{cell_prefix}_{sub_number}"
+
+        if cell:
+            return f"{cls._get_cell_function_name(cell)}_{sub_number}"
+
+        raise Exception("Cell is None")
 
     @staticmethod
     def _get_cell_with_cell_preprocessor(cell_function_name: str) -> str:
@@ -841,7 +847,7 @@ class ExcelInPython:
             else None
         )
 
-    def set_cell(self, cell: Cell, code: str) -> str:
+    def set_cell(self, cell: Cell, code: str) -> str | None:
         self._cell_translations[self._get_cell_function_name(cell)] = code
         return self.get_cell(cell)
 

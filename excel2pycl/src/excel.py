@@ -1,5 +1,5 @@
 import re
-from typing import TypedDict, cast
+from typing import Any, TypedDict, cast
 
 from openpyxl import load_workbook
 
@@ -97,11 +97,11 @@ class Excel:
         )
 
     def _get_vertical_range(self, first: Cell, second: Cell) -> list:
-        start_row = first.row
-        finish_row = second.row
+        start_row: int = cast(int, first.row)
+        finish_row: int = cast(int, second.row)
         if start_row is None:
             start_row = 0
-            finish_row = len(self._data[first.title])
+            finish_row = len(self._data[cast(int, first.title)])
         else:
             finish_row += 1
 
@@ -112,8 +112,8 @@ class Excel:
         return result
 
     def _get_horizontal_range(self, first: Cell, second: Cell) -> list:
-        start_column = first.column
-        finish_column = second.column + 1
+        start_column: int = cast(int, first.column)
+        finish_column: int = cast(int, second.column) + 1
 
         result = []
         for column in range(start_column, finish_column):
@@ -128,9 +128,9 @@ class Excel:
             )
 
         result = []
-        for row in range(first.row, second.row + 1):
+        for row in range(cast(int, first.row), cast(int, second.row) + 1):
             row_data = []
-            for column in range(first.column, second.column + 1):
+            for column in range(cast(int, first.column), cast(int, second.column) + 1):
                 row_data.append(self._fill_cell(Cell(title=first.title, column=column, row=row)))
             result.append(row_data)
 
@@ -152,16 +152,16 @@ class Excel:
                         Cell(first.title, column_index, None),
                         Cell(first.title, column_index, None),
                     )
-                    for column_index in range(first.column, second.column + 1)
+                    for column_index in range(cast(int, first.column), cast(int, second.column) + 1)
                 ),
             ]
-        if isinstance(first.row, int) and first.row >= 0 and second.row >= 0:
+        if (isinstance(first.row, int) and first.row >= 0) and (isinstance(second.row, int) and second.row >= 0):
             return self._get_matrix(first, second)
 
         raise E2PyclParserException("Invalid cell coordinates")
 
     @classmethod
-    def _get_suspicious_constructions(cls, value: int | float | str) -> list:
+    def _get_suspicious_constructions(cls, value: Any) -> list:  # noqa: ANN401
         value = str(value)
         suspicious_constructions = re.findall(r"[a-zA-Z_\d]+\(.*?\)", value)
         if suspicious_constructions:

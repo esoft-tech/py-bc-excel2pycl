@@ -852,7 +852,7 @@ class IterableRangeOfCellIdentifierWithConditionToken(RecursiveCompositeBaseToke
 
     def __init__(self, *args: tuple, **kwargs: dict) -> None:
         # ToDo: Проверить работу __init__
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)  # type: ignore [arg-type]
         self._range_of_cell_identifiers_with_conditions: list = []
 
     @property
@@ -1051,7 +1051,7 @@ class IterableMatrixOfCellIdentifiersToken(RecursiveCompositeBaseToken):
     ]
 
     def __init__(self, *args: tuple, **kwargs: dict) -> None:
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)  # type: ignore [arg-type]
         self._matrix_list: list = []
 
     @property

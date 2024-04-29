@@ -1,9 +1,12 @@
+# type: ignore
+# ToDo: After CI/CD configuration, make this file mypy compliant
+
 import calendar
 import datetime
 import re
 from abc import ABC
 from math import trunc
-from typing import Any, Callable, Literal
+from typing import Any, Callable, Literal, cast
 
 from dateutil import parser as date_parser
 from dateutil.relativedelta import relativedelta
@@ -50,13 +53,13 @@ class AbstractExcelInPython(ABC):
     ) -> bool:
         match operator:
             case ">=":
-                return left_operand >= right_operand
+                return left_operand >= right_operand  # type: ignore [operator]
             case ">":
-                return left_operand > right_operand
+                return left_operand > right_operand  # type: ignore [operator]
             case "<=":
-                return left_operand <= right_operand
+                return left_operand <= right_operand  # type: ignore [operator]
             case "<":
-                return left_operand < right_operand
+                return left_operand < right_operand  # type: ignore [operator]
             case "==":
                 return left_operand == right_operand
             case "!=":
@@ -71,10 +74,10 @@ class AbstractExcelInPython(ABC):
         right_operand: str | int | float | datetime.datetime,
     ) -> bool:
         try:
-            return self._by_operator(operator, int(left_operand), int(right_operand))
+            return self._by_operator(operator, int(left_operand), int(right_operand))  # type: ignore [arg-type]
         except (ValueError, TypeError):
             try:
-                return self._by_operator(operator, float(left_operand), float(right_operand))
+                return self._by_operator(operator, float(left_operand), float(right_operand))  # type: ignore [arg-type]
             except (ValueError, TypeError):
                 try:
                     return self._by_operator(operator, left_operand, right_operand)
@@ -82,7 +85,7 @@ class AbstractExcelInPython(ABC):
                     return self._by_operator(operator, str(left_operand), str(right_operand))
 
     def _flatten_list(self, subject: list) -> list:
-        result = []
+        result: list = []
         for i in subject:
             if isinstance(i, list):
                 result = result + self._flatten_list(i)
@@ -96,11 +99,11 @@ class AbstractExcelInPython(ABC):
             lambda cell: cell in ["#NUM!", "#DIV/0!", "#N/A", "#NAME?", " #NULL!", "#REF!", "#VALUE!"],
             flatten_list,
         ):
-            return err_value
+            return cast(str, err_value)
         return None
 
     @staticmethod
-    def _only_numeric_list(flatten_list: list, with_string_digits: bool = False) -> list[float | int]:
+    def _only_numeric_list(flatten_list: list, with_string_digits: bool = False) -> list[float | int | str]:
         return [
             i
             for i in flatten_list
@@ -112,7 +115,7 @@ class AbstractExcelInPython(ABC):
         return [i for i in flatten_list if isinstance(i, bool)]
 
     @staticmethod
-    def _only_datetime_list(flatten_list: list) -> list[datetime]:
+    def _only_datetime_list(flatten_list: list) -> list[datetime.datetime]:
         return [i for i in flatten_list if isinstance(i, datetime.datetime)]
 
     @staticmethod
@@ -129,7 +132,7 @@ class AbstractExcelInPython(ABC):
         return re.sub(r"[\[\]]", r"\\\\\g<0>", pattern)
 
     @staticmethod
-    def _binary_search(arr: list, lookup_value: any, reverse: bool = False) -> tuple[int, int, int]:
+    def _binary_search(arr: list, lookup_value: Any, reverse: bool = False) -> tuple[int, int, int]:
         first = 0
         last = len(arr) - 1
         next_smallest = last if reverse else first
@@ -172,7 +175,7 @@ class AbstractExcelInPython(ABC):
         return (exact, next_smallest, next_largest)
 
     def _sum(self, flatten_list: list) -> float | int:
-        return sum(self._only_numeric_list(flatten_list))
+        return cast(int | float, sum(cast(list[int | float], self._only_numeric_list(flatten_list))))
 
     def _average(self, flatten_list: list) -> float | int:
         return self._sum(flatten_list) / len(self._only_numeric_list(flatten_list))
@@ -200,7 +203,7 @@ class AbstractExcelInPython(ABC):
         lookup_value: str | float | int | datetime.datetime | datetime.date | "EmptyCell",
         lookup_array: list,
         match_type: int = 0,
-    ) -> int | str:
+    ) -> int | str | None:
         lookup_value_type = int if isinstance(lookup_value, self.EmptyCell) else type(lookup_value)
 
         match match_type:
@@ -242,7 +245,7 @@ class AbstractExcelInPython(ABC):
                         last_valid_index = index + 1
                     else:
                         return last_valid_index
-                return None
+        return None
 
     def _xmatch(
         self,

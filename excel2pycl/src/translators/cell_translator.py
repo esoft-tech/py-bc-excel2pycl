@@ -1,6 +1,7 @@
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.context import Context
 from excel2pycl.src.excel import Excel
+from excel2pycl.src.exceptions import E2PyclTranslationException
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
@@ -49,7 +50,12 @@ class CellTranslator(AbstractTranslator[Cell]):
             str: Translation of the passed cell.
         """
         cell, excel, context = cls._set_cell_to_context(cell, excel, context)
-        return context.get_cell(cell)
+        translated_cell = context.get_cell(cell)
+
+        if translated_cell is None:
+            raise E2PyclTranslationException("Cannot translate a cell", cell, context)
+
+        return translated_cell
 
     @classmethod
     def translate_file(cls, excel: Excel, context: Context) -> None:

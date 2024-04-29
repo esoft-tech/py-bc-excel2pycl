@@ -44,9 +44,13 @@ class LambdaTokenTranslator(AbstractTranslator[LambdaToken]):
             condition_value = expression
 
         # ToDo: Если судить по функции получения expression, то этот if никогда не выполнится
-        if getattr(getattr(token.expression, "left_operand", None), "value", None) and isinstance(
-            token.expression.left_operand.value[0],
-            PatternToken,
+        if (
+            token.expression
+            and token.expression.left_operand
+            and isinstance(
+                token.expression.left_operand.value[0],
+                PatternToken,
+            )
         ):
             return context.set_sub_cell(
                 token.in_cell,

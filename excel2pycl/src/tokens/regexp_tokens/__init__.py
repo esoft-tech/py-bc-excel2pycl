@@ -13,7 +13,7 @@ class MatrixOfCellIdentifiersToken(RegexpBaseToken):
 
     def __init__(self, *args: tuple, **kwargs: dict) -> None:
         self._matrix: tuple[Cell | None, Cell | None] = None, None
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)  # type: ignore [arg-type]
 
     def __str__(self) -> str:
         return f"<{self.__class__.__name__}>({self.matrix})"
@@ -43,13 +43,13 @@ class CellIdentifierRangeToken(RegexpBaseToken):
 
     def __init__(self, *args: tuple, **kwargs: dict) -> None:
         self._range: tuple[Cell | None, Cell | None] = None, None
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)  # type: ignore [arg-type]
 
     def __str__(self) -> str:
         return f"<{self.__class__.__name__}>({self.range})"
 
     @property
-    def range(self) -> (Cell, Cell):
+    def range(self) -> tuple[Cell, Cell]:
         if self._range[0] is None:
             self._range = (
                 Cell(
@@ -73,7 +73,7 @@ class CellIdentifierToken(RegexpBaseToken):
 
     def __init__(self, *args: tuple, **kwargs: dict) -> None:
         self._cell: Cell | None = None
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)  # type: ignore [arg-type]
 
     def __str__(self) -> str:
         return f"<{self.__class__.__name__}>({self.cell})"
@@ -107,7 +107,7 @@ class LiteralToken(RegexpBaseToken):
     value_range = [0, -1]
 
     def __init__(self, *args: tuple, **kwargs: dict) -> None:
-        super().__init__(*args, *kwargs)
+        super().__init__(*args, *kwargs)  # type: ignore [arg-type]
         real_value: int | float | str | None = None
 
         if self.value[2]:

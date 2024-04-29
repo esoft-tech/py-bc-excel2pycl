@@ -31,7 +31,8 @@ dependencies = [
 dev = [
   "ruff",
   "mypy",
-  "types-openpyxl"
+  "types-openpyxl",
+  "types-python-dateutil"
 ]
 
 [project.urls]

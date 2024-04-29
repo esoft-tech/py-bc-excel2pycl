@@ -4,7 +4,7 @@ from excel2pycl.src.cell import Cell
 from excel2pycl.src.exceptions import E2PyclExecutorException
 from excel2pycl.src.handle_cell import handle_cell
 from excel2pycl.src.object_loader import load_module
-from excel2pycl.src.utilities.abstract_excel_in_python_class import AbstractExcelInPython
+from excel2pycl.src.utilities.abstract_excel_in_python_class import AbstractExcelInPython  # type: ignore
 
 
 class Executor:
@@ -75,6 +75,8 @@ class Executor:
         Returns:
             Executor.
         """
+        if self._executed_instance is None:
+            raise Exception("Current executed instance is None")
         self._executed_instance.set_arguments([cell.to_dict() for cell in self._cells])
         self._cells_have_been_changed = False
         return self
@@ -91,6 +93,9 @@ class Executor:
         Returns:
             Cell.
         """
+        if self._executed_instance is None:
+            raise Exception("Current executed instance is None")
+
         if self._cells_have_been_changed:
             self._set_cells_to_executed_instance()
 
