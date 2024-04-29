@@ -18,6 +18,10 @@
     "python.testing.unittestEnabled": true,
     "python.languageServer": "Pylance",
     "python.analysis.typeCheckingMode": "basic",
+    // ignore pylance, because we're using Mypy
+    "python.analysis.ignore": [
+        "*"
+    ],
     "terminal.integrated.env.osx": {
         "PYTHONPATH": "${workspaceFolder}",
         "MYPYPATH": "${workspaceFolder}"
@@ -40,5 +44,5 @@
         "**/.mypy_cache/**": true,
         "**/.ruff_cache/**": true,
         "**/.pytest_cache/**": true
-      }
-}
+      },
+    }

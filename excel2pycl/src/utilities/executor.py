@@ -1,27 +1,28 @@
 from __future__ import annotations
 
-from typing import List, Optional, Set, Dict, Union
-
-from excel2pycl.src.handle_cell import handle_cell
-from excel2pycl.src.utilities.abstract_excel_in_python_class import AbstractExcelInPython
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.exceptions import E2PyclExecutorException
+from excel2pycl.src.handle_cell import handle_cell
 from excel2pycl.src.object_loader import load_module
+from excel2pycl.src.utilities.abstract_excel_in_python_class import AbstractExcelInPython
 
 
 class Executor:
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Simplified model of working with translated ExcelInPython objects.
         """
         self._cells_have_been_changed: bool = False
-        self._executed_instance: Optional[AbstractExcelInPython] = None
-        self._cells: Set[Cell] = set()
-        self._titles: Dict[str, int] = {}
-        self._sheets_size: List[Dict[str, int]] = []
+        self._executed_instance: AbstractExcelInPython | None = None
+        self._cells: set[Cell] = set()
+        self._titles: dict[str, int] = {}
+        self._sheets_size: list[dict[str, int]] = []
 
-    def set_executed_class(self, class_object: AbstractExcelInPython.__class__ = None,
-                           class_file: str = None) -> Executor:
+    def set_executed_class(
+        self,
+        class_object: AbstractExcelInPython.__class__ | None = None,
+        class_file: str | None = None,
+    ) -> Executor:
         """
         Sets the executing ExcelInPython object.
 
@@ -40,17 +41,17 @@ class Executor:
         elif class_file:
             self._executed_instance = load_module(class_file).ExcelInPython()
         else:
-            raise E2PyclExecutorException('There is no data to get an instance of an excel in python object.')
+            raise E2PyclExecutorException("There is no data to get an instance of an excel in python object.")
 
         self._titles = self._executed_instance.get_titles()
         self._sheets_size = self._executed_instance.get_sheets_size()
 
         return self
 
-    def get_executed_class(self):
+    def get_executed_class(self) -> AbstractExcelInPython | None:
         return self._executed_instance
 
-    def set_cells(self, cells: List[Cell]) -> Executor:
+    def set_cells(self, cells: list[Cell]) -> Executor:
         """
         Sets cell values for an ExcelInPython object.
         Replaces the existing values at the intersection.
@@ -98,7 +99,7 @@ class Executor:
 
         return cell
 
-    def get_cells(self, cells: List[Cell]) -> List[Cell]:
+    def get_cells(self, cells: list[Cell]) -> list[Cell]:
         """
         Calculates the value of the passed cells in the ExcelInPython
         object and writes them to the passed instance of the cells.
@@ -112,7 +113,7 @@ class Executor:
         """
         return [self.get_cell(cell) for cell in cells]
 
-    def get_sheet(self, sheet: Union[int, str]) -> List[List[Cell]]:
+    def get_sheet(self, sheet: int | str) -> list[list[Cell]]:
         """
         Calculates the value of the passed worksheet cells in the ExcelInPython
         object and writes them to the passed instance of the cells.
@@ -124,15 +125,15 @@ class Executor:
         Returns:
             List[List[Cell]].
         """
-        if type(sheet) is str:
+        if isinstance(sheet, str):
             sheet = self._titles[sheet]
 
         cells = []
         sheet_size = self._sheets_size[sheet]
 
-        for row in range(sheet_size.get('last_row', 0)):
+        for row in range(sheet_size.get("last_row", 0)):
             row_cells = []
-            for column in range(sheet_size.get('last_column', 0)):
+            for column in range(sheet_size.get("last_column", 0)):
                 row_cells.append(self.get_cell(Cell(title=sheet, row=row, column=column)))
             cells.append(row_cells)
 
