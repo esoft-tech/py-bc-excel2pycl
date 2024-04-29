@@ -26,4 +26,4 @@ jobs:
         pip install hatch 
     - name: Check unittests
       run: |
-        hatch env run unittest
+        hatch env run test
