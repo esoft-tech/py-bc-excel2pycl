@@ -22,17 +22,10 @@ classifiers = [
     "Operating System :: Microsoft :: Windows",
     "Operating System :: POSIX :: Linux",
 ]
+requires-python = "==3.11"
 dependencies = [
     "openpyxl>=3.1.2",
     "python-dateutil>=2.8.2",
-]
-
-[project.optional-dependencies]
-dev = [
-  "ruff",
-  "mypy",
-  "types-openpyxl",
-  "types-python-dateutil"
 ]
 
 [project.urls]
@@ -47,7 +40,24 @@ include = [
 ]
 
 [tool.hatch.envs.default]
-python="3.11"
+python = "3.11"
+dependencies = [
+    "openpyxl>=3.1.2",
+    "python-dateutil>=2.8.2",
+]
+[tool.hatch.envs.default.scripts]
+test = "python -m unittest"
+
+[[tool.hatch.envs.all.matrix]]
+python = ["3.11"]
+
+[tool.hatch.envs.lint]
+extra-dependencies = [
+  "ruff",
+  "mypy",
+  "types-openpyxl",
+  "types-python-dateutil"
+]
 
 [tool.ruff]
 select = [
