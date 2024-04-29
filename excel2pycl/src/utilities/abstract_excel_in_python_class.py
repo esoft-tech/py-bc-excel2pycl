@@ -13,6 +13,13 @@ from dateutil.relativedelta import relativedelta
 
 
 class AbstractExcelInPython(ABC):
+    class EmptyCell(int):
+        def __eq__(self, other: Any) -> bool:  # noqa: ANN401
+            empty_cell_equal_values = ["", 0, None, False]
+            if other in empty_cell_equal_values:
+                return True
+            return False
+
     class ExcelInPythonException(Exception):
         pass
 
@@ -200,7 +207,7 @@ class AbstractExcelInPython(ABC):
 
     def _match(
         self,
-        lookup_value: str | float | int | datetime.datetime | datetime.date | "EmptyCell",
+        lookup_value: str | float | int | datetime.datetime | datetime.date | EmptyCell,
         lookup_array: list,
         match_type: int = 0,
     ) -> int | str | None:
@@ -249,7 +256,7 @@ class AbstractExcelInPython(ABC):
 
     def _xmatch(
         self,
-        lookup_value: str | float | int | datetime.datetime | datetime.date | "EmptyCell",
+        lookup_value: str | float | int | datetime.datetime | datetime.date | EmptyCell,
         lookup_array: list,
         match_mode: int = 0,
         search_mode: int = 1,
@@ -776,10 +783,3 @@ class AbstractExcelInPython(ABC):
     @staticmethod
     def _today() -> datetime.date:
         return datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
-
-    class EmptyCell(int):
-        def __eq__(self, other: Any) -> bool:  # noqa: ANN401
-            empty_cell_equal_values = ["", 0, None, False]
-            if other in empty_cell_equal_values:
-                return True
-            return False
