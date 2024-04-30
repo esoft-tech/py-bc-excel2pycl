@@ -136,8 +136,8 @@ class ArithmeticOperatorToken(CompositeBaseToken):
     @property
     def operator(
         self,
-    ) -> MultiplicationOperatorToken | MultiplicationOperatorToken | PlusOperatorToken | MinusOperatorToken:
-        return self.value[0].operator if self.value[0].__class__ is OneOperandArithmeticOperatorToken else self.value[0]
+    ) -> MultiplicationOperatorToken | DivOperatorToken | PlusOperatorToken | MinusOperatorToken:
+        return self.value[0].operator if self.value[0].__class__ is OneOperandArithmeticOperatorToken else self.value[0]  # type: ignore [no-any-return]
 
 
 class AmpersandOperatorToken(CompositeBaseToken):

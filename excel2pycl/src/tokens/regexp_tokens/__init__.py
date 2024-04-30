@@ -113,7 +113,7 @@ class LiteralToken(RegexpBaseToken):
         if self.value[2]:
             real_value = self.value[2]
             if self.value[5]:
-                if real_value is None:
+                if real_value is None or isinstance(real_value, str):
                     real_value = 0
                 real_value += float(f"0.{self.value[5]}")
             if self.value[7]:
