@@ -26,10 +26,10 @@ jobs:
         pip install hatch 
     - name: Linter (Ruff)
       run: |
-        hatch env run -e test ruff .\excel2pycl\
+        hatch env run -e test ruff excel2pycl\
     - name: Type Checker (Mypy)
       run: |
-        hatch env run -e test mypy .\excel2pycl\
+        hatch env run -e test mypy excel2pycl\
     - name: unittests
       run: |
         hatch env run test
