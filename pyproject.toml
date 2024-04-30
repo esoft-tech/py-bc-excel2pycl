@@ -43,6 +43,7 @@ include = [
 [tool.hatch.envs.test]
 python = "3.11"
 extra-dependencies = [
+  "pre-commit",
   "ruff",
   "mypy",
   "types-openpyxl",
