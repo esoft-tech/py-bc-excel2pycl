@@ -30,14 +30,14 @@ class BaseToken:
 
         if not cls._SUBCLASSES:
             subclasses = cls.__subclasses__()
+            subclasses_first_rank = cls._remove_subclasses_lower_rank(subclasses)
 
-            cls._SUBCLASSES = cls._remove_subclasses_lower_rank(subclasses)
+            cls._SUBCLASSES = list(subclasses_first_rank)
             cls._SUBCLASSES.append(UndefinedToken)
 
         return cls._SUBCLASSES
 
-    @classmethod
-    def _remove_subclasses_lower_rank(cls, subclasses: list) -> list:
+    def _remove_subclasses_lower_rank(subclasses: list) -> dict:
         from excel2pycl.src.tokens.undefined_token import UndefinedToken
 
         nested_classes = []
@@ -49,9 +49,9 @@ class BaseToken:
 
         subclasses += nested_classes
 
-        subclasses_set = set(subclasses)
+        subclasses = dict.fromkeys(subclasses)
         for subclass in for_difference_update:
-            if subclass in subclasses_set:
-                subclasses_set.discard(subclass)
+            if subclass in subclasses:
+                del subclasses[subclass]
 
-        return list(subclasses_set)
+        return subclasses
