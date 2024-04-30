@@ -46,11 +46,12 @@ extra-dependencies = [
   "ruff",
   "mypy",
   "types-openpyxl",
-  "types-python-dateutil"
+  "types-python-dateutil",
+  "pytest"
 ]
 
 [tool.hatch.envs.test.scripts]
-test = "python -m unittest -v tests\\test_ifs_token.py"
+test = "pytest -v  tests"
 
 
 [tool.ruff]
