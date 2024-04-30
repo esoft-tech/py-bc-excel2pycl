@@ -32,7 +32,7 @@ class CompositeBaseToken(BaseToken):
             for token in tokens:
                 if not len(_expression):
                     break
-                elif token == _expression[0].__class__:
+                if token == _expression[0].__class__:
                     from excel2pycl.src.tokens import ControlConstructionCompositeBaseToken
 
                     """

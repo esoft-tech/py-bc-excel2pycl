@@ -54,4 +54,4 @@ class BaseToken:
             if subclass in subclasses_set:
                 subclasses_set.discard(subclass)
 
-        return list(subclasses)
+        return list(subclasses_set)
