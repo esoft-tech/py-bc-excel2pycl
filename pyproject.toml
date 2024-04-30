@@ -101,7 +101,7 @@ exclude = [
 ]
 line-length = 120
 target-version = "py311"
-lint.ignore = ["ANN101", "ANN102", "RUF001", "RUF002", "RUF003",]
+lint.ignore = ["ANN101", "ANN102", "RUF001", "RUF002", "RUF003", "SLF001", "C901", "E722"]
 
 [tool.ruff.lint.flake8-annotations]
 mypy-init-return = true

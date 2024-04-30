@@ -122,12 +122,12 @@ class ExcelInPython:
         return None
 
     @staticmethod
-    def _only_numeric_list(flatten_list: list, with_string_digits: bool = False) -> list[float | int | str]:
-        return [
-            i
-            for i in flatten_list
-            if i.__class__ in [float, int] or (with_string_digits and isinstance(i, str) and i.isdigit())
-        ]
+    def _filter_list_by_float_or_int(flatten_list: list) -> list[float | int | str]:
+        return [i for i in flatten_list if i.__class__ in [float, int]]
+
+    @staticmethod
+    def _filter_list_with_str_by_float_or_int(flatten_list: list) -> list[float | int | str]:
+        return [i for i in flatten_list if i.__class__ in [float, int] or (isinstance(i, str) and i.isdigit())]
 
     @staticmethod
     def _only_bool_list(flatten_list: list) -> list[bool]:
@@ -151,7 +151,7 @@ class ExcelInPython:
         return re.sub(r"[\\[\\]]", r"\\\\\\g<0>", pattern)
 
     @staticmethod
-    def _binary_search(arr: list, lookup_value: Any, reverse: bool = False) -> tuple[int, int, int]:
+    def _binary_search(arr: list, lookup_value: Any, reverse: bool = False) -> tuple[int, int, int]:  # noqa
         first = 0
         last = len(arr) - 1
         next_smallest = last if reverse else first
@@ -194,23 +194,22 @@ class ExcelInPython:
         return (exact, next_smallest, next_largest)
 
     def _sum(self, flatten_list: list) -> float | int:
-        return cast(int | float, sum(cast(list[int | float], self._only_numeric_list(flatten_list))))
+        return cast(int | float, sum(cast(list[int | float], self._filter_list_by_float_or_int(flatten_list))))
 
     def _average(self, flatten_list: list) -> float | int:
-        return self._sum(flatten_list) / len(self._only_numeric_list(flatten_list))
+        return self._sum(flatten_list) / len(self._filter_list_by_float_or_int(flatten_list))
 
     def _count(self, matrices: list[list], args: list, args_cells: list) -> int:
         flattened_matrices = self._flatten_list(matrices)
         return len(
-            self._only_numeric_list(
+            self._filter_list_by_float_or_int(
                 flattened_matrices + args_cells,
             )
             + self._only_bool_list(  # false и true учитываются
                 args,
             )
-            + self._only_numeric_list(
+            + self._filter_list_with_str_by_float_or_int(
                 args,
-                with_string_digits=True,
             )
             + self._only_datetime_list(
                 flattened_matrices + args_cells + args,
@@ -300,7 +299,7 @@ class ExcelInPython:
         lookup_value: str | int | float,
         table_array: list,
         col_index_num: int,
-        range_lookup: bool | int = False,
+        range_lookup: bool | int = False,  # noqa: FBT002
     ) -> str | int | float:
         if not isinstance(range_lookup, (bool, int)):
             return "#ERROR!"
@@ -453,14 +452,14 @@ class ExcelInPython:
         if err_value:
             return err_value
 
-        return min(self._only_numeric_list(flatten_list))
+        return min(self._filter_list_by_float_or_int(flatten_list))
 
     def _max(self, flatten_list: list) -> str | float | int:
         err_value = self._find_error_in_list(flatten_list)
         if err_value:
             return err_value
 
-        return max(self._only_numeric_list(flatten_list))
+        return max(self._filter_list_by_float_or_int(flatten_list))
 
     def _day(self, date: datetime.datetime) -> int:
         return date.day
@@ -478,7 +477,7 @@ class ExcelInPython:
                 return when_error
 
             return cell
-        except:  # noqa: E722
+        except:
             return when_error
 
     def _left(self, text: str, num_chars: int) -> str:
@@ -577,7 +576,7 @@ class ExcelInPython:
         # Если ячейки в average_range не могут быть преобразованы в числа, AVERAGEIFS возвращает #DIV0! значение ошибки.
         try:
             [int(i) for i in average_range]
-        except:  # noqa: E722
+        except:
             return "#DIV0!"
 
         # List[List[criteria_range, criteria]]

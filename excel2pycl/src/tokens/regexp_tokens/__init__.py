@@ -1,4 +1,4 @@
-from typing import cast
+from typing import ClassVar, cast
 
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.exceptions import E2PyclParserException
@@ -9,7 +9,7 @@ class MatrixOfCellIdentifiersToken(RegexpBaseToken):
     # TODO Consider the possibility of a matrix like A:A
     regexp = r"((\'([^!]*?)\'|(\w*?))!)?\$?([A-Z]+)(\$?(\d+))?:\$?([A-Z]+)(\$?(\d+))?"
     last_match_regexp = r"([^\d].*)?"
-    value_range = [0, -1]
+    value_range: ClassVar[list[int]] = [0, -1]
 
     def __init__(self, *args: tuple, **kwargs: dict) -> None:
         self._matrix: tuple[Cell | None, Cell | None] = None, None
@@ -37,9 +37,9 @@ class MatrixOfCellIdentifiersToken(RegexpBaseToken):
 
 
 class CellIdentifierRangeToken(RegexpBaseToken):
-    regexp = r"((\'(.*?)\'|(\w*?))!)?((\$?([A-Z]+)(\$?(\d+))?:\$?\8(\$?(\d+))?)|(\$?([A-Z]+)(\$?(\d+))?:\$?([A-Z]+)(\$?\15)?))"
+    regexp = r"((\'(.*?)\'|(\w*?))!)?((\$?([A-Z]+)(\$?(\d+))?:\$?\8(\$?(\d+))?)|(\$?([A-Z]+)(\$?(\d+))?:\$?([A-Z]+)(\$?\15)?))"  # noqa: E501
     last_match_regexp = r"([^\d$].*)?"
-    value_range: list[int] = [0, -1]
+    value_range: ClassVar[list[int]] = [0, -1]
 
     def __init__(self, *args: tuple, **kwargs: dict) -> None:
         self._range: tuple[Cell | None, Cell | None] = None, None
@@ -69,7 +69,7 @@ class CellIdentifierRangeToken(RegexpBaseToken):
 class CellIdentifierToken(RegexpBaseToken):
     regexp = r"((\'(.*?)\'|(\w*?))!)?\$?([A-Z]+)\$?(\d+)"
     last_match_regexp = r"([^\d]|[^:\d].*)?"
-    value_range: list[int] = [0, -1]
+    value_range: ClassVar[list[int]] = [0, -1]
 
     def __init__(self, *args: tuple, **kwargs: dict) -> None:
         self._cell: Cell | None = None
@@ -104,7 +104,7 @@ class PatternToken(RegexpBaseToken):
 # TODO добавить условие для локализации
 class LiteralToken(RegexpBaseToken):
     regexp = r"\"(.*?)\"|(\d+)((\.)(\d+))?(e(-?\d+))?|(TRUE(\(\))?)|(FALSE(\(\))?)"
-    value_range = [0, -1]
+    value_range: ClassVar[list[int]] = [0, -1]
 
     def __init__(self, *args: tuple, **kwargs: dict) -> None:
         super().__init__(*args, *kwargs)  # type: ignore [arg-type]

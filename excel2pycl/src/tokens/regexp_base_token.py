@@ -1,4 +1,5 @@
 import re
+from typing import ClassVar
 
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.exceptions import E2PyclParserException
@@ -8,7 +9,7 @@ from excel2pycl.src.tokens.base_token import BaseToken
 class RegexpBaseToken(BaseToken):
     regexp = r""
     last_match_regexp = r".*"
-    value_range: list[int] = [0, 1]
+    value_range: ClassVar[int] = [0, 1]
     irreplaceable_value = None
 
     @classmethod
