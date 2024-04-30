@@ -64,4 +64,4 @@ jobs:
 
     - name: unittests
       run: |
-        hatch env run test
+        hatch env run -e test test
