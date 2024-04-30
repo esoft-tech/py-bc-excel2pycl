@@ -24,6 +24,12 @@ jobs:
         cache: 'pip'
     - run: |
         pip install hatch 
-    - name: Check unittests
+    - name: Linter (Ruff)
+      run: |
+        hatch env run -e test ruff .\excel2pycl\
+    - name: Type Checker (Mypy)
+      run: |
+        hatch env run -e test mypy .\excel2pycl\
+    - name: unittests
       run: |
         hatch env run test

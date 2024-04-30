@@ -39,19 +39,9 @@ include = [
     "/excel2pycl",
 ]
 
-[tool.hatch.envs.default]
+
+[tool.hatch.envs.test]
 python = "3.11"
-dependencies = [
-    "openpyxl>=3.1.2",
-    "python-dateutil>=2.8.2",
-]
-[tool.hatch.envs.default.scripts]
-test = "python -m unittest"
-
-[[tool.hatch.envs.all.matrix]]
-python = ["3.11"]
-
-[tool.hatch.envs.lint]
 extra-dependencies = [
   "ruff",
   "mypy",
@@ -59,8 +49,12 @@ extra-dependencies = [
   "types-python-dateutil"
 ]
 
+[tool.hatch.envs.test.scripts]
+test = "python -m unittest -v tests\\test_ifs_token.py"
+
+
 [tool.ruff]
-select = [
+lint.select = [
     # "D",  # pydocstyle  # can't use with reSt docstrings
     "E",   # pycodestyle errors
     "W",   # pycodestyle warnings
@@ -78,7 +72,7 @@ select = [
     "COM", # https://docs.astral.sh/ruff/rules/#flake8-commas-com
     "ANN", # https://docs.astral.sh/ruff/rules/#flake8-commas-com
 ]
-fixable = ["ALL"]
+lint.fixable = ["ALL"]
 exclude = [
     ".bzr",
     ".direnv",
@@ -102,11 +96,10 @@ exclude = [
     "node_modules",
     "venv",
     "examples",
-    "test",
 ]
 line-length = 120
 target-version = "py311"
-ignore = ["ANN101", "ANN102", "RUF001", "RUF002", "RUF003",]
+lint.ignore = ["ANN101", "ANN102", "RUF001", "RUF002", "RUF003",]
 
 [tool.ruff.flake8-annotations]
 mypy-init-return = true
