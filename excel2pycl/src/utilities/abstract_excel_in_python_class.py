@@ -4,7 +4,6 @@
 import calendar
 import datetime
 import re
-from abc import ABC
 from math import trunc
 from typing import Any, Callable, Literal, cast
 
@@ -12,7 +11,7 @@ from dateutil import parser as date_parser
 from dateutil.relativedelta import relativedelta
 
 
-class AbstractExcelInPython(ABC):
+class AbstractExcelInPython:
     class EmptyCell(int):
         def __eq__(self, other: Any) -> bool:  # noqa: ANN401
             empty_cell_equal_values = ["", 0, None, False]
@@ -114,7 +113,7 @@ class AbstractExcelInPython(ABC):
         return [
             i
             for i in flatten_list
-            if isinstance(i, (float, int)) or (with_string_digits and isinstance(i, str) and i.isdigit())
+            if i.__class__ in [float, int] or (with_string_digits and isinstance(i, str) and i.isdigit())
         ]
 
     @staticmethod
@@ -213,7 +212,7 @@ class AbstractExcelInPython(ABC):
     ) -> int | str | None:
         lookup_value_type = int if isinstance(lookup_value, self.EmptyCell) else type(lookup_value)
 
-        match match_type:
+        match int(match_type):
             case 0:
                 for index, value in enumerate(lookup_array):
                     if isinstance(value[0], self.EmptyCell) or not isinstance(value[0], lookup_value_type):
@@ -269,7 +268,7 @@ class AbstractExcelInPython(ABC):
             case 1:
                 output_value = 2
 
-        match search_mode:
+        match int(search_mode):
             case 1:
                 return self._match(lookup_value, lookup_array, match_mode)
             case -1:
@@ -292,6 +291,8 @@ class AbstractExcelInPython(ABC):
     ) -> str | int | float:
         if not isinstance(range_lookup, (bool, int)):
             return "#ERROR!"
+
+        col_index_num = int(col_index_num)
 
         lookup_value_type = int if isinstance(lookup_value, self.EmptyCell) else type(lookup_value)
         last_valid_value = "#N/A"
@@ -422,7 +423,7 @@ class AbstractExcelInPython(ABC):
         return datetime.datetime(result_date.year, result_date.month, last_day_num)
 
     def _edate(self, start_date: datetime.datetime, months: float) -> datetime.datetime:
-        if not isinstance(start_date, datetime):
+        if not isinstance(start_date, datetime.datetime):
             return "#VALUE!"
         if not isinstance(months, (int, float)):
             return "#VALUE!"
@@ -544,7 +545,7 @@ class AbstractExcelInPython(ABC):
     def _when_cell_is_empty_cast_to_zero(self, iterable: list) -> list:
         return [0 if isinstance(i, self.EmptyCell) else i for i in iterable]
 
-    def _when_bool_cast_to_int(range: list) -> list[int]:
+    def _when_bool_cast_to_int(self, range: list) -> list[int]:
         return [int(element) if isinstance(element, bool) else element for element in range]
 
     def _averageifs(self, average_range: list[list], *range_and_criteria: tuple) -> float | int | str:

@@ -32,28 +32,25 @@ class ExpressionTokenTranslator(AbstractTranslator[ExpressionToken]):
             token.left_operand,
             token.right_operand,
         )
-        translated_left_operand = ""
-        translated_right_operand = ""
-        translated_operator = ""
 
         if left_operand:
             token_translator = (
                 ExpressionTokenTranslator if left_operand.__class__ is ExpressionToken else OperandTokenTranslator
             )
-            translated_right_operand = token_translator.translate(left_operand, excel, context)  # type: ignore
-            translated_left_operand = f"({translated_right_operand})" if left_brackets else translated_right_operand
+            left_operand = token_translator.translate(left_operand, excel, context)
+            left_operand = f"({left_operand})" if left_brackets else left_operand
 
         if right_operand:
             token_translator = (
                 ExpressionTokenTranslator if right_operand.__class__ is ExpressionToken else OperandTokenTranslator
             )
-            translated_right_operand = token_translator.translate(right_operand, excel, context)  # type: ignore
-            translated_right_operand = f"({translated_right_operand})" if right_brackets else translated_right_operand
+            right_operand = token_translator.translate(right_operand, excel, context)
+            right_operand = f"({right_operand})" if right_brackets else right_operand
 
         if operator:
             if operator.__class__ is AmpersandToken:
-                translated_left_operand = f"str({left_operand})"
-                translated_right_operand = f"str({right_operand})"
+                left_operand = f"str({left_operand})"
+                right_operand = f"str({right_operand})"
 
             # попытка заставить сравнение работать так, как надо
             compare_tokens = (
@@ -65,10 +62,10 @@ class ExpressionTokenTranslator(AbstractTranslator[ExpressionToken]):
                 LtOrEqualOperatorToken,
             )
 
-            if isinstance(operator, compare_tokens) and translated_left_operand and translated_left_operand:
-                translated_operator = OperatorSubTokenTranslator.translate(operator, excel, context)
-                return f'self._compare("{translated_operator}", {translated_left_operand}, {translated_right_operand})'
+            if isinstance(operator, compare_tokens) and left_operand and right_operand:
+                operator = OperatorSubTokenTranslator.translate(operator, excel, context)
+                return f'self._compare("{operator}", {left_operand}, {right_operand})'
 
-            translated_operator = OperatorSubTokenTranslator.translate(operator, excel, context)
+            operator = OperatorSubTokenTranslator.translate(operator, excel, context)
 
-        return f"{translated_left_operand}{translated_operator}{translated_right_operand}"
+        return f"{left_operand or ''}{operator or ''}{right_operand or ''}"

@@ -19,11 +19,19 @@ class Context:
 from dateutil import parser as date_parser
 from dateutil.relativedelta import relativedelta
 from math import trunc
-from typing import Literal, Any, Callable
+from typing import Any, Callable, Literal, cast
 import calendar
 import re
 
 class ExcelInPython:
+    class EmptyCell(int):
+        def __eq__(self, other: Any) -> bool:  # noqa: ANN401
+            empty_cell_equal_values = ["", 0, None, False]
+            if other in empty_cell_equal_values:
+                return True
+
+            return False
+
     class ExcelInPythonException(Exception):
         pass
 
@@ -38,7 +46,7 @@ class ExcelInPython:
     def set_arguments(self, arguments: list):
         self._arguments = {{
             **self._arguments,
-            **{{i['uid']: i['value'] for i in arguments}}
+            **{{i["uid"]: i["value"] for i in arguments}}
         }}
 
     def get_titles(self) -> dict[str, int]:
@@ -46,13 +54,6 @@ class ExcelInPython:
 
     def get_sheets_size(self) -> list[dict[str, int]]:
         return self._sheets_size
-
-    class EmptyCell(int):
-        def __eq__(self, other: Any) -> bool:  # noqa: ANN401
-            empty_cell_equal_values = ["", 0, None, False]
-            if other in empty_cell_equal_values:
-                return True
-            return False
 
     def _parse_date_obj(self, date: str | datetime.datetime) -> datetime.datetime | None:
         if isinstance(date, datetime.datetime):
@@ -71,13 +72,13 @@ class ExcelInPython:
     ) -> bool:
         match operator:
             case ">=":
-                return left_operand >= right_operand
+                return left_operand >= right_operand  # type: ignore [operator]
             case ">":
-                return left_operand > right_operand
+                return left_operand > right_operand  # type: ignore [operator]
             case "<=":
-                return left_operand <= right_operand
+                return left_operand <= right_operand  # type: ignore [operator]
             case "<":
-                return left_operand < right_operand
+                return left_operand < right_operand  # type: ignore [operator]
             case "==":
                 return left_operand == right_operand
             case "!=":
@@ -92,10 +93,10 @@ class ExcelInPython:
         right_operand: str | int | float | datetime.datetime,
     ) -> bool:
         try:
-            return self._by_operator(operator, int(left_operand), int(right_operand))
+            return self._by_operator(operator, int(left_operand), int(right_operand))  # type: ignore [arg-type]
         except (ValueError, TypeError):
             try:
-                return self._by_operator(operator, float(left_operand), float(right_operand))
+                return self._by_operator(operator, float(left_operand), float(right_operand))  # type: ignore [arg-type]
             except (ValueError, TypeError):
                 try:
                     return self._by_operator(operator, left_operand, right_operand)
@@ -103,7 +104,7 @@ class ExcelInPython:
                     return self._by_operator(operator, str(left_operand), str(right_operand))
 
     def _flatten_list(self, subject: list) -> list:
-        result = []
+        result: list = []
         for i in subject:
             if isinstance(i, list):
                 result = result + self._flatten_list(i)
@@ -117,15 +118,15 @@ class ExcelInPython:
             lambda cell: cell in ["#NUM!", "#DIV/0!", "#N/A", "#NAME?", " #NULL!", "#REF!", "#VALUE!"],
             flatten_list,
         ):
-            return err_value
+            return cast(str, err_value)
         return None
 
     @staticmethod
-    def _only_numeric_list(flatten_list: list, with_string_digits: bool = False) -> list[float | int]:
+    def _only_numeric_list(flatten_list: list, with_string_digits: bool = False) -> list[float | int | str]:
         return [
             i
             for i in flatten_list
-            if isinstance(i, (float, int)) or (with_string_digits and isinstance(i, str) and i.isdigit())
+            if i.__class__ in [float, int] or (with_string_digits and isinstance(i, str) and i.isdigit())
         ]
 
     @staticmethod
@@ -133,7 +134,7 @@ class ExcelInPython:
         return [i for i in flatten_list if isinstance(i, bool)]
 
     @staticmethod
-    def _only_datetime_list(flatten_list: list) -> list[datetime]:
+    def _only_datetime_list(flatten_list: list) -> list[datetime.datetime]:
         return [i for i in flatten_list if isinstance(i, datetime.datetime)]
 
     @staticmethod
@@ -150,7 +151,7 @@ class ExcelInPython:
         return re.sub(r"[\\[\\]]", r"\\\\\\g<0>", pattern)
 
     @staticmethod
-    def _binary_search(arr: list, lookup_value: any, reverse: bool = False) -> tuple[int, int, int]:
+    def _binary_search(arr: list, lookup_value: Any, reverse: bool = False) -> tuple[int, int, int]:
         first = 0
         last = len(arr) - 1
         next_smallest = last if reverse else first
@@ -193,7 +194,7 @@ class ExcelInPython:
         return (exact, next_smallest, next_largest)
 
     def _sum(self, flatten_list: list) -> float | int:
-        return sum(self._only_numeric_list(flatten_list))
+        return cast(int | float, sum(cast(list[int | float], self._only_numeric_list(flatten_list))))
 
     def _average(self, flatten_list: list) -> float | int:
         return self._sum(flatten_list) / len(self._only_numeric_list(flatten_list))
@@ -218,13 +219,13 @@ class ExcelInPython:
 
     def _match(
         self,
-        lookup_value: str | float | int | datetime.datetime | datetime.date | "EmptyCell",
+        lookup_value: str | float | int | datetime.datetime | datetime.date | EmptyCell,
         lookup_array: list,
         match_type: int = 0,
-    ) -> int | str:
+    ) -> int | str | None:
         lookup_value_type = int if isinstance(lookup_value, self.EmptyCell) else type(lookup_value)
 
-        match match_type:
+        match int(match_type):
             case 0:
                 for index, value in enumerate(lookup_array):
                     if isinstance(value[0], self.EmptyCell) or not isinstance(value[0], lookup_value_type):
@@ -263,11 +264,11 @@ class ExcelInPython:
                         last_valid_index = index + 1
                     else:
                         return last_valid_index
-                return None
+        return None
 
     def _xmatch(
         self,
-        lookup_value: str | float | int | datetime.datetime | datetime.date | "EmptyCell",
+        lookup_value: str | float | int | datetime.datetime | datetime.date | EmptyCell,
         lookup_array: list,
         match_mode: int = 0,
         search_mode: int = 1,
@@ -280,7 +281,7 @@ class ExcelInPython:
             case 1:
                 output_value = 2
 
-        match search_mode:
+        match int(search_mode):
             case 1:
                 return self._match(lookup_value, lookup_array, match_mode)
             case -1:
@@ -303,6 +304,8 @@ class ExcelInPython:
     ) -> str | int | float:
         if not isinstance(range_lookup, (bool, int)):
             return "#ERROR!"
+
+        col_index_num = int(col_index_num)
 
         lookup_value_type = int if isinstance(lookup_value, self.EmptyCell) else type(lookup_value)
         last_valid_value = "#N/A"
@@ -433,7 +436,7 @@ class ExcelInPython:
         return datetime.datetime(result_date.year, result_date.month, last_day_num)
 
     def _edate(self, start_date: datetime.datetime, months: float) -> datetime.datetime:
-        if not isinstance(start_date, datetime):
+        if not isinstance(start_date, datetime.datetime):
             return "#VALUE!"
         if not isinstance(months, (int, float)):
             return "#VALUE!"
@@ -555,7 +558,7 @@ class ExcelInPython:
     def _when_cell_is_empty_cast_to_zero(self, iterable: list) -> list:
         return [0 if isinstance(i, self.EmptyCell) else i for i in iterable]
 
-    def _when_bool_cast_to_int(range: list) -> list[int]:
+    def _when_bool_cast_to_int(self, range: list) -> list[int]:
         return [int(element) if isinstance(element, bool) else element for element in range]
 
     def _averageifs(self, average_range: list[list], *range_and_criteria: tuple) -> float | int | str:

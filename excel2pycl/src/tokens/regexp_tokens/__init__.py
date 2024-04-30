@@ -111,8 +111,10 @@ class LiteralToken(RegexpBaseToken):
         real_value: int | float | str | None = None
 
         if self.value[2]:
-            real_value = float(self.value[2])
+            real_value = self.value[2]
             if self.value[5]:
+                if real_value is None:
+                    real_value = 0
                 real_value += float(f"0.{self.value[5]}")
             if self.value[7]:
                 # TODO in theory, the degree can be calculated using the expression

@@ -134,11 +134,10 @@ class ArithmeticOperatorToken(CompositeBaseToken):
     ]
 
     @property
-    def operator(self) -> OneOperandArithmeticOperatorToken | MultiplicationOperatorToken | DivOperatorToken:
-        return cast(
-            OneOperandArithmeticOperatorToken | MultiplicationOperatorToken | DivOperatorToken,
-            self.value[0].operator,
-        )
+    def operator(
+        self,
+    ) -> MultiplicationOperatorToken | MultiplicationOperatorToken | PlusOperatorToken | MinusOperatorToken:
+        return self.value[0].operator if self.value[0].__class__ is OneOperandArithmeticOperatorToken else self.value[0]
 
 
 class AmpersandOperatorToken(CompositeBaseToken):
@@ -935,7 +934,7 @@ class CountIfsControlConstructionToken(CompositeBaseToken):
 
     @property
     def count_condition(self) -> LambdaToken:
-        return cast(LambdaToken, self.value[2])
+        return cast(LambdaToken, self.value[4])
 
     @property
     def conditions(self) -> IterableRangeOfCellIdentifierWithConditionToken | None:
