@@ -1,0 +1,26 @@
+name: py-excel-to-func
+
+on:
+  push:
+    branches:
+      - main  # or any other branch you want to deploy from
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    - run: pip install hatch
+
+    - name: Build Package
+      run: hatch build
+
+    - name: Publish to Nexus PyPI Repository
+      if: github.ref == 'refs/heads/main'  # Ensures this step runs only on pushes to main branch
+      run: |
+        pip install twine
+        twine upload --repository-url ${{ secrets.NEXUS_URL }} -u ${{ secrets.NEXUS_USERNAME }} -p ${{ secrets.NEXUS_PASSWORD }} dist/*
