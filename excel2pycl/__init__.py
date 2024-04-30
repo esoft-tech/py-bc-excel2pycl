@@ -7,6 +7,7 @@ from excel2pycl.src.exceptions import (
     E2PyclExecutorException,
     E2PyclParserException,
     E2PyclSafetyException,
+    E2PyclTranslationException,
 )
 from excel2pycl.src.object_loader import load_module
 from excel2pycl.src.translators import CellTranslator
