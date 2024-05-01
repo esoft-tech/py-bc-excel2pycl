@@ -50,12 +50,38 @@ class ExcelInPython:
         return self._sheets_size
 
     class EmptyCell(int):
-        def __eq__(self, other):
+        def __eq__(self, other: Any) -> bool:
             empty_cell_equal_values = ['', 0, None, False]
             if other in empty_cell_equal_values:
                 return True
+            
+            return isinstance(other, self.__class__)
+        
+        def __lt__(self, other: Any) -> bool:
+            if isinstance(other, (datetime.date, datetime.datetime)):
+                # Ну вот так excel себя чувствует, пустая ячейка меньше любой даты
+                return True
+            
+            if isinstance(other, (int, float)):
+                return other > 0
+            
+            if isinstance(other, str):
+                return other != ''
+            
+            if isinstance(other, list):
+                return not other
+            
             return False
         
+        def __le__(self, other: Any) -> bool:
+            return self.__eq__(other) or self.__lt__(other)
+        
+        def __gt__(self, other: Any) -> bool:
+            return False
+        
+        def __ge__(self, other: Any) -> bool:
+            return self.__eq__(other) or self.__gt__(other)
+            
     def _parse_date_obj(self, date: str | datetime.datetime) -> datetime.datetime | None:
         if isinstance(date, datetime.datetime):
             return date
@@ -65,8 +91,7 @@ class ExcelInPython:
         except (date_parser.ParserError, TypeError):
             return None
 
-    def _by_operator(self, operator: str, left_operand: str | int | float | datetime.datetime, 
-                     right_operand: str | int | float | datetime.datetime) -> bool:
+    def _by_operator(self, operator: str, left_operand: str | int | float | datetime.datetime, right_operand: str | int | float | datetime.datetime) -> bool:
         match operator:
             case '>=':
                 return left_operand >= right_operand
@@ -83,9 +108,8 @@ class ExcelInPython:
             case _:
                 raise self.ExcelInPythonException('unknown operator ' + operator)
 
-
-    def _compare(self, operator: str, left_operand: str | int | float | datetime.datetime,
-                          right_operand: str | int | float | datetime.datetime) -> bool:
+    def _compare(self, operator: str, left_operand: str | int | float | datetime.date | datetime.datetime,
+                          right_operand: str | int | float | datetime.date | datetime.datetime) -> bool:
         try:
             return self._by_operator(operator, int(left_operand), int(right_operand))
         except (ValueError, TypeError):
@@ -93,6 +117,13 @@ class ExcelInPython:
                 return self._by_operator(operator, float(left_operand), float(right_operand))
             except (ValueError, TypeError):
                 try:
+                    # Приводим date к datetime для удобного сравнения
+                    if isinstance(left_operand, datetime.date) and not isinstance(left_operand, datetime.datetime):
+                        left_operand = datetime.datetime(left_operand.year, left_operand.month, left_operand.day)
+                    
+                    if isinstance(right_operand, datetime.date) and not isinstance(right_operand, datetime.datetime):
+                        right_operand = datetime.datetime(right_operand.year, right_operand.month, right_operand.day)
+                    
                     return self._by_operator(operator, left_operand, right_operand)
                 except (ValueError, TypeError):
                     return self._by_operator(operator, str(left_operand), str(right_operand))
@@ -101,7 +132,7 @@ class ExcelInPython:
     def _flatten_list(self, subject: List) -> List:
         result = []
         for i in subject:
-            if type(i) == list:
+            if isinstance(i, list):
                 result = result + self._flatten_list(i)
             else:
                 result.append(i)
@@ -198,7 +229,7 @@ class ExcelInPython:
         return len(
             self._only_numeric_list(
                 flattened_matrices + args_cells
-            ) + self._only_bool_list(
+            ) + self._only_bool_list(  # false и true учитываются
                 args
             ) + self._only_numeric_list(
                 args, with_string_digits=True
@@ -517,8 +548,6 @@ class ExcelInPython:
         class Undefined:
             pass
 
-        # Если ячейка в диапазоне критериев пуста, AVERAGEIFS обрабатывает ее как значение 0.
-        _when_cell_is_empty_cast_to_zero = lambda l: [0 if isinstance(i, self.EmptyCell) else i for i in l]
         # Ячейки в диапазоне, содержащие значение TRUE, оцениваются как 1; ячейки в диапазоне,
         # содержащие значение FALSE, оцениваются как 0 (ноль).
         _when_bool_cast_to_int = lambda l: [int(i) if isinstance(i, bool) else i for i in l]
@@ -580,7 +609,7 @@ class ExcelInPython:
         return len(list(filter(None, count_range)))
         
     def _network_days(self, date_start: datetime.datetime, date_end: datetime.datetime,
-                      holidays: List[datetime.datetime] = None):
+                      holidays: List[List[datetime.datetime]] | None = None):
         # Большая загадка как вычисляется значение если на входе не даты - поэтому я решила просто кидать '#VALUE!'
         if not isinstance(date_start, datetime.datetime) or not isinstance(date_end, datetime.datetime):
             return '#VALUE!'
@@ -726,7 +755,7 @@ class ExcelInPython:
                 continue
             find_elem = i
             break
-        #исключаем поиск по regex вроде \d
+        # исключаем поиск по regex вроде \d
         if find_elem:
             sequences = find_elem.groups(0)
             found_text = find_elem.group(0)
