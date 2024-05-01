@@ -8,6 +8,43 @@ on:
 
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    - run: |
+        pip install hatch 
+    
+    - name: Linter (Ruff)
+      run: |
+        hatch env run -e test ruff check excel2pycl\
+
+  type-check:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11']
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    - run: |
+        pip install hatch 
+    - name: Type Checker (Mypy)
+      run: |
+        hatch env run -e test mypy excel2pycl\
+
   testing:
 
     runs-on: ubuntu-latest
@@ -22,7 +59,9 @@ jobs:
       with:
         python-version: '3.11'
         cache: 'pip'
-    - run: pip install -r requirements.txt
-    - name: Check unittests
+    - run: |
+        pip install hatch 
+
+    - name: unittests
       run: |
-        python -m unittest
+        hatch env run -e test test

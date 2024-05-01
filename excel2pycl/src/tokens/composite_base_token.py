@@ -1,14 +1,20 @@
+from typing import ClassVar
+
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.exceptions import E2PyclParserException
 from excel2pycl.src.tokens.base_token import BaseToken
 
 
 class CompositeBaseToken(BaseToken):
-    _TOKEN_SETS = []
-    _PROCESSED = False
+    _TOKEN_SETS: ClassVar[list[list]] = []
+    _PROCESSED: ClassVar[bool] = False
+
+    @property
+    def expressions(self) -> list:
+        raise NotImplementedError()
 
     @classmethod
-    def add_token_set(cls, tokens: list):
+    def add_token_set(cls, tokens: list) -> None:
         cls._TOKEN_SETS.append(tokens)
 
     @classmethod
@@ -16,7 +22,9 @@ class CompositeBaseToken(BaseToken):
         return cls._TOKEN_SETS
 
     @classmethod
-    def get(cls, expression: list, in_cell: Cell):
+    def get(cls, expression: list | str, in_cell: Cell) -> tuple["BaseToken | None", list | str]:
+        if isinstance(expression, str):
+            raise E2PyclParserException("expression must be list")
         control_construction_flag = False
         for tokens in cls.get_token_sets():
             new_expression_part = []
@@ -24,8 +32,9 @@ class CompositeBaseToken(BaseToken):
             for token in tokens:
                 if not len(_expression):
                     break
-                elif token == _expression[0].__class__:
+                if token == _expression[0].__class__:
                     from excel2pycl.src.tokens import ControlConstructionCompositeBaseToken
+
                     """
                     If we encounter a control construction and have not encountered any of its token sets,
                     we are sure that the structure we are trying to parse contains an error
@@ -48,6 +57,6 @@ class CompositeBaseToken(BaseToken):
                 return cls(new_expression_part, in_cell), _expression
 
         if control_construction_flag:
-            raise E2PyclParserException(f'{cls.__name__} has an incorrect structure')
+            raise E2PyclParserException(f"{cls.__name__} has an incorrect structure")
 
         return None, expression

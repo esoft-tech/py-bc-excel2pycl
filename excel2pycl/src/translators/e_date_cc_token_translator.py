@@ -4,7 +4,7 @@ from excel2pycl.src.tokens import EDateControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
-class EDateControlConstructionTokenTranslator(AbstractTranslator):
+class EDateControlConstructionTokenTranslator(AbstractTranslator[EDateControlConstructionToken]):
     @classmethod
     def translate(cls, token: EDateControlConstructionToken, excel: Excel, context: Context) -> str:
         from excel2pycl.src.translators.expression_token_translator import ExpressionTokenTranslator
@@ -12,4 +12,4 @@ class EDateControlConstructionTokenTranslator(AbstractTranslator):
         start_date = ExpressionTokenTranslator.translate(token.start_date, excel, context)
         months = ExpressionTokenTranslator.translate(token.months, excel, context)
 
-        return f'self._edate({start_date}, {months})'
+        return f"self._edate({start_date}, {months})"

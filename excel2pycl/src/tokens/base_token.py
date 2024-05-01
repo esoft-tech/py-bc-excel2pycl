@@ -1,22 +1,24 @@
+from typing import Any, ClassVar
+
 from excel2pycl.src.cell import Cell
 
 
 class BaseToken:
-    _SUBCLASSES = []
+    _SUBCLASSES: ClassVar[list] = []
 
-    def __init__(self, value, in_cell: Cell):
+    def __init__(self, value: Any, in_cell: Cell) -> None:  # noqa: ANN401
         self.value = value
         self._in_cell = in_cell
 
-    def __str__(self):
-        return f'<{self.__class__.__name__}>(value=`{self.value}`)'
+    def __str__(self) -> str:
+        return f"<{self.__class__.__name__}>(value=`{self.value}`)"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.__str__()
 
     @classmethod
-    def get(cls, expression: str or list, in_cell: Cell):
-        pass
+    def get(cls, expression: str | list, in_cell: Cell) -> tuple["BaseToken | None", str | list]:
+        raise NotImplementedError()
 
     @property
     def in_cell(self) -> Cell:
@@ -35,7 +37,8 @@ class BaseToken:
 
         return cls._SUBCLASSES
 
-    def _remove_subclasses_lower_rank(subclasses: list) -> dict:
+    @classmethod
+    def _remove_subclasses_lower_rank(cls, subclasses: list) -> dict:
         from excel2pycl.src.tokens.undefined_token import UndefinedToken
 
         nested_classes = []
@@ -47,9 +50,9 @@ class BaseToken:
 
         subclasses += nested_classes
 
-        subclasses = dict.fromkeys(subclasses)
+        subclasses_dict = dict.fromkeys(subclasses)
         for subclass in for_difference_update:
-            if subclass in subclasses:
-                del subclasses[subclass]
+            if subclass in subclasses_dict:
+                del subclasses_dict[subclass]
 
-        return subclasses
+        return subclasses_dict

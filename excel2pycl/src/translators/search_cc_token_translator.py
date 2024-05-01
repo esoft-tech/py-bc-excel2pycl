@@ -4,7 +4,7 @@ from excel2pycl.src.tokens import SearchControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
-class SearchControlConstructionTokenTranslator(AbstractTranslator):
+class SearchControlConstructionTokenTranslator(AbstractTranslator[SearchControlConstructionToken]):
     @classmethod
     def translate(cls, token: SearchControlConstructionToken, excel: Excel, context: Context) -> str:
         from excel2pycl.src.translators.expression_token_translator import ExpressionTokenTranslator
@@ -14,4 +14,4 @@ class SearchControlConstructionTokenTranslator(AbstractTranslator):
 
         start_num = ExpressionTokenTranslator.translate(token.start_num, excel, context) if token.start_num else None
 
-        return f'self._search({find_text}, {within_text}, {start_num})'
+        return f"self._search({find_text}, {within_text}, {start_num})"

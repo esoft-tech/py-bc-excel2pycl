@@ -1,70 +1,92 @@
+from typing import ClassVar, cast
+
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.exceptions import E2PyclParserException
-from excel2pycl.src.tokens.regexp_base_token import RegexpBaseToken, KeywordRegexpBaseToken
+from excel2pycl.src.tokens.regexp_base_token import KeywordRegexpBaseToken, RegexpBaseToken
 
 
 class MatrixOfCellIdentifiersToken(RegexpBaseToken):
     # TODO Consider the possibility of a matrix like A:A
-    regexp = r'((\'([^!]*?)\'|(\w*?))!)?\$?([A-Z]+)(\$?(\d+))?:\$?([A-Z]+)(\$?(\d+))?'
-    last_match_regexp = r'([^\d].*)?'
-    value_range = [0, -1]
+    regexp = r"((\'([^!]*?)\'|(\w*?))!)?\$?([A-Z]+)(\$?(\d+))?:\$?([A-Z]+)(\$?(\d+))?"
+    last_match_regexp = r"([^\d].*)?"
+    value_range: ClassVar[list[int]] = [0, -1]
 
-    def __init__(self, *args, **kwargs):
-        self._matrix = None, None
-        super().__init__(*args, *kwargs)
+    def __init__(self, *args: tuple, **kwargs: dict) -> None:
+        self._matrix: tuple[Cell | None, Cell | None] = None, None
+        super().__init__(*args, **kwargs)  # type: ignore [arg-type]
 
-    def __str__(self):
-        return f'<{self.__class__.__name__}>({self.matrix})'
+    def __str__(self) -> str:
+        return f"<{self.__class__.__name__}>({self.matrix})"
 
     @property
-    def matrix(self) -> (Cell, Cell,):
+    def matrix(self) -> tuple[Cell, Cell]:
         if self._matrix[0] is None:
-            self._matrix = Cell(title=self.value[3] or self.value[4] or self.in_cell.title, column=self.value[5],
-                                row=self.value[7]), Cell(title=self.value[3] or self.value[4] or self.in_cell.title,
-                                                         column=self.value[8], row=self.value[10])
-        return self._matrix
+            self._matrix = (
+                Cell(
+                    title=self.value[3] or self.value[4] or self.in_cell.title,
+                    column=self.value[5],
+                    row=self.value[7],
+                ),
+                Cell(
+                    title=self.value[3] or self.value[4] or self.in_cell.title,
+                    column=self.value[8],
+                    row=self.value[10],
+                ),
+            )
+        return cast(tuple[Cell, Cell], self._matrix)
 
 
 class CellIdentifierRangeToken(RegexpBaseToken):
-    regexp = r'((\'(.*?)\'|(\w*?))!)?((\$?([A-Z]+)(\$?(\d+))?:\$?\8(\$?(\d+))?)|(\$?([A-Z]+)(\$?(\d+))?:\$?([A-Z]+)(\$?\15)?))'
-    last_match_regexp = r'([^\d$].*)?'
-    value_range = [0, -1]
+    regexp = r"((\'(.*?)\'|(\w*?))!)?((\$?([A-Z]+)(\$?(\d+))?:\$?\8(\$?(\d+))?)|(\$?([A-Z]+)(\$?(\d+))?:\$?([A-Z]+)(\$?\15)?))"  # noqa: E501
+    last_match_regexp = r"([^\d$].*)?"
+    value_range: ClassVar[list[int]] = [0, -1]
 
-    def __init__(self, *args, **kwargs):
-        self._range = None, None
-        super().__init__(*args, *kwargs)
+    def __init__(self, *args: tuple, **kwargs: dict) -> None:
+        self._range: tuple[Cell | None, Cell | None] = None, None
+        super().__init__(*args, **kwargs)  # type: ignore [arg-type]
 
-    def __str__(self):
-        return f'<{self.__class__.__name__}>({self.range})'
+    def __str__(self) -> str:
+        return f"<{self.__class__.__name__}>({self.range})"
 
     @property
-    def range(self) -> (Cell, Cell,):
+    def range(self) -> tuple[Cell, Cell]:
         if self._range[0] is None:
-            self._range = Cell(title=self.value[3] or self.value[4] or self.in_cell.title, column=self.value[7] or self.value[13],
-                               row=self.value[9] or self.value[15]), Cell(title=self.value[3] or self.value[4] or self.in_cell.title,
-                                                                          column=self.value[7] or self.value[16],
-                                                                          row=self.value[11] or self.value[15])
-        return self._range
+            self._range = (
+                Cell(
+                    title=self.value[3] or self.value[4] or self.in_cell.title,
+                    column=self.value[7] or self.value[13],
+                    row=self.value[9] or self.value[15],
+                ),
+                Cell(
+                    title=self.value[3] or self.value[4] or self.in_cell.title,
+                    column=self.value[7] or self.value[16],
+                    row=self.value[11] or self.value[15],
+                ),
+            )
+        return cast(tuple[Cell, Cell], self._range)
 
 
 class CellIdentifierToken(RegexpBaseToken):
-    regexp = r'((\'(.*?)\'|(\w*?))!)?\$?([A-Z]+)\$?(\d+)'
-    last_match_regexp = r'([^\d]|[^:\d].*)?'
-    value_range = [0, -1]
+    regexp = r"((\'(.*?)\'|(\w*?))!)?\$?([A-Z]+)\$?(\d+)"
+    last_match_regexp = r"([^\d]|[^:\d].*)?"
+    value_range: ClassVar[list[int]] = [0, -1]
 
-    def __init__(self, *args, **kwargs):
-        self._cell = None
-        super().__init__(*args, *kwargs)
+    def __init__(self, *args: tuple, **kwargs: dict) -> None:
+        self._cell: Cell | None = None
+        super().__init__(*args, **kwargs)  # type: ignore [arg-type]
 
-    def __str__(self):
-        return f'<{self.__class__.__name__}>({self.cell})'
+    def __str__(self) -> str:
+        return f"<{self.__class__.__name__}>({self.cell})"
 
     @property
     def cell(self) -> Cell:
         if self._cell is None:
-            self._cell = Cell(title=self.value[3] or self.value[4] or self.in_cell.title, column=self.value[5],
-                              row=self.value[6])
-        return self._cell
+            self._cell = Cell(
+                title=self.value[3] or self.value[4] or self.in_cell.title,
+                column=self.value[5],
+                row=self.value[6],
+            )
+        return cast(Cell, self._cell)
 
 
 class PatternToken(RegexpBaseToken):
@@ -75,233 +97,237 @@ class PatternToken(RegexpBaseToken):
     ~ - cancels pattern effect if placed before ? or * (cancels effect only for next symbol, but not for all)
     Would be useful to recognize argument in function e.g =COUNTIFS(A3:B3; "???le") or =COUNTIFS(A4:B7; "a*")
     """
-    regexp = r'\"(.*(?<![~])[?*]+.*)\"'
+
+    regexp = r"\"(.*(?<![~])[?*]+.*)\""
 
 
 # TODO добавить условие для локализации
 class LiteralToken(RegexpBaseToken):
-    regexp = r'\"(.*?)\"|(\d+)((\.)(\d+))?(e(-?\d+))?|(TRUE(\(\))?)|(FALSE(\(\))?)'
-    value_range = [0, -1]
+    regexp = r"\"(.*?)\"|(\d+)((\.)(\d+))?(e(-?\d+))?|(TRUE(\(\))?)|(FALSE(\(\))?)"
+    value_range: ClassVar[list[int]] = [0, -1]
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, *kwargs)
+    def __init__(self, *args: tuple, **kwargs: dict) -> None:
+        super().__init__(*args, *kwargs)  # type: ignore [arg-type]
+        real_value: int | float | str | None = None
 
         if self.value[2]:
-            real_value = int(self.value[2])
+            real_value = self.value[2]
             if self.value[5]:
-                real_value += float(f'0.{self.value[5]}')
+                if real_value is None or isinstance(real_value, str):
+                    real_value = 0
+                real_value += float(f"0.{self.value[5]}")
             if self.value[7]:
                 # TODO in theory, the degree can be calculated using the expression
                 real_value *= 10 ** int(self.value[7])
             real_value = str(real_value)
         elif self.value[1] or self.value[0] == '""':
-            real_value = f'\'{self.value[1]}\''
+            real_value = f"'{self.value[1]}'"
         elif self.value[8]:
-            real_value = 'True'
+            real_value = "True"
         elif self.value[10]:
-            real_value = 'False'
+            real_value = "False"
         else:
-            raise E2PyclParserException('Unknown literal value')
+            raise E2PyclParserException("Unknown literal value")
 
         self.value = real_value
 
 
 class BracketStartToken(RegexpBaseToken):
-    regexp = r'\('
+    regexp = r"\("
 
 
 class BracketFinishToken(RegexpBaseToken):
-    regexp = r'\)'
+    regexp = r"\)"
 
 
 class WhitespaceToken(RegexpBaseToken):
-    regexp = r'[\s\n\t]+'
+    regexp = r"[\s\n\t]+"
 
 
 # TODO добавить условие для локализации
 class SeparatorToken(RegexpBaseToken):
-    regexp = r';|,|~'
+    regexp = r";|,|~"
 
 
 class NotEqOperatorToken(RegexpBaseToken):
-    regexp = r'<>'
+    regexp = r"<>"
 
 
 class GtOrEqualOperatorToken(RegexpBaseToken):
-    regexp = r'>='
+    regexp = r">="
 
 
 class LtOrEqualOperatorToken(RegexpBaseToken):
-    regexp = r'<='
+    regexp = r"<="
 
 
 class EqOperatorToken(RegexpBaseToken):
-    regexp = r'='
+    regexp = r"="
 
 
 class GtOperatorToken(RegexpBaseToken):
-    regexp = r'>'
+    regexp = r">"
 
 
 class LtOperatorToken(RegexpBaseToken):
-    regexp = r'<'
+    regexp = r"<"
 
 
 class PlusOperatorToken(RegexpBaseToken):
-    regexp = r'\+'
+    regexp = r"\+"
 
 
 class MinusOperatorToken(RegexpBaseToken):
-    regexp = r'-'
+    regexp = r"-"
 
 
 class MultiplicationOperatorToken(RegexpBaseToken):
-    regexp = r'\*'
+    regexp = r"\*"
 
 
 class DivOperatorToken(RegexpBaseToken):
-    regexp = r'/'
+    regexp = r"/"
 
 
 class AmpersandToken(RegexpBaseToken):
-    regexp = r'&'
+    regexp = r"&"
 
 
 class AddressKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'ADDRESS'
+    regexp = r"ADDRESS"
 
 
 class AndKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'AND'
+    regexp = r"AND"
 
 
 class AverageKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'AVERAGE'
+    regexp = r"AVERAGE"
 
 
 class AverageIfSKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'AVERAGEIFS'
+    regexp = r"AVERAGEIFS"
 
 
 class ColumnKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'COLUMN'
+    regexp = r"COLUMN"
 
 
 class CountKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'COUNT'
+    regexp = r"COUNT"
 
 
 class CountBlankKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'COUNTBLANK'
+    regexp = r"COUNTBLANK"
 
 
 class CountIfSKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'COUNTIFS'
+    regexp = r"COUNTIFS"
 
 
 class DayKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'DAY'
+    regexp = r"DAY"
 
 
 class DateKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'DATE'
+    regexp = r"DATE"
 
 
 class DateDifKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'DATEDIF'
+    regexp = r"DATEDIF"
 
 
 class EDateKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'EDATE'
+    regexp = r"EDATE"
 
 
 class EoMonthKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'EOMONTH'
+    regexp = r"EOMONTH"
 
 
 class IfKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'IF'
+    regexp = r"IF"
 
 
 class IfErrorKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'IFERROR'
+    regexp = r"IFERROR"
 
 
 class IndexKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'INDEX'
+    regexp = r"INDEX"
 
 
 class LeftKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'LEFT'
+    regexp = r"LEFT"
 
 
 class MatchKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'MATCH'
+    regexp = r"MATCH"
 
 
 class MaxKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'MAX'
+    regexp = r"MAX"
 
 
 class MidKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'MID'
+    regexp = r"MID"
 
 
 class MinKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'MIN'
+    regexp = r"MIN"
 
 
 class MonthKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'MONTH'
+    regexp = r"MONTH"
 
 
 class NetworkDaysKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'NETWORKDAYS'
+    regexp = r"NETWORKDAYS"
 
 
 class OrKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'OR'
+    regexp = r"OR"
 
 
 class RightKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'RIGHT'
+    regexp = r"RIGHT"
 
 
 class RoundKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'ROUND'
+    regexp = r"ROUND"
 
 
 class SearchKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'SEARCH'
+    regexp = r"SEARCH"
 
 
 class SumKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'SUM'
+    regexp = r"SUM"
 
 
 class SumIfKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'SUMIF'
+    regexp = r"SUMIF"
 
 
 class SumIfSKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'SUMIFS'
+    regexp = r"SUMIFS"
 
 
 class TodayKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'TODAY'
+    regexp = r"TODAY"
 
 
 class VlookupKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'VLOOKUP'
+    regexp = r"VLOOKUP"
 
 
 class XMatchKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'XMATCH'
+    regexp = r"XMATCH"
 
 
 class YearKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'YEAR'
+    regexp = r"YEAR"
 
 
 class IfsKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'IFS'
+    regexp = r"IFS"

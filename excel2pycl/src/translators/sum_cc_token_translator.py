@@ -5,8 +5,8 @@ from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 from excel2pycl.src.utilities.helper import get_flatten_numeric_list
 
 
-class SumControlConstructionTokenTranslator(AbstractTranslator):
+class SumControlConstructionTokenTranslator(AbstractTranslator[SumControlConstructionToken]):
     @classmethod
     def translate(cls, token: SumControlConstructionToken, excel: Excel, context: Context) -> str:
         flatten_numeric_list = get_flatten_numeric_list(token, excel, context)
-        return context.set_sub_cell(token.in_cell, f'self._sum({flatten_numeric_list})')
+        return context.set_sub_cell(token.in_cell, f"self._sum({flatten_numeric_list})")

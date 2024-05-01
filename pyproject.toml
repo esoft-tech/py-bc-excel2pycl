@@ -1,0 +1,123 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "excel2pycl"
+dynamic = ["version"]
+description = "Package for translating an excel file to python code"
+readme = "README.md"
+license = "MIT"
+authors = [
+    { name = "Esoft", email = "it@esoft.tech" },
+]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Environment :: Console",
+    "Environment :: MacOS X",
+    "Environment :: Web Environment",
+    "Environment :: Win32 (MS Windows)",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+]
+requires-python = ">=3.11"
+dependencies = [
+    "openpyxl>=3.1.2",
+    "python-dateutil>=2.8.2",
+]
+
+[project.urls]
+Homepage = "https://github.com/etagi-esoft/py-excel-to-func"
+
+[tool.hatch.version]
+path = "excel2pycl/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/excel2pycl",
+]
+
+
+[tool.hatch.envs.test]
+python = "3.11"
+extra-dependencies = [
+  "pre-commit",
+  "ruff",
+  "mypy",
+  "types-openpyxl",
+  "types-python-dateutil",
+  "pytest"
+]
+
+[tool.hatch.envs.test.scripts]
+test = "pytest -v  tests"
+
+
+[tool.ruff]
+lint.select = [
+    # "D",  # pydocstyle  # can't use with reSt docstrings
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "C",   # flake8-comprehensions
+    "B",   # flake8-bugbear
+    "Q",   # flake8-quotes
+    "SIM", # flake8-simplify
+    "SLF", # flake8-self
+    "RET", # flake8-return
+    "FLY", # https://docs.astral.sh/ruff/rules/#flynt-fly
+    "RUF", # https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
+    "FBT", # https://docs.astral.sh/ruff/rules/#flake8-boolean-trap-fbt
+    "COM", # https://docs.astral.sh/ruff/rules/#flake8-commas-com
+    "ANN", # https://docs.astral.sh/ruff/rules/#flake8-commas-com
+]
+lint.fixable = ["ALL"]
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+    "examples",
+]
+line-length = 120
+target-version = "py311"
+lint.ignore = ["ANN101", "ANN102", "RUF001", "RUF002", "RUF003", "SLF001", "C901", "E722"]
+
+[tool.ruff.lint.flake8-annotations]
+mypy-init-return = true
+
+
+[tool.ruff.lint.extend-per-file-ignores]
+"__init__.py" = ["F401"]
+
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+disallow_untyped_defs = true
+strict_equality = true
+
+exclude = [
+    "examples/*",
+    "test/*"]
+

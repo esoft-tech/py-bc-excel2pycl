@@ -1,6 +1,6 @@
 from excel2pycl.src.tokens.composite_base_token import CompositeBaseToken
 
-CLS = 'cls'
+CLS = "cls"
 
 
 class RecursiveCompositeBaseToken(CompositeBaseToken):

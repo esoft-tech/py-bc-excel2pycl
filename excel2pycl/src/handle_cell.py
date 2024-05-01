@@ -5,7 +5,7 @@ from openpyxl.utils import column_index_from_string
 from excel2pycl.src.cell import Cell
 
 
-def handle_cell(cell: Cell, titles: Dict[str, int]):
+def handle_cell(cell: Cell, titles: Dict[str, int]) -> None:
     if cell.has_handled_identifiers():
         return
 
