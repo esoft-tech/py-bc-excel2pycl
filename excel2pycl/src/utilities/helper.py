@@ -14,4 +14,7 @@ def get_flatten_list(token: CompositeBaseToken, excel: Excel, context: Context) 
 
 
 def get_flatten_numeric_list(token: CompositeBaseToken, excel: Excel, context: Context) -> str:
-    return context.set_sub_cell(token.in_cell, f"self._only_numeric_list({get_flatten_list(token, excel, context)})")
+    return context.set_sub_cell(
+        token.in_cell,
+        f"self._filter_list_by_float_or_int({get_flatten_list(token, excel, context)})",
+    )
