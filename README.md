@@ -26,7 +26,7 @@ After that, install pre-commit hook.
     hatch env run -e test pre-commit install
 ```
 
-If you cant find the path of venv (or vscode can't find), you can use this command:
+If you can't find the path of venv (or vscode can't find), you can use this command:
 
 ```bash
 hatch env find
