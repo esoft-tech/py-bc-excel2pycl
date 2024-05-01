@@ -17,6 +17,23 @@ class AbstractExcelInPython:
             empty_cell_equal_values = ["", 0, None, False]
             if other in empty_cell_equal_values:
                 return True
+
+            return isinstance(other, self.__class__)
+
+        def __lt__(self, other: Any) -> bool:  # noqa: ANN401
+            if isinstance(other, (datetime.date, datetime.datetime)):
+                # Ну вот так excel себя чувствует, пустая ячейка меньше любой даты
+                return True
+
+            if isinstance(other, (int, float)):
+                return other > 0
+
+            if isinstance(other, str):
+                return other != ""
+
+            if isinstance(other, list):
+                return not other
+
             return False
 
     class ExcelInPythonException(Exception):
@@ -76,8 +93,8 @@ class AbstractExcelInPython:
     def _compare(
         self,
         operator: str,
-        left_operand: str | int | float | datetime.datetime,
-        right_operand: str | int | float | datetime.datetime,
+        left_operand: str | int | float | datetime.date | datetime.datetime,
+        right_operand: str | int | float | datetime.date | datetime.datetime,
     ) -> bool:
         try:
             return self._by_operator(operator, int(left_operand), int(right_operand))  # type: ignore [arg-type]
@@ -86,6 +103,13 @@ class AbstractExcelInPython:
                 return self._by_operator(operator, float(left_operand), float(right_operand))  # type: ignore [arg-type]
             except (ValueError, TypeError):
                 try:
+                    # Приводим date к datetime для удобного сравнения
+                    if isinstance(left_operand, datetime.date) and not isinstance(left_operand, datetime.datetime):
+                        left_operand = datetime.datetime(left_operand.year, left_operand.month, left_operand.day)
+
+                    if isinstance(right_operand, datetime.date) and not isinstance(right_operand, datetime.datetime):
+                        right_operand = datetime.datetime(right_operand.year, right_operand.month, right_operand.day)
+
                     return self._by_operator(operator, left_operand, right_operand)
                 except (ValueError, TypeError):
                     return self._by_operator(operator, str(left_operand), str(right_operand))
