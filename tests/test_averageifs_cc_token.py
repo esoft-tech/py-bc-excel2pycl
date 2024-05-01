@@ -7,7 +7,7 @@ from excel2pycl import Cell, Executor, Parser
 
 class TestAverageIfsCcToken(unittest.TestCase):
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls) -> None:
         cls.translation_file_path = f"tests/{uuid.uuid4()}.py"
         cls.parser = (
             Parser()
@@ -21,55 +21,55 @@ class TestAverageIfsCcToken(unittest.TestCase):
         # после выполнения всех тестов удаляем файлики
         os.remove(cls.translation_file_path)
 
-    def test_only_standard_int_and_gt_condition(self):
+    def test_only_standard_int_and_gt_condition(self) -> None:
         excepted_cell_value = 5
         cell_value = Executor().set_executed_class(class_file=self.translation_file_path).get_cell(Cell(0, 7, 0))
 
         self.assertEqual(cell_value.value, excepted_cell_value)
 
-    def test_with_string_eq_in_condition(self):
+    def test_with_string_eq_in_condition(self) -> None:
         excepted_cell_value = 1
         cell_value = Executor().set_executed_class(class_file=self.translation_file_path).get_cell(Cell(0, 7, 1))
 
         self.assertEqual(cell_value.value, excepted_cell_value)
 
-    def test_where_has_unreachable_string_condition(self):
+    def test_where_has_unreachable_string_condition(self) -> None:
         excepted_cell_value = "#DIV/0!"
         cell_value = Executor().set_executed_class(class_file=self.translation_file_path).get_cell(Cell(0, 7, 2))
 
         self.assertEqual(cell_value.value, excepted_cell_value)
 
-    def test_where_average_range_has_empty_cell(self):
+    def test_where_average_range_has_empty_cell(self) -> None:
         excepted_cell_value = "#DIV/0!"
         cell_value = Executor().set_executed_class(class_file=self.translation_file_path).get_cell(Cell(0, 7, 3))
 
         self.assertEqual(cell_value.value, excepted_cell_value)
 
-    def test_average_rage_with_bool_value(self):
+    def test_average_rage_with_bool_value(self) -> None:
         excepted_cell_value = 1
         cell_value = Executor().set_executed_class(class_file=self.translation_file_path).get_cell(Cell(0, 7, 4))
 
         self.assertEqual(cell_value.value, excepted_cell_value)
 
-    def test_average_by_matrix(self):
+    def test_average_by_matrix(self) -> None:
         excepted_cell_value = 3
         cell_value = Executor().set_executed_class(class_file=self.translation_file_path).get_cell(Cell(0, 7, 5))
 
         self.assertEqual(cell_value.value, excepted_cell_value)
 
-    def test_with_string_date_eq_condition(self):
+    def test_with_string_date_eq_condition(self) -> None:
         excepted_cell_value = 5
         cell_value = Executor().set_executed_class(class_file=self.translation_file_path).get_cell(Cell(0, 7, 6))
 
         self.assertEqual(cell_value.value, excepted_cell_value)
 
-    def test_with_string_in_average_range(self):
+    def test_with_string_in_average_range(self) -> None:
         excepted_cell_value = "#DIV0!"
         cell_value = Executor().set_executed_class(class_file=self.translation_file_path).get_cell(Cell(0, 7, 7))
 
         self.assertEqual(cell_value.value, excepted_cell_value)
 
-    def test_with_different_range_sizes(self):
+    def test_with_different_range_sizes(self) -> None:
         executor = Executor().set_executed_class(class_file=self.translation_file_path)
 
         with self.assertRaises(executor.get_executed_class().ExcelInPythonException):
