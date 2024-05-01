@@ -29,7 +29,7 @@ After that, install pre-commit hook.
 If you can't find the path of venv (or vscode can't find), you can use this command:
 
 ```bash
-hatch env find
+    hatch env find
 ```
 
 Done 🪄 🐈‍⬛ Now you can develop.
