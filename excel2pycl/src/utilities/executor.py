@@ -63,6 +63,14 @@ class Executor:
         """
         for cell in cells:
             handle_cell(cell, self._titles)
+
+            sheet = cell.title
+            row = cell.row + 1
+            column = cell.column + 1
+
+            self._sheets_size[sheet]['last_row'] = max(row, self._sheets_size[sheet]['last_row'])
+            self._sheets_size[sheet]['last_column'] = max(column, self._sheets_size[sheet]['last_column'])
+
         self._cells = {*cells, *self._cells}
         self._cells_have_been_changed = True
         return self
