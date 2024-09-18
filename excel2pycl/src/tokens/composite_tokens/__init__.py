@@ -534,16 +534,18 @@ class MatchControlConstructionToken(CompositeBaseToken):
         [MatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken,
          SeparatorToken, ExpressionToken, BracketFinishToken],
         [MatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken,
-         BracketFinishToken],]
-        # [MatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, ExpressionToken,
-        #  SeparatorToken, ExpressionToken, BracketFinishToken]]
+         BracketFinishToken],
+        [MatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, ExpressionToken,
+         SeparatorToken, ExpressionToken, BracketFinishToken],
+        [MatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersExpressionToken,
+         SeparatorToken, ExpressionToken, BracketFinishToken]]
 
     @property
     def lookup_value(self) -> ExpressionToken:
         return self.value[2]
 
     @property
-    def lookup_array(self) -> MatrixOfCellIdentifiersToken:
+    def lookup_array(self) -> MatrixOfCellIdentifiersToken | ExpressionToken:
         return self.value[4]
 
     @property

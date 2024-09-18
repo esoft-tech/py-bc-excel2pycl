@@ -15,4 +15,4 @@ class MatrixOfCellIdentifiersExpressionTokenTranslator(AbstractTranslator):
         list1 = MatrixOfCellIdentifiersTokenTranslator.translate(left, excel, context)
         list2 = MatrixOfCellIdentifiersTokenTranslator.translate(right, excel, context)
 
-        return context.set_sub_cell(token.in_cell, f'self._sum_arrays(self._flatten_list({list1}), self._flatten_list({list2}))')
+        return context.set_sub_cell(token.in_cell, f'self._concat_arrays_values(self._flatten_list({list1}), self._flatten_list({list2}))')
