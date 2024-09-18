@@ -13,7 +13,7 @@ from excel2pycl.src.tokens import IfControlConstructionToken, ControlConstructio
     SearchControlConstructionToken, TodayControlConstructionToken, AverageIfsControlConstructionToken, \
     AddressControlConstructionToken, CountIfsControlConstructionToken, NetworkDaysControlConstructionToken, \
     CountControlConstructionToken, ColumnControlConstructionToken, SumIfsControlConstructionToken, \
-    IndexControlConstructionToken, IfsControlConstructionToken
+    IndexControlConstructionToken, IfsControlConstructionToken, MatrixOfCellIdentifiersExpressionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
@@ -57,7 +57,9 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
         from excel2pycl.src.translators.column_cc_token_translator import ColumnControlConstructionTokenTranslator
         from excel2pycl.src.translators.sumifs_cc_token_translator import SumIfsControlConstructionTokenTranslator
         from excel2pycl.src.translators.index_cc_token_translator import IndexControlConstructionTokenTranslator
-        from  excel2pycl.src.translators.ifs_cc_token_translator import IfsControlConstructionTokenTranslator
+        from excel2pycl.src.translators.ifs_cc_token_translator import IfsControlConstructionTokenTranslator
+        from excel2pycl.src.translators.matrix_of_cell_identifiers_expression_token_translator import \
+            MatrixOfCellIdentifiersExpressionTokenTranslator
 
         translate_functions = {
             IfControlConstructionToken.__name__: IfControlConstructionTokenTranslator.translate,
@@ -94,7 +96,8 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             NetworkDaysControlConstructionToken.__name__: NetworkDaysControlConstructionTokenTranslator.translate,
             SumIfsControlConstructionToken.__name__: SumIfsControlConstructionTokenTranslator.translate,
             IndexControlConstructionToken.__name__: IndexControlConstructionTokenTranslator.translate,
-            IfsControlConstructionToken.__name__: IfsControlConstructionTokenTranslator.translate
+            IfsControlConstructionToken.__name__: IfsControlConstructionTokenTranslator.translate,
+            MatrixOfCellIdentifiersExpressionToken.__name__: MatrixOfCellIdentifiersExpressionTokenTranslator.translate
         }
 
         sub_token = token.control_construction

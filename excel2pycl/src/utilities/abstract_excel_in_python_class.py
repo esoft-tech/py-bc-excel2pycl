@@ -204,6 +204,15 @@ class AbstractExcelInPython(ABC):
 
         return (exact, next_smallest, next_largest)
 
+    def _sum_arrays(self, list1: list, list2: list):
+        max_len = max(len(list1), len(list2))
+
+        # Дополнение массивов нулями до одинаковой длины
+        arr1_extended = list1 + [0] * (max_len - len(list1))
+        arr2_extended = list2 + [0] * (max_len - len(list2))
+
+        return [x + y for x, y in zip(arr1_extended, arr2_extended)]
+
     def _sum(self, flatten_list: List):
         return sum(self._only_numeric_list(flatten_list))
 

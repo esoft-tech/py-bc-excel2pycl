@@ -65,7 +65,6 @@ class AmpersandOperatorToken(CompositeBaseToken):
     def operator(self):
         return self.value[0]
 
-
 class OperandToken(CompositeBaseToken):
     _TOKEN_SETS = [[PatternToken], [LiteralToken], [CellIdentifierToken], [CellIdentifierRangeToken],
                    [MatrixOfCellIdentifiersToken]]
@@ -468,12 +467,76 @@ class MaxControlConstructionToken(CompositeBaseToken):
         return self.value[2].expressions
 
 
+class IterableMatrixOfCellIdentifiersToken(RecursiveCompositeBaseToken):
+    _TOKEN_SETS = [
+        [BracketStartToken, MatrixOfCellIdentifiersToken, SeparatorToken, CLS, BracketFinishToken],
+        [MatrixOfCellIdentifiersToken, SeparatorToken, CLS],
+        [MatrixOfCellIdentifiersToken],
+    ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, *kwargs)
+        self._matrix_list = []
+
+    @property
+    def matrix_list(self):
+        if not self._matrix_list:
+            if len(self.value) == 5:
+                self._matrix_list = [self.value[1]] + self.value[3].matrix_list
+            elif len(self.value) == 3:
+                self._matrix_list = [self.value[0]] + self.value[2].matrix_list
+            else:
+                self._matrix_list = [self.value[0]]
+        return self._matrix_list
+
+
+class MatrixOfCellIdentifiersExpressionToken(RecursiveCompositeBaseToken):
+    _TOKEN_SETS = [[MatrixOfCellIdentifiersToken, AmpersandToken, CLS], [MatrixOfCellIdentifiersToken]]
+
+    @property
+    def operands(self) -> tuple:
+        if len(self.value) == 1:
+            return self.value[0]
+
+        return self.value[0], self.value[2].operands
+
+
+class IndexControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [
+        [IndexKeywordToken, BracketStartToken, IterableMatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken,
+         SeparatorToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken],
+        [IndexKeywordToken, BracketStartToken, IterableMatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken,
+         SeparatorToken, ExpressionToken, BracketFinishToken],
+        [IndexKeywordToken, BracketStartToken, IterableMatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken, BracketFinishToken],
+        [IndexKeywordToken, BracketStartToken, MatrixOfCellIdentifiersExpressionToken, SeparatorToken, ExpressionToken,
+         BracketFinishToken],
+    ]
+
+    @property
+    def matrix_list(self) -> Iterable | MatrixOfCellIdentifiersExpressionToken:
+        return self.value[2] if self.value[2].__class__ == MatrixOfCellIdentifiersExpressionToken else self.value[2].matrix_list
+
+    @property
+    def row_number(self) -> ExpressionToken:
+        return self.value[4]
+
+    @property
+    def column_number(self) -> ExpressionToken:
+        return self.value[6] if len(self.value) >= 8 else None
+
+    @property
+    def area_number(self) -> ExpressionToken:
+        return self.value[8] if len(self.value) == 10 else None
+
+
 class MatchControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [MatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken,
          SeparatorToken, ExpressionToken, BracketFinishToken],
         [MatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken,
-         BracketFinishToken]]
+         BracketFinishToken],]
+        # [MatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, ExpressionToken,
+        #  SeparatorToken, ExpressionToken, BracketFinishToken]]
 
     @property
     def lookup_value(self) -> ExpressionToken:
@@ -512,6 +575,7 @@ class XMatchControlConstructionToken(CompositeBaseToken):
     @property
     def search_mode(self) -> ExpressionToken:
         return self.value[8] if len(self.value) == 10 else None
+
 
 class RangeOfCellIdentifierWithConditionToken(CompositeBaseToken):
     _TOKEN_SETS = [
@@ -729,56 +793,6 @@ class SumIfsControlConstructionToken(CompositeBaseToken):
     @property
     def conditions(self) -> IterableRangeOfCellIdentifierWithConditionToken:
         return self.value[4]
-
-
-class IterableMatrixOfCellIdentifiersToken(RecursiveCompositeBaseToken):
-    _TOKEN_SETS = [
-        [BracketStartToken, MatrixOfCellIdentifiersToken, SeparatorToken, CLS, BracketFinishToken],
-        [MatrixOfCellIdentifiersToken, SeparatorToken, CLS],
-        [MatrixOfCellIdentifiersToken]
-    ]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, *kwargs)
-        self._matrix_list = []
-
-    @property
-    def matrix_list(self):
-        if not self._matrix_list:
-            if len(self.value) == 5:
-                self._matrix_list = [self.value[1]] + self.value[3].matrix_list
-            elif len(self.value) == 3:
-                self._matrix_list = [self.value[0]] + self.value[2].matrix_list
-            else:
-                self._matrix_list = [self.value[0]]
-        return self._matrix_list
-
-
-class IndexControlConstructionToken(CompositeBaseToken):
-    _TOKEN_SETS = [
-        [IndexKeywordToken, BracketStartToken, IterableMatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken,
-         SeparatorToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken],
-        [IndexKeywordToken, BracketStartToken, IterableMatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken,
-         SeparatorToken, ExpressionToken, BracketFinishToken],
-        [IndexKeywordToken, BracketStartToken, IterableMatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken,
-         BracketFinishToken],
-    ]
-
-    @property
-    def matrix_list(self) -> Iterable:
-        return self.value[2].matrix_list
-
-    @property
-    def row_number(self) -> ExpressionToken:
-        return self.value[4]
-
-    @property
-    def column_number(self) -> ExpressionToken:
-        return self.value[6] if len(self.value) >= 8 else None
-
-    @property
-    def area_number(self) -> ExpressionToken:
-        return self.value[8] if len(self.value) == 10 else None
 
 
 class ControlConstructionCompositeBaseToken(CompositeBaseToken):
