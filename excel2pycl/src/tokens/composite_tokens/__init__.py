@@ -14,7 +14,7 @@ from excel2pycl.src.tokens.regexp_tokens import MatrixOfCellIdentifiersToken, Ce
     IfKeywordToken, IfErrorKeywordToken, IndexKeywordToken, LeftKeywordToken, MatchKeywordToken, MaxKeywordToken, \
     MidKeywordToken, MinKeywordToken, MonthKeywordToken, NetworkDaysKeywordToken, OrKeywordToken, RightKeywordToken, \
     RoundKeywordToken, SearchKeywordToken, SumKeywordToken, SumIfKeywordToken, SumIfSKeywordToken, TodayKeywordToken, \
-    VlookupKeywordToken, XMatchKeywordToken, YearKeywordToken, IfsKeywordToken, RoundUpKeywordToken
+    VlookupKeywordToken, XMatchKeywordToken, YearKeywordToken, IfsKeywordToken, RoundUpKeywordToken, PercentToken
 
 
 class SimilarCellToken(CompositeBaseToken):
@@ -65,6 +65,15 @@ class AmpersandOperatorToken(CompositeBaseToken):
     def operator(self):
         return self.value[0]
 
+
+class PercentOperatorToken(CompositeBaseToken):
+    _TOKEN_SETS = [[PercentToken]]
+
+    @property
+    def operator(self):
+        return self.value[0]
+
+
 class OperandToken(CompositeBaseToken):
     _TOKEN_SETS = [[PatternToken], [LiteralToken], [CellIdentifierToken], [CellIdentifierRangeToken],
                    [MatrixOfCellIdentifiersToken]]
@@ -95,7 +104,7 @@ class OperandToken(CompositeBaseToken):
 
 
 class OperatorToken(CompositeBaseToken):
-    _TOKEN_SETS = [[ArithmeticOperatorToken], [LogicalOperatorToken], [AmpersandOperatorToken]]
+    _TOKEN_SETS = [[ArithmeticOperatorToken], [LogicalOperatorToken], [AmpersandOperatorToken], [PercentOperatorToken]]
 
     @property
     def operator(self):

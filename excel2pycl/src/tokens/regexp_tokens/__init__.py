@@ -167,6 +167,10 @@ class AmpersandToken(RegexpBaseToken):
     regexp = r'&'
 
 
+class PercentToken(RegexpBaseToken):
+    regexp = r'%'
+
+
 class AddressKeywordToken(KeywordRegexpBaseToken):
     regexp = r'ADDRESS'
 
