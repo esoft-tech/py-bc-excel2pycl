@@ -103,6 +103,18 @@ class OperandToken(CompositeBaseToken):
         return self.value[0] if self.value[0].__class__ == ControlConstructionCompositeBaseToken else None
 
 
+class OneLeftOperandExpressionToken(RecursiveCompositeBaseToken):
+    _TOKEN_SETS = [[OperandToken, PercentOperatorToken, CLS], [OperandToken, PercentOperatorToken]]
+
+    @property
+    def operator(self) -> PercentToken:
+        return self.value[1].operator
+
+    @property
+    def left_operand(self):
+        return self.value[0]
+
+
 class OperatorToken(CompositeBaseToken):
     _TOKEN_SETS = [[ArithmeticOperatorToken], [LogicalOperatorToken], [AmpersandOperatorToken], [PercentOperatorToken]]
 
@@ -112,7 +124,10 @@ class OperatorToken(CompositeBaseToken):
 
 
 class ExpressionToken(RecursiveCompositeBaseToken):
-    _TOKEN_SETS = [[OperandToken, OperatorToken, CLS], [OneOperandArithmeticOperatorToken, CLS],
+    _TOKEN_SETS = [[OperandToken, OperatorToken, CLS],
+                   [OneOperandArithmeticOperatorToken, CLS],
+                   [OneLeftOperandExpressionToken, OperatorToken, CLS],
+                   [OneLeftOperandExpressionToken],
                    [BracketStartToken, CLS, BracketFinishToken, OperatorToken, CLS],
                    [BracketStartToken, CLS, BracketFinishToken], [OperandToken]]
 
@@ -134,6 +149,9 @@ class ExpressionToken(RecursiveCompositeBaseToken):
 
     @property
     def left_operand(self):
+        if self.value[0].__class__ is OneLeftOperandExpressionToken:
+            return self.value[0]
+
         return self.value[0] if len(self.value) in [1, 3] and self.value[0].__class__ is OperandToken else self.value[
             1] if len(self.value) == 5 and self.value[1].__class__ is self.__class__ else None
 
@@ -514,6 +532,7 @@ class IterableMatrixOfCellIdentifiersToken(RecursiveCompositeBaseToken):
         return self._matrix_list
 
 
+# !!!Attention Please!!! Достаточно костыльное решение для объединения множеств внутри других выражений
 class MatrixOfCellIdentifiersExpressionToken(RecursiveCompositeBaseToken):
     _TOKEN_SETS = [[MatrixOfCellIdentifiersToken, AmpersandToken, CLS], [MatrixOfCellIdentifiersToken]]
 

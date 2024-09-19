@@ -13,7 +13,7 @@ class MatchControlConstructionTokenTranslator(AbstractTranslator):
         if isinstance(token.lookup_array, MatrixOfCellIdentifiersToken):
             lookup_array = MatrixOfCellIdentifiersTokenTranslator.translate(token.lookup_array, excel, context)
         else:
-             lookup_array = ExpressionTokenTranslator.translate(token.lookup_array, excel, context)
+            lookup_array = ExpressionTokenTranslator.translate(token.lookup_array, excel, context)
 
         lookup_value, match_type \
             = ExpressionTokenTranslator.translate(token.lookup_value, excel, context), \
