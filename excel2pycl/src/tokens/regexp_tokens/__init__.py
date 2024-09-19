@@ -271,6 +271,10 @@ class RoundKeywordToken(KeywordRegexpBaseToken):
     regexp = r'ROUND'
 
 
+class RoundUpKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'ROUNDUP'
+
+
 class SearchKeywordToken(KeywordRegexpBaseToken):
     regexp = r'SEARCH'
 

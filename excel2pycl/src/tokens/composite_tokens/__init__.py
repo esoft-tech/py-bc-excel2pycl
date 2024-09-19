@@ -14,7 +14,7 @@ from excel2pycl.src.tokens.regexp_tokens import MatrixOfCellIdentifiersToken, Ce
     IfKeywordToken, IfErrorKeywordToken, IndexKeywordToken, LeftKeywordToken, MatchKeywordToken, MaxKeywordToken, \
     MidKeywordToken, MinKeywordToken, MonthKeywordToken, NetworkDaysKeywordToken, OrKeywordToken, RightKeywordToken, \
     RoundKeywordToken, SearchKeywordToken, SumKeywordToken, SumIfKeywordToken, SumIfSKeywordToken, TodayKeywordToken, \
-    VlookupKeywordToken, XMatchKeywordToken, YearKeywordToken, IfsKeywordToken
+    VlookupKeywordToken, XMatchKeywordToken, YearKeywordToken, IfsKeywordToken, RoundUpKeywordToken
 
 
 class SimilarCellToken(CompositeBaseToken):
@@ -278,6 +278,21 @@ class RoundControlConstructionToken(CompositeBaseToken):
     @property
     def num_digits(self) -> ExpressionToken:
         return self.value[4]
+
+
+class RoundUpControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[RoundUpKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, BracketFinishToken],
+                   [RoundUpKeywordToken, BracketStartToken, ExpressionToken, BracketFinishToken],
+                   [RoundUpKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken,
+                    ExpressionToken, BracketFinishToken]]
+
+    @property
+    def number(self) -> ExpressionToken:
+        return self.value[2]
+
+    @property
+    def num_digits(self) -> ExpressionToken:
+        return self.value[4] if self.value[4].__class__ == ExpressionToken else None
 
 
 class DateControlConstructionToken(CompositeBaseToken):
@@ -812,7 +827,7 @@ class ControlConstructionCompositeBaseToken(CompositeBaseToken):
                    [AddressControlConstructionToken], [CountIfsControlConstructionToken],
                    [CountControlConstructionToken], [NetworkDaysControlConstructionToken],
                    [ColumnControlConstructionToken], [SumIfsControlConstructionToken],
-                   [IndexControlConstructionToken]]
+                   [IndexControlConstructionToken], [RoundUpControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumIfControlConstructionToken,
@@ -820,7 +835,7 @@ class ControlConstructionCompositeBaseToken(CompositeBaseToken):
                                             AverageControlConstructionToken, RoundControlConstructionToken,
                                             OrControlConstructionToken, AndControlConstructionToken,
                                             YearControlConstructionToken, MonthControlConstructionToken,
-                                            DayControlConstructionToken,
+                                            DayControlConstructionToken, RoundUpControlConstructionToken,
                                             MinControlConstructionToken, MaxControlConstructionToken,
                                             IfErrorControlConstructionToken, DateControlConstructionToken,
                                             DateDifControlConstructionToken, EoMonthControlConstructionToken,
