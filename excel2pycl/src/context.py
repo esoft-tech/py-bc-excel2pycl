@@ -20,7 +20,7 @@ class Context:
         return '''import datetime
 from dateutil import parser as date_parser
 from dateutil.relativedelta import relativedelta
-from math import trunc
+from math import trunc, ceil
 from typing import Dict, List, Literal, Any, Callable
 import calendar
 import re
