@@ -14,7 +14,7 @@ from excel2pycl.src.tokens import IfControlConstructionToken, ControlConstructio
     AddressControlConstructionToken, CountIfsControlConstructionToken, NetworkDaysControlConstructionToken, \
     CountControlConstructionToken, ColumnControlConstructionToken, SumIfsControlConstructionToken, \
     IndexControlConstructionToken, IfsControlConstructionToken, RoundUpControlConstructionToken, \
-    RoundDownControlConstructionToken
+    RoundDownControlConstructionToken, ValueControlConstructionToken, TextControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
@@ -61,6 +61,8 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
         from excel2pycl.src.translators.ifs_cc_token_translator import IfsControlConstructionTokenTranslator
         from excel2pycl.src.translators.roundup_cc_token_translator import RoundUpControlConstructionTokenTranslator
         from excel2pycl.src.translators.rounddown_cc_token_translator import RoundDownControlConstructionTokenTranslator
+        from excel2pycl.src.translators.value_cc_token_translator import ValueControlConstructionTokenTranslator
+        # from excel2pycl.src.translators.rounddown_cc_token_translator import RoundDownControlConstructionTokenTranslator
 
         translate_functions = {
             IfControlConstructionToken.__name__: IfControlConstructionTokenTranslator.translate,
@@ -99,7 +101,8 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             IndexControlConstructionToken.__name__: IndexControlConstructionTokenTranslator.translate,
             IfsControlConstructionToken.__name__: IfsControlConstructionTokenTranslator.translate,
             RoundUpControlConstructionToken.__name__: RoundUpControlConstructionTokenTranslator.translate,
-            RoundDownControlConstructionToken.__name__: RoundDownControlConstructionTokenTranslator.translate
+            RoundDownControlConstructionToken.__name__: RoundDownControlConstructionTokenTranslator.translate,
+            ValueControlConstructionToken.__name__: ValueControlConstructionTokenTranslator.translate
         }
 
         sub_token = token.control_construction

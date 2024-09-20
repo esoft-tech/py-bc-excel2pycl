@@ -15,7 +15,7 @@ from excel2pycl.src.tokens.regexp_tokens import MatrixOfCellIdentifiersToken, Ce
     MidKeywordToken, MinKeywordToken, MonthKeywordToken, NetworkDaysKeywordToken, OrKeywordToken, RightKeywordToken, \
     RoundKeywordToken, SearchKeywordToken, SumKeywordToken, SumIfKeywordToken, SumIfSKeywordToken, TodayKeywordToken, \
     VlookupKeywordToken, XMatchKeywordToken, YearKeywordToken, IfsKeywordToken, RoundUpKeywordToken, PercentToken, \
-    RoundDownKeywordToken
+    RoundDownKeywordToken, ValueKeywordToken, TextKeywordToken
 
 
 class SimilarCellToken(CompositeBaseToken):
@@ -858,6 +858,26 @@ class IndexControlConstructionToken(CompositeBaseToken):
         return self.value[8] if len(self.value) == 10 else None
 
 
+class ValueControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[ValueKeywordToken, ExpressionToken]]
+
+    @property
+    def expression(self) -> ExpressionToken:
+        return self.value[1]
+
+
+class TextControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[TextKeywordToken, ExpressionToken, SeparatorToken, LiteralToken]]
+
+    @property
+    def expression(self) -> ExpressionToken:
+        return self.value[1]
+
+    @property
+    def format(self) -> LiteralToken:
+        return self.value[2]
+
+
 class ControlConstructionCompositeBaseToken(CompositeBaseToken):
     _TOKEN_SETS = [[IfControlConstructionToken], [SumIfControlConstructionToken], [SumControlConstructionToken],
                    [VlookupControlConstructionToken], [AverageControlConstructionToken],
@@ -874,7 +894,8 @@ class ControlConstructionCompositeBaseToken(CompositeBaseToken):
                    [CountControlConstructionToken], [NetworkDaysControlConstructionToken],
                    [ColumnControlConstructionToken], [SumIfsControlConstructionToken],
                    [IndexControlConstructionToken], [RoundUpControlConstructionToken],
-                   [RoundDownControlConstructionToken]]
+                   [RoundDownControlConstructionToken], [ValueControlConstructionToken],
+                   [TextControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumIfControlConstructionToken,
@@ -895,7 +916,8 @@ class ControlConstructionCompositeBaseToken(CompositeBaseToken):
                                             AddressControlConstructionToken, CountControlConstructionToken,
                                             NetworkDaysControlConstructionToken, ColumnControlConstructionToken,
                                             SumIfsControlConstructionToken, IndexControlConstructionToken,
-                                            RoundDownControlConstructionToken]:
+                                            RoundDownControlConstructionToken, ValueControlConstructionToken,
+                                            TextControlConstructionToken]:
         return self.value[0]
 
 

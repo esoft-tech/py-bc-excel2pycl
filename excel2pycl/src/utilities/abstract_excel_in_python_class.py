@@ -774,3 +774,65 @@ class AbstractExcelInPython(ABC):
     def _today() -> datetime.date:
         return datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
 
+    def _parse_date_formats(self, date: str, format: str):
+        try:
+            return datetime.datetime.strptime(date, format)
+        except ValueError:
+            return datetime.datetime.strptime(date, f'{format} 00:00:00')
+
+        raise ValueError()
+
+    def _value(self, text: str):
+        # Удаляем пробелы в начале и конце строки
+        text = text.strip()
+
+        # Попытка преобразовать строку в целое число
+        try:
+            return int(text)
+        except ValueError:
+            pass
+
+        # Попытка преобразовать строку в число с плавающей точкой
+        try:
+            # Заменяем запятую на точку, если используется десятичная запятая
+            text = text.replace(",", ".")
+            return float(text)
+        except ValueError:
+            pass
+
+        # Попытка преобразовать строку в дату в разных форматах
+        date_formats = ["%d/%m/%Y", "%Y-%m-%d", "%d-%m-%Y", "%m/%d/%Y"]
+        base_date = datetime.datetime(1899, 12, 30)  # Базовая дата для Excel (1 января 1900 года = 1 день)
+        for fmt in date_formats:
+            try:
+                date = self._parse_date_formats(text, fmt)
+                # Возвращаем количество дней, прошедших с 1 января 1900 года
+                return (date - base_date).days
+            except ValueError:
+                continue
+
+        time_formats = ["%H:%M:%S", "%H:%M"]
+        for fmt in time_formats:
+            try:
+                time_value = datetime.datetime.strptime(text, fmt).time()
+                # Преобразуем время в долю дня
+                return (time_value.hour + time_value.minute / 60 + time_value.second / 3600) / 24
+            except ValueError:
+                continue
+
+        # Попытка преобразовать строку с процентами
+        if text.endswith("%"):
+            try:
+                return float(text[:-1].replace(",", ".")) / 100
+            except ValueError:
+                pass
+
+        # Удаление пробелов и разделителей тысяч
+        # Пример: "1 234,56" -> "1234.56"
+        clean_text = text.replace(" ", "").replace(",", ".")
+        try:
+            return float(clean_text)
+        except ValueError:
+            pass
+
+        return '#VALUE!'

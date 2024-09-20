@@ -317,3 +317,11 @@ class YearKeywordToken(KeywordRegexpBaseToken):
 
 class IfsKeywordToken(KeywordRegexpBaseToken):
     regexp = r'IFS'
+
+
+class ValueKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'VALUE'
+
+
+class TextKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'TEXT'
