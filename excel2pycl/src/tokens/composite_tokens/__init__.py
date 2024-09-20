@@ -859,23 +859,24 @@ class IndexControlConstructionToken(CompositeBaseToken):
 
 
 class ValueControlConstructionToken(CompositeBaseToken):
-    _TOKEN_SETS = [[ValueKeywordToken, ExpressionToken]]
+    _TOKEN_SETS = [[ValueKeywordToken, BracketStartToken, ExpressionToken, BracketFinishToken]]
 
     @property
     def expression(self) -> ExpressionToken:
-        return self.value[1]
+        return self.value[2]
 
 
 class TextControlConstructionToken(CompositeBaseToken):
-    _TOKEN_SETS = [[TextKeywordToken, ExpressionToken, SeparatorToken, LiteralToken]]
+    _TOKEN_SETS = [[TextKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken,
+                    ExpressionToken, BracketFinishToken]]
 
     @property
     def expression(self) -> ExpressionToken:
-        return self.value[1]
+        return self.value[2]
 
     @property
-    def format(self) -> LiteralToken:
-        return self.value[2]
+    def format(self) -> ExpressionToken:
+        return self.value[4]
 
 
 class ControlConstructionCompositeBaseToken(CompositeBaseToken):

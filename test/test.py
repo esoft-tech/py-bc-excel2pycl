@@ -615,6 +615,45 @@ class TestTokens(unittest.TestCase):
         self.assertEqual(cell_values[3].value, 0.0084, msg='Left operand expression percent operator are OK')
         self.assertEqual(cell_values[4].value, 0.0007, msg='Left operand expression percent operator are OK')
 
+    def test_value_token_int(self):
+        cell = self.executor.get_cell(Cell('value', 0, 0))
+
+        self.assertEqual(cell.value, 123, msg='VALUE token int are OK')
+
+    def test_value_token_float(self):
+        cell = self.executor.get_cell(Cell('value', 0, 1))
+
+        self.assertEqual(cell.value, 123.45, msg='VALUE token float are OK')
+
+    def test_value_token_date(self):
+        cell = self.executor.get_cell(Cell('value', 0, 2))
+
+        self.assertEqual(cell.value, 45550, msg='VALUE token date are OK')
+
+    def test_value_token_time(self):
+        cell = self.executor.get_cell(Cell('value', 0, 3))
+
+        self.assertEqual(cell.value, 0.5208333333333334, msg='VALUE token time are OK')
+
+    def test_value_token_percent(self):
+        cell = self.executor.get_cell(Cell('value', 0, 4))
+
+        self.assertEqual(cell.value, 0.005, msg='VALUE token percent are OK')
+
+    def test_value_token_error(self):
+        cell = self.executor.get_cell(Cell('value', 0, 5))
+
+        self.assertEqual(cell.value, '#VALUE!', msg='VALUE token error are OK')
+
+    def test_value_token_datetime_expression(self):
+        cell = self.executor.get_cell(Cell('value', 0, 6))
+
+        self.assertEqual(cell.value, 45550, msg='VALUE token datetime expression are OK')
+
+    def test_text_token(self):
+        cell = self.executor.get_cell(Cell('text', 0, 0))
+
+        self.assertEqual(cell.value, '1234567', msg='TEXT token are OK')
 
 if __name__ == '__main__':
     unittest.main()

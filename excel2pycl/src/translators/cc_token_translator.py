@@ -62,7 +62,7 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
         from excel2pycl.src.translators.roundup_cc_token_translator import RoundUpControlConstructionTokenTranslator
         from excel2pycl.src.translators.rounddown_cc_token_translator import RoundDownControlConstructionTokenTranslator
         from excel2pycl.src.translators.value_cc_token_translator import ValueControlConstructionTokenTranslator
-        # from excel2pycl.src.translators.rounddown_cc_token_translator import RoundDownControlConstructionTokenTranslator
+        from excel2pycl.src.translators.text_cc_token_translator import TextControlConstructionTokenTranslator
 
         translate_functions = {
             IfControlConstructionToken.__name__: IfControlConstructionTokenTranslator.translate,
@@ -102,7 +102,8 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             IfsControlConstructionToken.__name__: IfsControlConstructionTokenTranslator.translate,
             RoundUpControlConstructionToken.__name__: RoundUpControlConstructionTokenTranslator.translate,
             RoundDownControlConstructionToken.__name__: RoundDownControlConstructionTokenTranslator.translate,
-            ValueControlConstructionToken.__name__: ValueControlConstructionTokenTranslator.translate
+            ValueControlConstructionToken.__name__: ValueControlConstructionTokenTranslator.translate,
+            TextControlConstructionToken.__name__: TextControlConstructionTokenTranslator.translate
         }
 
         sub_token = token.control_construction

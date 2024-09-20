@@ -286,4 +286,27 @@ def create_test_table(file_name):
     for row in data:
         ws_left_operand_expression.append(row)
 
+    ws_value = wb.create_sheet('value')
+
+    data = [
+        ['=VALUE("123")', '2024-09-15'],
+        ['=VALUE("123.45")'],
+        ['=VALUE("2024-09-15")'],
+        ['=VALUE("12:30:00")'],
+        ['=VALUE(50% /100)'],
+        ['=VALUE("123abc")'],
+        ['=VALUE(B1)']
+    ]
+
+    for row in data:
+        ws_value.append(row)
+
+    vs_text = wb.create_sheet('text')
+    data = [
+        ['=TEXT("1234567", "#,##0")'],
+    ]
+
+    for row in data:
+        vs_text.append(row)
+
     wb.save(file_name)
