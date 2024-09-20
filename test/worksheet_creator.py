@@ -219,7 +219,8 @@ def create_test_table(file_name):
         [4, 5, 6],
         [7, 8, 9],
         ['=INDEX(A1:C1;2)', '=INDEX(A1:A3;2)', '=INDEX(A1:C3;2;2)', '=INDEX((A1:C1; A1:A3; A1:C3);3;3;3)'],
-        ['=INDEX(A1:C3;0;0)']
+        ['=INDEX(A1:C3;0;0)'],
+        ['=INDEX(A1:A3&B1:B3, 0)']
     ]
 
     for row in data:

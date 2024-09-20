@@ -19,7 +19,7 @@ class TestTokens(unittest.TestCase):
     def tearDownClass(cls) -> None:
         # после выполнения всех тестов удаляем файлики
         os.remove(cls.translation_file_path)
-        # os.remove('test/tokens.xlsx')
+        os.remove('test/tokens.xlsx')
 
     @property
     def executor(self):
@@ -548,6 +548,11 @@ class TestTokens(unittest.TestCase):
         ]
 
         self.assertEqual(cell_value.value, cell_values_array, msg='INDEX array return down')
+
+    def test_index_merge_sets_values(self):
+        cell_value = self.executor.get_cell(Cell('index', 0, 5))
+
+        self.assertEqual(cell_value.value, [['12'], ['45'], ['78']])
 
     def test_roundup_with_digits_token(self):
         cell_values = self.executor.get_cells([Cell('roundup', 1, 0), Cell('roundup', 1, 1), Cell('roundup', 1, 2)])
