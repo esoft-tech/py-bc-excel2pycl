@@ -544,36 +544,6 @@ class MatrixOfCellIdentifiersExpressionToken(RecursiveCompositeBaseToken):
         return self.value[0], self.value[2].operands
 
 
-class IndexControlConstructionToken(CompositeBaseToken):
-    _TOKEN_SETS = [
-        [IndexKeywordToken, BracketStartToken, IterableMatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken,
-         SeparatorToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken],
-        [IndexKeywordToken, BracketStartToken, IterableMatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken,
-         SeparatorToken, ExpressionToken, BracketFinishToken],
-        [IndexKeywordToken, BracketStartToken, IterableMatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken,
-         BracketFinishToken],
-        [IndexKeywordToken, BracketStartToken, MatrixOfCellIdentifiersExpressionToken, SeparatorToken, ExpressionToken,
-         BracketFinishToken],
-    ]
-
-    @property
-    def matrix_list(self) -> Iterable | MatrixOfCellIdentifiersExpressionToken:
-        return self.value[2] if \
-            self.value[2].__class__ == MatrixOfCellIdentifiersExpressionToken else self.value[2].matrix_list
-
-    @property
-    def row_number(self) -> ExpressionToken:
-        return self.value[4]
-
-    @property
-    def column_number(self) -> ExpressionToken:
-        return self.value[6] if len(self.value) >= 8 else None
-
-    @property
-    def area_number(self) -> ExpressionToken:
-        return self.value[8] if len(self.value) == 10 else None
-
-
 class MatchControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [MatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken,
@@ -840,6 +810,36 @@ class SumIfsControlConstructionToken(CompositeBaseToken):
     @property
     def conditions(self) -> IterableRangeOfCellIdentifierWithConditionToken:
         return self.value[4]
+
+
+class IndexControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [
+        [IndexKeywordToken, BracketStartToken, IterableMatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken,
+         SeparatorToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken],
+        [IndexKeywordToken, BracketStartToken, IterableMatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken,
+         SeparatorToken, ExpressionToken, BracketFinishToken],
+        [IndexKeywordToken, BracketStartToken, IterableMatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken,
+         BracketFinishToken],
+        [IndexKeywordToken, BracketStartToken, MatrixOfCellIdentifiersExpressionToken, SeparatorToken, ExpressionToken,
+         BracketFinishToken],
+    ]
+
+    @property
+    def matrix_list(self) -> Iterable | MatrixOfCellIdentifiersExpressionToken:
+        return self.value[2] if \
+            self.value[2].__class__ == MatrixOfCellIdentifiersExpressionToken else self.value[2].matrix_list
+
+    @property
+    def row_number(self) -> ExpressionToken:
+        return self.value[4]
+
+    @property
+    def column_number(self) -> ExpressionToken:
+        return self.value[6] if len(self.value) >= 8 else None
+
+    @property
+    def area_number(self) -> ExpressionToken:
+        return self.value[8] if len(self.value) == 10 else None
 
 
 class ControlConstructionCompositeBaseToken(CompositeBaseToken):
