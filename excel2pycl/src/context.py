@@ -20,7 +20,7 @@ class Context:
         return '''import datetime
 from dateutil import parser as date_parser
 from dateutil.relativedelta import relativedelta
-from math import trunc, ceil
+from math import trunc, ceil, floor
 from typing import Dict, List, Literal, Any, Callable
 import calendar
 import re
@@ -342,6 +342,10 @@ class ExcelInPython:
     def _roundup(self, number: float, num_digits: int):
         factor = 10 ** num_digits
         return ceil(number * factor) / factor
+
+    def _rounddown(self, number: float, num_digits: int):
+        factor = 10 ** num_digits
+        return floor(number * factor) / factor
 
     def _date(self, year: int, month: int, day: int):
         if isinstance(year, str):

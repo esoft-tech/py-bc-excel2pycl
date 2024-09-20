@@ -259,6 +259,20 @@ def create_test_table(file_name):
     for row in data:
         ws_roundup.append(row)
 
+    ws_rounddown = wb.create_sheet('rounddown')
+
+    data = [
+        ['=ROUNDDOWN(C1)', '=ROUNDDOWN(C1, 1)', 3.14],
+        ['=ROUNDDOWN(C2)', '=ROUNDDOWN(C2, 2)', 3.1415926],
+        ['=ROUNDDOWN(C3)', '=ROUNDDOWN(C3, 2)', 3.141],
+        ['=ROUNDDOWN(C1,)'],
+        ['=ROUNDDOWN(C2,)'],
+        ['=ROUNDDOWN(C3,)']
+    ]
+
+    for row in data:
+        ws_rounddown.append(row)
+
     ws_left_operand_expression = wb.create_sheet('leftOperandExpression')
 
     data = [

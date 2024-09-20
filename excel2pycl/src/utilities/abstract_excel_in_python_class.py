@@ -6,7 +6,7 @@ import calendar
 from dateutil import parser as date_parser
 from dateutil.relativedelta import relativedelta
 from typing import Dict, List, Literal, Any, Callable
-from math import trunc, ceil
+from math import trunc, ceil, floor
 
 
 class AbstractExcelInPython(ABC):
@@ -328,6 +328,10 @@ class AbstractExcelInPython(ABC):
     def _roundup(self, number: float, num_digits: int):
         factor = 10 ** num_digits
         return ceil(number * factor) / factor
+
+    def _rounddown(self, number: float, num_digits: int):
+        factor = 10 ** num_digits
+        return floor(number * factor) / factor
 
     def _date(self, year: int, month: int, day: int):
         if isinstance(year, str):
