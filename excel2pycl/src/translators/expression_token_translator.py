@@ -30,7 +30,9 @@ class ExpressionTokenTranslator(AbstractTranslator):
             left_operand = f'({left_operand})' if left_brackets else left_operand
 
         if right_operand:
-            token_translator = ExpressionTokenTranslator if right_operand.__class__ is ExpressionToken else OperandTokenTranslator
+            token_translator = ExpressionTokenTranslator \
+                if right_operand.__class__ is ExpressionToken else OperandTokenTranslator
+
             right_operand = token_translator.translate(right_operand, excel, context)
             right_operand = f'({right_operand})' if right_brackets else right_operand
 
@@ -48,9 +50,13 @@ class ExpressionTokenTranslator(AbstractTranslator):
                 return f'self._compare("{operator}", {left_operand}, {right_operand})'
 
             if operator.__class__ is PercentToken:
-                left_operand = f'({left_operand} / 100)'
+                left_operand = f'self._normalize_float_number({left_operand} / 100)'
                 operator = None
             else:
                 operator = OperatorSubTokenTranslator.translate(operator, excel, context)
+
+            if isinstance(token.left_operand, OneLeftOperandExpressionToken) and \
+                    isinstance(token.left_operand.operator, PercentToken):
+                return f"self._normalize_float_number({left_operand or ''}{operator or ''}{right_operand or ''})"
 
         return f"{left_operand or ''}{operator or ''}{right_operand or ''}"

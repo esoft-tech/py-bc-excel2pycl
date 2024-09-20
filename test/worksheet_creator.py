@@ -244,4 +244,31 @@ def create_test_table(file_name):
     for row in data:
         ws_mid.append(row)
 
+    ws_roundup = wb.create_sheet('roundup')
+
+    data = [
+        ['=ROUNDUP(C1)', '=ROUNDUP(C1, 1)', 3.14],
+        ['=ROUNDUP(C2)', '=ROUNDUP(C2, 2)', 3.1415926],
+        ['=ROUNDUP(C3)', '=ROUNDUP(C3, 2)', 3.141],
+        ['=ROUNDUP(C1,)'],
+        ['=ROUNDUP(C2,)'],
+        ['=ROUNDUP(C3,)']
+    ]
+
+    for row in data:
+        ws_roundup.append(row)
+
+    ws_left_operand_expression = wb.create_sheet('leftOperandExpression')
+
+    data = [
+        ['=B1%', 7],
+        ['=B1%*2', 12],
+        ['=B1%*B2', '=7%'],
+        ['=B1%*B2%'],
+        ['=B3%']
+    ]
+
+    for row in data:
+        ws_left_operand_expression.append(row)
+
     wb.save(file_name)

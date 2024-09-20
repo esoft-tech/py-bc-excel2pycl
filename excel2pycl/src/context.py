@@ -145,6 +145,17 @@ class ExcelInPython:
                                                       '#REF!', '#VALUE!'], flatten_list):
             return err_value
 
+    def _concat_arrays_values(self, list1: list, list2: list):
+        max_len = max(len(list1), len(list2))
+
+        arr1_extended = list1 + [''] * (max_len - len(list1))
+        arr2_extended = list2 + [''] * (max_len - len(list2))
+
+        return [[[str(x) + str(y)]] for x, y in zip(arr1_extended, arr2_extended)]
+
+    def _normalize_float_number(self, number: float):
+        return float(f'{{number:.15g}}')
+
     @staticmethod
     def _only_numeric_list(flatten_list: List, with_string_digits: bool = False):
         return [
@@ -217,14 +228,6 @@ class ExcelInPython:
             next_largest = -1
 
         return (exact, next_smallest, next_largest)
-
-    def _concat_arrays_values(self, list1: list, list2: list):
-        max_len = max(len(list1), len(list2))
-
-        arr1_extended = list1 + [''] * (max_len - len(list1))
-        arr2_extended = list2 + [''] * (max_len - len(list2))
-
-        return [[[str(x) + str(y)]] for x, y in zip(arr1_extended, arr2_extended)]
 
     def _sum(self, flatten_list: List):
         return sum(self._only_numeric_list(flatten_list))

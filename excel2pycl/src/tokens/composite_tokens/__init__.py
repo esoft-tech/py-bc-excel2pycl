@@ -309,9 +309,9 @@ class RoundControlConstructionToken(CompositeBaseToken):
 
 class RoundUpControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [[RoundUpKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, BracketFinishToken],
-                   [RoundUpKeywordToken, BracketStartToken, ExpressionToken, BracketFinishToken],
                    [RoundUpKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken,
-                    ExpressionToken, BracketFinishToken]]
+                    ExpressionToken, BracketFinishToken],
+                   [RoundUpKeywordToken, BracketStartToken, ExpressionToken, BracketFinishToken]]
 
     @property
     def number(self) -> ExpressionToken:
@@ -319,7 +319,7 @@ class RoundUpControlConstructionToken(CompositeBaseToken):
 
     @property
     def num_digits(self) -> ExpressionToken:
-        return self.value[4] if self.value[4].__class__ == ExpressionToken else None
+        return 0 if len(self.value) == 4 else self.value[4] if self.value[4].__class__ == ExpressionToken else None
 
 
 class DateControlConstructionToken(CompositeBaseToken):
@@ -537,7 +537,7 @@ class MatrixOfCellIdentifiersExpressionToken(RecursiveCompositeBaseToken):
     _TOKEN_SETS = [[MatrixOfCellIdentifiersToken, AmpersandToken, CLS], [MatrixOfCellIdentifiersToken]]
 
     @property
-    def operands(self) -> tuple:
+    def operands(self) -> tuple[MatrixOfCellIdentifiersToken, MatrixOfCellIdentifiersToken]:
         if len(self.value) == 1:
             return self.value[0]
 
@@ -550,14 +550,16 @@ class IndexControlConstructionToken(CompositeBaseToken):
          SeparatorToken, ExpressionToken, SeparatorToken, ExpressionToken, BracketFinishToken],
         [IndexKeywordToken, BracketStartToken, IterableMatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken,
          SeparatorToken, ExpressionToken, BracketFinishToken],
-        [IndexKeywordToken, BracketStartToken, IterableMatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken, BracketFinishToken],
+        [IndexKeywordToken, BracketStartToken, IterableMatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken,
+         BracketFinishToken],
         [IndexKeywordToken, BracketStartToken, MatrixOfCellIdentifiersExpressionToken, SeparatorToken, ExpressionToken,
          BracketFinishToken],
     ]
 
     @property
     def matrix_list(self) -> Iterable | MatrixOfCellIdentifiersExpressionToken:
-        return self.value[2] if self.value[2].__class__ == MatrixOfCellIdentifiersExpressionToken else self.value[2].matrix_list
+        return self.value[2] if \
+            self.value[2].__class__ == MatrixOfCellIdentifiersExpressionToken else self.value[2].matrix_list
 
     @property
     def row_number(self) -> ExpressionToken:

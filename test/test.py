@@ -19,7 +19,7 @@ class TestTokens(unittest.TestCase):
     def tearDownClass(cls) -> None:
         # после выполнения всех тестов удаляем файлики
         os.remove(cls.translation_file_path)
-        os.remove('test/tokens.xlsx')
+        # os.remove('test/tokens.xlsx')
 
     @property
     def executor(self):
@@ -219,7 +219,7 @@ class TestTokens(unittest.TestCase):
         cell_values = self.executor.get_cells([Cell(0, 20, 1), Cell(0, 20, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='XMATCH token are OK')
-    
+
     def test_left_normal_token(self):
         cell_values = self.executor.get_cells([Cell('left', 0, 1), Cell('left', 0, 2)])
 
@@ -548,6 +548,40 @@ class TestTokens(unittest.TestCase):
         ]
 
         self.assertEqual(cell_value.value, cell_values_array, msg='INDEX array return down')
+
+    def test_roundup_with_digits_token(self):
+        cell_values = self.executor.get_cells([Cell('roundup', 1, 0), Cell('roundup', 1, 1), Cell('roundup', 1, 2)])
+
+        self.assertEqual(cell_values[0].value, 3.2, msg='ROUNDUP token with digits are OK')
+        self.assertEqual(cell_values[1].value, 3.15, msg='ROUNDUP token with digits are OK')
+        self.assertEqual(cell_values[2].value, 3.15, msg='ROUNDUP token with digits are OK')
+
+    def test_roundup_with_separator_token(self):
+        cell_values = self.executor.get_cells([Cell('roundup', 0, 3), Cell('roundup', 0, 4), Cell('roundup', 0, 5)])
+
+        self.assertEqual(cell_values[0].value, 4, msg='ROUNDUP token with separator are OK')
+        self.assertEqual(cell_values[1].value, 4, msg='ROUNDUP token with separator are OK')
+        self.assertEqual(cell_values[2].value, 4, msg='ROUNDUP token with separator are OK')
+
+    def test_roundup_without_digits_token(self):
+        cell_values = self.executor.get_cells([Cell('roundup', 0, 0), Cell('roundup', 0, 1), Cell('roundup', 0, 2)])
+
+        self.assertEqual(cell_values[0].value, 4, msg='ROUNDUP token without digits are OK')
+        self.assertEqual(cell_values[1].value, 4, msg='ROUNDUP token without digits are OK')
+        self.assertEqual(cell_values[2].value, 4, msg='ROUNDUP token without digits are OK')
+
+    def test_left_operand_expression_percent_token(self):
+        cell_values = self.executor.get_cells([
+            Cell('leftOperandExpression', 0, 0), Cell('leftOperandExpression', 0, 1),
+            Cell('leftOperandExpression', 0, 2), Cell('leftOperandExpression', 0, 3),
+            Cell('leftOperandExpression', 0, 4)
+        ])
+
+        self.assertEqual(cell_values[0].value, 0.07, msg='Left operand expression percent operator are OK')
+        self.assertEqual(cell_values[1].value, 0.14, msg='Left operand expression percent operator are OK')
+        self.assertEqual(cell_values[2].value, 0.84, msg='Left operand expression percent operator are OK')
+        self.assertEqual(cell_values[3].value, 0.0084, msg='Left operand expression percent operator are OK')
+        self.assertEqual(cell_values[4].value, 0.0007, msg='Left operand expression percent operator are OK')
 
 
 if __name__ == '__main__':
