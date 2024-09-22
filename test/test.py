@@ -655,5 +655,15 @@ class TestTokens(unittest.TestCase):
 
         self.assertEqual(cell.value, '1234567', msg='TEXT token are OK')
 
+    def test_concatenate_with_cell_ref_token(self):
+        cell = self.executor.get_cell(Cell('concatenate', 0, 0))
+
+        self.assertEqual(cell.value, 'привет', msg='CONCATENATE token are OK')
+
+    def test_concatenate_with_number_token(self):
+        cell = self.executor.get_cell(Cell('concatenate', 0, 1))
+
+        self.assertEqual(cell.value, 'при123вет', msg='CONCATENATE token are OK')
+
 if __name__ == '__main__':
     unittest.main()

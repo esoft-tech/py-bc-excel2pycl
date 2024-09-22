@@ -325,3 +325,7 @@ class ValueKeywordToken(KeywordRegexpBaseToken):
 
 class TextKeywordToken(KeywordRegexpBaseToken):
     regexp = r'TEXT'
+
+
+class ConcatenateKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'CONCATENATE'

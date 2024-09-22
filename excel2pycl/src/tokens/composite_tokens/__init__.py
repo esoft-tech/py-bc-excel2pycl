@@ -15,7 +15,7 @@ from excel2pycl.src.tokens.regexp_tokens import MatrixOfCellIdentifiersToken, Ce
     MidKeywordToken, MinKeywordToken, MonthKeywordToken, NetworkDaysKeywordToken, OrKeywordToken, RightKeywordToken, \
     RoundKeywordToken, SearchKeywordToken, SumKeywordToken, SumIfKeywordToken, SumIfSKeywordToken, TodayKeywordToken, \
     VlookupKeywordToken, XMatchKeywordToken, YearKeywordToken, IfsKeywordToken, RoundUpKeywordToken, PercentToken, \
-    RoundDownKeywordToken, ValueKeywordToken, TextKeywordToken
+    RoundDownKeywordToken, ValueKeywordToken, TextKeywordToken, ConcatenateKeywordToken
 
 
 class SimilarCellToken(CompositeBaseToken):
@@ -879,6 +879,14 @@ class TextControlConstructionToken(CompositeBaseToken):
         return self.value[4]
 
 
+class ConcatenateControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[ConcatenateKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]]
+
+    @property
+    def expressions(self) -> list[ExpressionToken]:
+        return self.value[2].expressions
+
+
 class ControlConstructionCompositeBaseToken(CompositeBaseToken):
     _TOKEN_SETS = [[IfControlConstructionToken], [SumIfControlConstructionToken], [SumControlConstructionToken],
                    [VlookupControlConstructionToken], [AverageControlConstructionToken],
@@ -896,7 +904,7 @@ class ControlConstructionCompositeBaseToken(CompositeBaseToken):
                    [ColumnControlConstructionToken], [SumIfsControlConstructionToken],
                    [IndexControlConstructionToken], [RoundUpControlConstructionToken],
                    [RoundDownControlConstructionToken], [ValueControlConstructionToken],
-                   [TextControlConstructionToken]]
+                   [TextControlConstructionToken], [ConcatenateControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumIfControlConstructionToken,
@@ -918,7 +926,7 @@ class ControlConstructionCompositeBaseToken(CompositeBaseToken):
                                             NetworkDaysControlConstructionToken, ColumnControlConstructionToken,
                                             SumIfsControlConstructionToken, IndexControlConstructionToken,
                                             RoundDownControlConstructionToken, ValueControlConstructionToken,
-                                            TextControlConstructionToken]:
+                                            TextControlConstructionToken, ConcatenateControlConstructionToken]:
         return self.value[0]
 
 

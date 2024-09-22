@@ -14,7 +14,8 @@ from excel2pycl.src.tokens import IfControlConstructionToken, ControlConstructio
     AddressControlConstructionToken, CountIfsControlConstructionToken, NetworkDaysControlConstructionToken, \
     CountControlConstructionToken, ColumnControlConstructionToken, SumIfsControlConstructionToken, \
     IndexControlConstructionToken, IfsControlConstructionToken, RoundUpControlConstructionToken, \
-    RoundDownControlConstructionToken, ValueControlConstructionToken, TextControlConstructionToken
+    RoundDownControlConstructionToken, ValueControlConstructionToken, TextControlConstructionToken, \
+    ConcatenateControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
@@ -63,6 +64,7 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
         from excel2pycl.src.translators.rounddown_cc_token_translator import RoundDownControlConstructionTokenTranslator
         from excel2pycl.src.translators.value_cc_token_translator import ValueControlConstructionTokenTranslator
         from excel2pycl.src.translators.text_cc_token_translator import TextControlConstructionTokenTranslator
+        from excel2pycl.src.translators.concatenate_cc_token_translator import ConcatenateControlConstructionTokenTranslator
 
         translate_functions = {
             IfControlConstructionToken.__name__: IfControlConstructionTokenTranslator.translate,
@@ -103,7 +105,8 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             RoundUpControlConstructionToken.__name__: RoundUpControlConstructionTokenTranslator.translate,
             RoundDownControlConstructionToken.__name__: RoundDownControlConstructionTokenTranslator.translate,
             ValueControlConstructionToken.__name__: ValueControlConstructionTokenTranslator.translate,
-            TextControlConstructionToken.__name__: TextControlConstructionTokenTranslator.translate
+            TextControlConstructionToken.__name__: TextControlConstructionTokenTranslator.translate,
+            ConcatenateControlConstructionToken.__name__: ConcatenateControlConstructionTokenTranslator.translate
         }
 
         sub_token = token.control_construction

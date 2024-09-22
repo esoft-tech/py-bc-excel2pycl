@@ -301,12 +301,21 @@ def create_test_table(file_name):
     for row in data:
         ws_value.append(row)
 
-    vs_text = wb.create_sheet('text')
+    ws_text = wb.create_sheet('text')
     data = [
         ['=TEXT("1234567", "#,##0")'],
     ]
 
     for row in data:
-        vs_text.append(row)
+        ws_text.append(row)
+
+    ws_concatenate = wb.create_sheet('concatenate')
+    data = [
+        ['=CONCATENATE("при", B1)', 'вет'],
+        ['=CONCATENATE("при", 123, "вет")']
+    ]
+
+    for row in data:
+        ws_concatenate.append(row)
 
     wb.save(file_name)
