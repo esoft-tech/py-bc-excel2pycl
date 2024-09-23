@@ -13,4 +13,4 @@ class ConcatenateControlConstructionTokenTranslator(AbstractTranslator):
         expressions = [
             ExpressionTokenTranslator.translate(expression, excel, context) for expression in token.expressions]
 
-        return '+'.join([f'str({expression})' for expression in expressions])
+        return '+'.join([f'self._excel_value_to_string({expression})' for expression in expressions])

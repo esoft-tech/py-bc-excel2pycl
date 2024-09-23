@@ -312,7 +312,8 @@ def create_test_table(file_name):
     ws_concatenate = wb.create_sheet('concatenate')
     data = [
         ['=CONCATENATE("при", B1)', 'вет'],
-        ['=CONCATENATE("при", 123, "вет")']
+        ['=CONCATENATE("при", 123, "вет")'],
+        ['=CONCATENATE("при", DATE(2024, 9, 12), "вет")']
     ]
 
     for row in data:

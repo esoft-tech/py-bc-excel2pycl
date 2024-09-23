@@ -19,7 +19,7 @@ class IndexControlConstructionTokenTranslator(AbstractTranslator):
             matrix_list = MatrixOfCellIdentifiersExpressionTokenTranslator.translate(token_matrix_list, excel, context)
         else:
             matrix_list = context.set_sub_cell(token.in_cell, ','.join(
-                [MatrixOfCellIdentifiersTokenTranslator.translate(i, excel, context) for i in token_matrix_list]))
+                MatrixOfCellIdentifiersTokenTranslator.translate(i, excel, context) for i in token_matrix_list))
 
         row_number, column_number, area_number = \
             ExpressionTokenTranslator.translate(token.row_number, excel, context), \

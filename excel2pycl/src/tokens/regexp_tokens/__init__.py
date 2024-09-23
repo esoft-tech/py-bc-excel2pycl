@@ -203,6 +203,10 @@ class CountIfSKeywordToken(KeywordRegexpBaseToken):
     regexp = r'COUNTIFS'
 
 
+class ConcatenateKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'CONCATENATE'
+
+
 class DayKeywordToken(KeywordRegexpBaseToken):
     regexp = r'DAY'
 
@@ -319,13 +323,9 @@ class IfsKeywordToken(KeywordRegexpBaseToken):
     regexp = r'IFS'
 
 
-class ValueKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'VALUE'
-
-
 class TextKeywordToken(KeywordRegexpBaseToken):
     regexp = r'TEXT'
 
 
-class ConcatenateKeywordToken(KeywordRegexpBaseToken):
-    regexp = r'CONCATENATE'
+class ValueKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'VALUE'

@@ -24,6 +24,7 @@ from math import trunc, ceil, floor
 from typing import Dict, List, Literal, Any, Callable
 import calendar
 import re
+from itertools import zip_longest
 
 class ExcelInPython:
     class ExcelInPythonException(Exception):
@@ -146,12 +147,7 @@ class ExcelInPython:
             return err_value
 
     def _concat_arrays_values(self, list1: list, list2: list):
-        max_len = max(len(list1), len(list2))
-
-        arr1_extended = list1 + [''] * (max_len - len(list1))
-        arr2_extended = list2 + [''] * (max_len - len(list2))
-
-        return [[[str(x) + str(y)]] for x, y in zip(arr1_extended, arr2_extended)]
+        return [[[str(x) + str(y)]] for x, y in zip_longest(list1, list2, fillvalue='')]
 
     def _normalize_float_number(self, number: float):
         return float(f'{{number:.15g}}')
@@ -789,17 +785,23 @@ class ExcelInPython:
             
         return find_elem.span(0)[0] + 1 if find_elem else '#VALUE!'
 
+    def _excel_value_to_string(self, value: Any):
+
+        if isinstance(value, (datetime.datetime)):
+            base_date = datetime.datetime(1899, 12, 30)
+            return str((value - base_date).days)
+
+        return str(value)
+
     def _parse_date_formats(self, date: str, format: str):
         try:
             return datetime.datetime.strptime(date, format)
         except ValueError:
             return datetime.datetime.strptime(date, f'{{format}} 00:00:00')
 
-        raise ValueError()
-
     def _value(self, text: str):
         # Удаляем пробелы в начале и конце строки
-        text = text.strip()
+        text = str(text).strip()
 
         # Попытка преобразовать строку в целое число
         try:

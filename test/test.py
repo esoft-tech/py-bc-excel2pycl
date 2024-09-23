@@ -665,5 +665,11 @@ class TestTokens(unittest.TestCase):
 
         self.assertEqual(cell.value, 'при123вет', msg='CONCATENATE token are OK')
 
+    def test_concatenate_with_date_token(self):
+        cell = self.executor.get_cell(Cell('concatenate', 0, 2))
+
+        self.assertEqual(cell.value, 'при45547вет', msg='CONCATENATE token are OK')
+
+
 if __name__ == '__main__':
     unittest.main()
