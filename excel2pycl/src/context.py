@@ -786,7 +786,6 @@ class ExcelInPython:
         return find_elem.span(0)[0] + 1 if find_elem else '#VALUE!'
 
     def _excel_value_to_string(self, value: Any):
-
         if isinstance(value, (datetime.datetime)):
             base_date = datetime.datetime(1899, 12, 30)
             return str((value - base_date).days)
@@ -801,7 +800,7 @@ class ExcelInPython:
 
     def _value(self, text: str):
         # Удаляем пробелы в начале и конце строки
-        text = str(text).strip()
+        text = text.strip()
 
         # Попытка преобразовать строку в целое число
         try:
