@@ -6,7 +6,8 @@ import calendar
 from dateutil import parser as date_parser
 from dateutil.relativedelta import relativedelta
 from typing import Dict, List, Literal, Any, Callable
-from math import trunc
+from math import trunc, ceil, floor
+from itertools import zip_longest
 
 
 class AbstractExcelInPython(ABC):
@@ -130,6 +131,12 @@ class AbstractExcelInPython(ABC):
                                                       '#N/A', '#NAME?', ' #NULL!',
                                                       '#REF!', '#VALUE!'], flatten_list):
             return err_value
+
+    def _concat_arrays_values(self, list1: list, list2: list):
+        return [[[str(x) + str(y)]] for x, y in zip_longest(list1, list2, fillvalue='')]
+
+    def _normalize_float_number(self, number: float):
+        return float(f'{number:.15g}')
 
     @staticmethod
     def _only_numeric_list(flatten_list: List, with_string_digits: bool = False):
@@ -313,6 +320,14 @@ class AbstractExcelInPython(ABC):
 
     def _round(self, number: float, num_digits: int):
         return round(number, int(num_digits))
+
+    def _roundup(self, number: float, num_digits: int):
+        factor = 10 ** num_digits
+        return ceil(number * factor) / factor
+
+    def _rounddown(self, number: float, num_digits: int):
+        factor = 10 ** num_digits
+        return floor(number * factor) / factor
 
     def _date(self, year: int, month: int, day: int):
         if isinstance(year, str):
@@ -755,3 +770,70 @@ class AbstractExcelInPython(ABC):
     def _today() -> datetime.date:
         return datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
 
+    def _excel_value_to_string(self, value: Any):
+        if isinstance(value, (datetime.datetime)):
+            base_date = datetime.datetime(1899, 12, 30)
+            return str((value - base_date).days)
+
+        return str(value)
+
+    def _parse_date_formats(self, date: str, format: str):
+        try:
+            return datetime.datetime.strptime(date, format)
+        except ValueError:
+            return datetime.datetime.strptime(date, f'{format} 00:00:00')
+
+    def _value(self, text: str):
+        # Удаляем пробелы в начале и конце строки
+        text = text.strip()
+
+        # Попытка преобразовать строку в целое число
+        try:
+            return int(text)
+        except ValueError:
+            pass
+
+        # Попытка преобразовать строку в число с плавающей точкой
+        try:
+            # Заменяем запятую на точку, если используется десятичная запятая
+            text = text.replace(",", ".")
+            return float(text)
+        except ValueError:
+            pass
+
+        # Попытка преобразовать строку в дату в разных форматах
+        date_formats = ["%d/%m/%Y", "%Y-%m-%d", "%d-%m-%Y", "%m/%d/%Y"]
+        base_date = datetime.datetime(1899, 12, 30)  # Базовая дата для Excel (1 января 1900 года = 1 день)
+        for fmt in date_formats:
+            try:
+                date = self._parse_date_formats(text, fmt)
+                # Возвращаем количество дней, прошедших с 1 января 1900 года
+                return (date - base_date).days
+            except ValueError:
+                continue
+
+        time_formats = ["%H:%M:%S", "%H:%M"]
+        for fmt in time_formats:
+            try:
+                time_value = datetime.datetime.strptime(text, fmt).time()
+                # Преобразуем время в долю дня
+                return (time_value.hour + time_value.minute / 60 + time_value.second / 3600) / 24
+            except ValueError:
+                continue
+
+        # Попытка преобразовать строку с процентами
+        if text.endswith("%"):
+            try:
+                return float(text[:-1].replace(",", ".")) / 100
+            except ValueError:
+                pass
+
+        # Удаление пробелов и разделителей тысяч
+        # Пример: "1 234,56" -> "1234.56"
+        clean_text = text.replace(" ", "").replace(",", ".")
+        try:
+            return float(clean_text)
+        except ValueError:
+            pass
+
+        return '#VALUE!'

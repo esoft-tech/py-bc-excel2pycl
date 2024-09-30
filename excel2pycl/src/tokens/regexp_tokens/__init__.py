@@ -167,6 +167,10 @@ class AmpersandToken(RegexpBaseToken):
     regexp = r'&'
 
 
+class PercentToken(RegexpBaseToken):
+    regexp = r'%'
+
+
 class AddressKeywordToken(KeywordRegexpBaseToken):
     regexp = r'ADDRESS'
 
@@ -197,6 +201,10 @@ class CountBlankKeywordToken(KeywordRegexpBaseToken):
 
 class CountIfSKeywordToken(KeywordRegexpBaseToken):
     regexp = r'COUNTIFS'
+
+
+class ConcatenateKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'CONCATENATE'
 
 
 class DayKeywordToken(KeywordRegexpBaseToken):
@@ -271,6 +279,14 @@ class RoundKeywordToken(KeywordRegexpBaseToken):
     regexp = r'ROUND'
 
 
+class RoundUpKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'ROUNDUP'
+
+
+class RoundDownKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'ROUNDDOWN'
+
+
 class SearchKeywordToken(KeywordRegexpBaseToken):
     regexp = r'SEARCH'
 
@@ -305,3 +321,11 @@ class YearKeywordToken(KeywordRegexpBaseToken):
 
 class IfsKeywordToken(KeywordRegexpBaseToken):
     regexp = r'IFS'
+
+
+class TextKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'TEXT'
+
+
+class ValueKeywordToken(KeywordRegexpBaseToken):
+    regexp = r'VALUE'

@@ -13,7 +13,9 @@ from excel2pycl.src.tokens import IfControlConstructionToken, ControlConstructio
     SearchControlConstructionToken, TodayControlConstructionToken, AverageIfsControlConstructionToken, \
     AddressControlConstructionToken, CountIfsControlConstructionToken, NetworkDaysControlConstructionToken, \
     CountControlConstructionToken, ColumnControlConstructionToken, SumIfsControlConstructionToken, \
-    IndexControlConstructionToken, IfsControlConstructionToken
+    IndexControlConstructionToken, IfsControlConstructionToken, RoundUpControlConstructionToken, \
+    RoundDownControlConstructionToken, ValueControlConstructionToken, TextControlConstructionToken, \
+    ConcatenateControlConstructionToken
 from excel2pycl.src.translators.abstract_translator import AbstractTranslator
 
 
@@ -57,7 +59,12 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
         from excel2pycl.src.translators.column_cc_token_translator import ColumnControlConstructionTokenTranslator
         from excel2pycl.src.translators.sumifs_cc_token_translator import SumIfsControlConstructionTokenTranslator
         from excel2pycl.src.translators.index_cc_token_translator import IndexControlConstructionTokenTranslator
-        from  excel2pycl.src.translators.ifs_cc_token_translator import IfsControlConstructionTokenTranslator
+        from excel2pycl.src.translators.ifs_cc_token_translator import IfsControlConstructionTokenTranslator
+        from excel2pycl.src.translators.roundup_cc_token_translator import RoundUpControlConstructionTokenTranslator
+        from excel2pycl.src.translators.rounddown_cc_token_translator import RoundDownControlConstructionTokenTranslator
+        from excel2pycl.src.translators.value_cc_token_translator import ValueControlConstructionTokenTranslator
+        from excel2pycl.src.translators.text_cc_token_translator import TextControlConstructionTokenTranslator
+        from excel2pycl.src.translators.concatenate_cc_token_translator import ConcatenateControlConstructionTokenTranslator
 
         translate_functions = {
             IfControlConstructionToken.__name__: IfControlConstructionTokenTranslator.translate,
@@ -94,7 +101,12 @@ class ControlConstructionTokenTranslator(AbstractTranslator):
             NetworkDaysControlConstructionToken.__name__: NetworkDaysControlConstructionTokenTranslator.translate,
             SumIfsControlConstructionToken.__name__: SumIfsControlConstructionTokenTranslator.translate,
             IndexControlConstructionToken.__name__: IndexControlConstructionTokenTranslator.translate,
-            IfsControlConstructionToken.__name__: IfsControlConstructionTokenTranslator.translate
+            IfsControlConstructionToken.__name__: IfsControlConstructionTokenTranslator.translate,
+            RoundUpControlConstructionToken.__name__: RoundUpControlConstructionTokenTranslator.translate,
+            RoundDownControlConstructionToken.__name__: RoundDownControlConstructionTokenTranslator.translate,
+            ValueControlConstructionToken.__name__: ValueControlConstructionTokenTranslator.translate,
+            TextControlConstructionToken.__name__: TextControlConstructionTokenTranslator.translate,
+            ConcatenateControlConstructionToken.__name__: ConcatenateControlConstructionTokenTranslator.translate
         }
 
         sub_token = token.control_construction

@@ -14,7 +14,8 @@ from excel2pycl.src.tokens.regexp_tokens import MatrixOfCellIdentifiersToken, Ce
     IfKeywordToken, IfErrorKeywordToken, IndexKeywordToken, LeftKeywordToken, MatchKeywordToken, MaxKeywordToken, \
     MidKeywordToken, MinKeywordToken, MonthKeywordToken, NetworkDaysKeywordToken, OrKeywordToken, RightKeywordToken, \
     RoundKeywordToken, SearchKeywordToken, SumKeywordToken, SumIfKeywordToken, SumIfSKeywordToken, TodayKeywordToken, \
-    VlookupKeywordToken, XMatchKeywordToken, YearKeywordToken, IfsKeywordToken
+    VlookupKeywordToken, XMatchKeywordToken, YearKeywordToken, IfsKeywordToken, RoundUpKeywordToken, PercentToken, \
+    RoundDownKeywordToken, ValueKeywordToken, TextKeywordToken, ConcatenateKeywordToken
 
 
 class SimilarCellToken(CompositeBaseToken):
@@ -66,6 +67,14 @@ class AmpersandOperatorToken(CompositeBaseToken):
         return self.value[0]
 
 
+class PercentOperatorToken(CompositeBaseToken):
+    _TOKEN_SETS = [[PercentToken]]
+
+    @property
+    def operator(self):
+        return self.value[0]
+
+
 class OperandToken(CompositeBaseToken):
     _TOKEN_SETS = [[PatternToken], [LiteralToken], [CellIdentifierToken], [CellIdentifierRangeToken],
                    [MatrixOfCellIdentifiersToken]]
@@ -95,8 +104,20 @@ class OperandToken(CompositeBaseToken):
         return self.value[0] if self.value[0].__class__ == ControlConstructionCompositeBaseToken else None
 
 
+class OneLeftOperandExpressionToken(RecursiveCompositeBaseToken):
+    _TOKEN_SETS = [[OperandToken, PercentOperatorToken, CLS], [OperandToken, PercentOperatorToken]]
+
+    @property
+    def operator(self) -> PercentToken:
+        return self.value[1].operator
+
+    @property
+    def left_operand(self):
+        return self.value[0]
+
+
 class OperatorToken(CompositeBaseToken):
-    _TOKEN_SETS = [[ArithmeticOperatorToken], [LogicalOperatorToken], [AmpersandOperatorToken]]
+    _TOKEN_SETS = [[ArithmeticOperatorToken], [LogicalOperatorToken], [AmpersandOperatorToken], [PercentOperatorToken]]
 
     @property
     def operator(self):
@@ -104,7 +125,10 @@ class OperatorToken(CompositeBaseToken):
 
 
 class ExpressionToken(RecursiveCompositeBaseToken):
-    _TOKEN_SETS = [[OperandToken, OperatorToken, CLS], [OneOperandArithmeticOperatorToken, CLS],
+    _TOKEN_SETS = [[OperandToken, OperatorToken, CLS],
+                   [OneOperandArithmeticOperatorToken, CLS],
+                   [OneLeftOperandExpressionToken, OperatorToken, CLS],
+                   [OneLeftOperandExpressionToken],
                    [BracketStartToken, CLS, BracketFinishToken, OperatorToken, CLS],
                    [BracketStartToken, CLS, BracketFinishToken], [OperandToken]]
 
@@ -126,6 +150,9 @@ class ExpressionToken(RecursiveCompositeBaseToken):
 
     @property
     def left_operand(self):
+        if self.value[0].__class__ is OneLeftOperandExpressionToken:
+            return self.value[0]
+
         return self.value[0] if len(self.value) in [1, 3] and self.value[0].__class__ is OperandToken else self.value[
             1] if len(self.value) == 5 and self.value[1].__class__ is self.__class__ else None
 
@@ -279,6 +306,36 @@ class RoundControlConstructionToken(CompositeBaseToken):
     @property
     def num_digits(self) -> ExpressionToken:
         return self.value[4]
+
+
+class RoundUpControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[RoundUpKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, BracketFinishToken],
+                   [RoundUpKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken,
+                    ExpressionToken, BracketFinishToken],
+                   [RoundUpKeywordToken, BracketStartToken, ExpressionToken, BracketFinishToken]]
+
+    @property
+    def number(self) -> ExpressionToken:
+        return self.value[2]
+
+    @property
+    def num_digits(self) -> ExpressionToken:
+        return 0 if len(self.value) == 4 else self.value[4] if self.value[4].__class__ == ExpressionToken else None
+
+
+class RoundDownControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[RoundDownKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, BracketFinishToken],
+                   [RoundDownKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken,
+                    ExpressionToken, BracketFinishToken],
+                   [RoundDownKeywordToken, BracketStartToken, ExpressionToken, BracketFinishToken]]
+
+    @property
+    def number(self) -> ExpressionToken:
+        return self.value[2]
+
+    @property
+    def num_digits(self) -> ExpressionToken:
+        return 0 if len(self.value) == 4 else self.value[4] if self.value[4].__class__ == ExpressionToken else None
 
 
 class DateControlConstructionToken(CompositeBaseToken):
@@ -468,19 +525,58 @@ class MaxControlConstructionToken(CompositeBaseToken):
         return self.value[2].expressions
 
 
+class IterableMatrixOfCellIdentifiersToken(RecursiveCompositeBaseToken):
+    _TOKEN_SETS = [
+        [BracketStartToken, MatrixOfCellIdentifiersToken, SeparatorToken, CLS, BracketFinishToken],
+        [MatrixOfCellIdentifiersToken, SeparatorToken, CLS],
+        [MatrixOfCellIdentifiersToken],
+    ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, *kwargs)
+        self._matrix_list = []
+
+    @property
+    def matrix_list(self):
+        if not self._matrix_list:
+            if len(self.value) == 5:
+                self._matrix_list = [self.value[1]] + self.value[3].matrix_list
+            elif len(self.value) == 3:
+                self._matrix_list = [self.value[0]] + self.value[2].matrix_list
+            else:
+                self._matrix_list = [self.value[0]]
+        return self._matrix_list
+
+
+# !!!Attention Please!!! Достаточно костыльное решение для объединения множеств внутри других выражений
+class MatrixOfCellIdentifiersExpressionToken(RecursiveCompositeBaseToken):
+    _TOKEN_SETS = [[MatrixOfCellIdentifiersToken, AmpersandToken, CLS], [MatrixOfCellIdentifiersToken]]
+
+    @property
+    def operands(self) -> tuple[MatrixOfCellIdentifiersToken, MatrixOfCellIdentifiersToken]:
+        if len(self.value) == 1:
+            return self.value[0]
+
+        return self.value[0], self.value[2].operands
+
+
 class MatchControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [MatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken,
          SeparatorToken, ExpressionToken, BracketFinishToken],
         [MatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersToken,
-         BracketFinishToken]]
+         BracketFinishToken],
+        [MatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, ExpressionToken,
+         SeparatorToken, ExpressionToken, BracketFinishToken],
+        [MatchKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken, MatrixOfCellIdentifiersExpressionToken,
+         SeparatorToken, ExpressionToken, BracketFinishToken]]
 
     @property
     def lookup_value(self) -> ExpressionToken:
         return self.value[2]
 
     @property
-    def lookup_array(self) -> MatrixOfCellIdentifiersToken:
+    def lookup_array(self) -> MatrixOfCellIdentifiersToken | ExpressionToken:
         return self.value[4]
 
     @property
@@ -512,6 +608,7 @@ class XMatchControlConstructionToken(CompositeBaseToken):
     @property
     def search_mode(self) -> ExpressionToken:
         return self.value[8] if len(self.value) == 10 else None
+
 
 class RangeOfCellIdentifierWithConditionToken(CompositeBaseToken):
     _TOKEN_SETS = [
@@ -731,29 +828,6 @@ class SumIfsControlConstructionToken(CompositeBaseToken):
         return self.value[4]
 
 
-class IterableMatrixOfCellIdentifiersToken(RecursiveCompositeBaseToken):
-    _TOKEN_SETS = [
-        [BracketStartToken, MatrixOfCellIdentifiersToken, SeparatorToken, CLS, BracketFinishToken],
-        [MatrixOfCellIdentifiersToken, SeparatorToken, CLS],
-        [MatrixOfCellIdentifiersToken]
-    ]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, *kwargs)
-        self._matrix_list = []
-
-    @property
-    def matrix_list(self):
-        if not self._matrix_list:
-            if len(self.value) == 5:
-                self._matrix_list = [self.value[1]] + self.value[3].matrix_list
-            elif len(self.value) == 3:
-                self._matrix_list = [self.value[0]] + self.value[2].matrix_list
-            else:
-                self._matrix_list = [self.value[0]]
-        return self._matrix_list
-
-
 class IndexControlConstructionToken(CompositeBaseToken):
     _TOKEN_SETS = [
         [IndexKeywordToken, BracketStartToken, IterableMatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken,
@@ -762,11 +836,14 @@ class IndexControlConstructionToken(CompositeBaseToken):
          SeparatorToken, ExpressionToken, BracketFinishToken],
         [IndexKeywordToken, BracketStartToken, IterableMatrixOfCellIdentifiersToken, SeparatorToken, ExpressionToken,
          BracketFinishToken],
+        [IndexKeywordToken, BracketStartToken, MatrixOfCellIdentifiersExpressionToken, SeparatorToken, ExpressionToken,
+         BracketFinishToken],
     ]
 
     @property
-    def matrix_list(self) -> Iterable:
-        return self.value[2].matrix_list
+    def matrix_list(self) -> Iterable | MatrixOfCellIdentifiersExpressionToken:
+        return self.value[2] if \
+            self.value[2].__class__ == MatrixOfCellIdentifiersExpressionToken else self.value[2].matrix_list
 
     @property
     def row_number(self) -> ExpressionToken:
@@ -779,6 +856,35 @@ class IndexControlConstructionToken(CompositeBaseToken):
     @property
     def area_number(self) -> ExpressionToken:
         return self.value[8] if len(self.value) == 10 else None
+
+
+class ValueControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[ValueKeywordToken, BracketStartToken, ExpressionToken, BracketFinishToken]]
+
+    @property
+    def expression(self) -> ExpressionToken:
+        return self.value[2]
+
+
+class TextControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[TextKeywordToken, BracketStartToken, ExpressionToken, SeparatorToken,
+                    ExpressionToken, BracketFinishToken]]
+
+    @property
+    def expression(self) -> ExpressionToken:
+        return self.value[2]
+
+    @property
+    def format(self) -> ExpressionToken:
+        return self.value[4]
+
+
+class ConcatenateControlConstructionToken(CompositeBaseToken):
+    _TOKEN_SETS = [[ConcatenateKeywordToken, BracketStartToken, IterableExpressionToken, BracketFinishToken]]
+
+    @property
+    def expressions(self) -> list[ExpressionToken]:
+        return self.value[2].expressions
 
 
 class ControlConstructionCompositeBaseToken(CompositeBaseToken):
@@ -796,7 +902,9 @@ class ControlConstructionCompositeBaseToken(CompositeBaseToken):
                    [AddressControlConstructionToken], [CountIfsControlConstructionToken],
                    [CountControlConstructionToken], [NetworkDaysControlConstructionToken],
                    [ColumnControlConstructionToken], [SumIfsControlConstructionToken],
-                   [IndexControlConstructionToken]]
+                   [IndexControlConstructionToken], [RoundUpControlConstructionToken],
+                   [RoundDownControlConstructionToken], [ValueControlConstructionToken],
+                   [TextControlConstructionToken], [ConcatenateControlConstructionToken]]
 
     @property
     def control_construction(self) -> Union[IfControlConstructionToken, SumIfControlConstructionToken,
@@ -804,7 +912,7 @@ class ControlConstructionCompositeBaseToken(CompositeBaseToken):
                                             AverageControlConstructionToken, RoundControlConstructionToken,
                                             OrControlConstructionToken, AndControlConstructionToken,
                                             YearControlConstructionToken, MonthControlConstructionToken,
-                                            DayControlConstructionToken,
+                                            DayControlConstructionToken, RoundUpControlConstructionToken,
                                             MinControlConstructionToken, MaxControlConstructionToken,
                                             IfErrorControlConstructionToken, DateControlConstructionToken,
                                             DateDifControlConstructionToken, EoMonthControlConstructionToken,
@@ -816,7 +924,9 @@ class ControlConstructionCompositeBaseToken(CompositeBaseToken):
                                             CountIfsControlConstructionToken, IfsControlConstructionToken,
                                             AddressControlConstructionToken, CountControlConstructionToken,
                                             NetworkDaysControlConstructionToken, ColumnControlConstructionToken,
-                                            SumIfsControlConstructionToken, IndexControlConstructionToken]:
+                                            SumIfsControlConstructionToken, IndexControlConstructionToken,
+                                            RoundDownControlConstructionToken, ValueControlConstructionToken,
+                                            TextControlConstructionToken, ConcatenateControlConstructionToken]:
         return self.value[0]
 
 

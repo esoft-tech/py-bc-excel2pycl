@@ -219,7 +219,7 @@ class TestTokens(unittest.TestCase):
         cell_values = self.executor.get_cells([Cell(0, 20, 1), Cell(0, 20, 2)])
 
         self.assertEqual(cell_values[0].value, cell_values[1].value, msg='XMATCH token are OK')
-    
+
     def test_left_normal_token(self):
         cell_values = self.executor.get_cells([Cell('left', 0, 1), Cell('left', 0, 2)])
 
@@ -548,6 +548,127 @@ class TestTokens(unittest.TestCase):
         ]
 
         self.assertEqual(cell_value.value, cell_values_array, msg='INDEX array return down')
+
+    def test_index_merge_sets_values(self):
+        cell_value = self.executor.get_cell(Cell('index', 0, 5))
+
+        self.assertEqual(cell_value.value, [['12'], ['45'], ['78']])
+
+    def test_roundup_with_digits_token(self):
+        cell_values = self.executor.get_cells([Cell('roundup', 1, 0), Cell('roundup', 1, 1), Cell('roundup', 1, 2)])
+
+        self.assertEqual(cell_values[0].value, 3.2, msg='ROUNDUP token with digits are OK')
+        self.assertEqual(cell_values[1].value, 3.15, msg='ROUNDUP token with digits are OK')
+        self.assertEqual(cell_values[2].value, 3.15, msg='ROUNDUP token with digits are OK')
+
+    def test_roundup_with_separator_token(self):
+        cell_values = self.executor.get_cells([Cell('roundup', 0, 3), Cell('roundup', 0, 4), Cell('roundup', 0, 5)])
+
+        self.assertEqual(cell_values[0].value, 4, msg='ROUNDUP token with separator are OK')
+        self.assertEqual(cell_values[1].value, 4, msg='ROUNDUP token with separator are OK')
+        self.assertEqual(cell_values[2].value, 4, msg='ROUNDUP token with separator are OK')
+
+    def test_roundup_without_digits_token(self):
+        cell_values = self.executor.get_cells([Cell('roundup', 0, 0), Cell('roundup', 0, 1), Cell('roundup', 0, 2)])
+
+        self.assertEqual(cell_values[0].value, 4, msg='ROUNDUP token without digits are OK')
+        self.assertEqual(cell_values[1].value, 4, msg='ROUNDUP token without digits are OK')
+        self.assertEqual(cell_values[2].value, 4, msg='ROUNDUP token without digits are OK')
+
+    def test_rounddown_with_digits_token(self):
+        cell_values = self.executor.get_cells(
+            [Cell('rounddown', 1, 0), Cell('rounddown', 1, 1), Cell('rounddown', 1, 2)]
+        )
+
+        self.assertEqual(cell_values[0].value, 3.1, msg='ROUNDDOWN token with digits are OK')
+        self.assertEqual(cell_values[1].value, 3.14, msg='ROUNDDOWN token with digits are OK')
+        self.assertEqual(cell_values[2].value, 3.14, msg='ROUNDDOWN token with digits are OK')
+
+    def test_rounddown_with_separator_token(self):
+        cell_values = self.executor.get_cells(
+            [Cell('rounddown', 0, 3), Cell('rounddown', 0, 4), Cell('rounddown', 0, 5)]
+        )
+
+        self.assertEqual(cell_values[0].value, 3, msg='ROUNDDOWN token with separator are OK')
+        self.assertEqual(cell_values[1].value, 3, msg='ROUNDDOWN token with separator are OK')
+        self.assertEqual(cell_values[2].value, 3, msg='ROUNDDOWN token with separator are OK')
+
+    def test_rounddown_without_digits_token(self):
+        cell_values = self.executor.get_cells(
+            [Cell('rounddown', 0, 0), Cell('rounddown', 0, 1), Cell('rounddown', 0, 2)]
+        )
+
+        self.assertEqual(cell_values[0].value, 3, msg='ROUNDDOWN token without digits are OK')
+        self.assertEqual(cell_values[1].value, 3, msg='ROUNDDOWN token without digits are OK')
+        self.assertEqual(cell_values[2].value, 3, msg='ROUNDDOWN token without digits are OK')
+
+    def test_left_operand_expression_percent_token(self):
+        cell_values = self.executor.get_cells([
+            Cell('leftOperandExpression', 0, 0), Cell('leftOperandExpression', 0, 1),
+            Cell('leftOperandExpression', 0, 2), Cell('leftOperandExpression', 0, 3),
+            Cell('leftOperandExpression', 0, 4)
+        ])
+
+        self.assertEqual(cell_values[0].value, 0.07, msg='Left operand expression percent operator are OK')
+        self.assertEqual(cell_values[1].value, 0.14, msg='Left operand expression percent operator are OK')
+        self.assertEqual(cell_values[2].value, 0.84, msg='Left operand expression percent operator are OK')
+        self.assertEqual(cell_values[3].value, 0.0084, msg='Left operand expression percent operator are OK')
+        self.assertEqual(cell_values[4].value, 0.0007, msg='Left operand expression percent operator are OK')
+
+    def test_value_token_int(self):
+        cell = self.executor.get_cell(Cell('value', 0, 0))
+
+        self.assertEqual(cell.value, 123, msg='VALUE token int are OK')
+
+    def test_value_token_float(self):
+        cell = self.executor.get_cell(Cell('value', 0, 1))
+
+        self.assertEqual(cell.value, 123.45, msg='VALUE token float are OK')
+
+    def test_value_token_date(self):
+        cell = self.executor.get_cell(Cell('value', 0, 2))
+
+        self.assertEqual(cell.value, 45550, msg='VALUE token date are OK')
+
+    def test_value_token_time(self):
+        cell = self.executor.get_cell(Cell('value', 0, 3))
+
+        self.assertEqual(cell.value, 0.5208333333333334, msg='VALUE token time are OK')
+
+    def test_value_token_percent(self):
+        cell = self.executor.get_cell(Cell('value', 0, 4))
+
+        self.assertEqual(cell.value, 0.005, msg='VALUE token percent are OK')
+
+    def test_value_token_error(self):
+        cell = self.executor.get_cell(Cell('value', 0, 5))
+
+        self.assertEqual(cell.value, '#VALUE!', msg='VALUE token error are OK')
+
+    def test_value_token_datetime_expression(self):
+        cell = self.executor.get_cell(Cell('value', 0, 6))
+
+        self.assertEqual(cell.value, 45550, msg='VALUE token datetime expression are OK')
+
+    def test_text_token(self):
+        cell = self.executor.get_cell(Cell('text', 0, 0))
+
+        self.assertEqual(cell.value, '1234567', msg='TEXT token are OK')
+
+    def test_concatenate_with_cell_ref_token(self):
+        cell = self.executor.get_cell(Cell('concatenate', 0, 0))
+
+        self.assertEqual(cell.value, 'привет', msg='CONCATENATE token are OK')
+
+    def test_concatenate_with_number_token(self):
+        cell = self.executor.get_cell(Cell('concatenate', 0, 1))
+
+        self.assertEqual(cell.value, 'при123вет', msg='CONCATENATE token are OK')
+
+    def test_concatenate_with_date_token(self):
+        cell = self.executor.get_cell(Cell('concatenate', 0, 2))
+
+        self.assertEqual(cell.value, 'при45547вет', msg='CONCATENATE token are OK')
 
 
 if __name__ == '__main__':

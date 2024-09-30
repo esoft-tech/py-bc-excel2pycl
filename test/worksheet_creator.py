@@ -219,7 +219,8 @@ def create_test_table(file_name):
         [4, 5, 6],
         [7, 8, 9],
         ['=INDEX(A1:C1;2)', '=INDEX(A1:A3;2)', '=INDEX(A1:C3;2;2)', '=INDEX((A1:C1; A1:A3; A1:C3);3;3;3)'],
-        ['=INDEX(A1:C3;0;0)']
+        ['=INDEX(A1:C3;0;0)'],
+        ['=INDEX(A1:A3&B1:B3, 0)']
     ]
 
     for row in data:
@@ -243,5 +244,79 @@ def create_test_table(file_name):
 
     for row in data:
         ws_mid.append(row)
+
+    ws_roundup = wb.create_sheet('roundup')
+
+    data = [
+        ['=ROUNDUP(C1)', '=ROUNDUP(C1, 1)', 3.14],
+        ['=ROUNDUP(C2)', '=ROUNDUP(C2, 2)', 3.1415926],
+        ['=ROUNDUP(C3)', '=ROUNDUP(C3, 2)', 3.141],
+        ['=ROUNDUP(C1,)'],
+        ['=ROUNDUP(C2,)'],
+        ['=ROUNDUP(C3,)']
+    ]
+
+    for row in data:
+        ws_roundup.append(row)
+
+    ws_rounddown = wb.create_sheet('rounddown')
+
+    data = [
+        ['=ROUNDDOWN(C1)', '=ROUNDDOWN(C1, 1)', 3.14],
+        ['=ROUNDDOWN(C2)', '=ROUNDDOWN(C2, 2)', 3.1415926],
+        ['=ROUNDDOWN(C3)', '=ROUNDDOWN(C3, 2)', 3.141],
+        ['=ROUNDDOWN(C1,)'],
+        ['=ROUNDDOWN(C2,)'],
+        ['=ROUNDDOWN(C3,)']
+    ]
+
+    for row in data:
+        ws_rounddown.append(row)
+
+    ws_left_operand_expression = wb.create_sheet('leftOperandExpression')
+
+    data = [
+        ['=B1%', 7],
+        ['=B1%*2', 12],
+        ['=B1%*B2', '=7%'],
+        ['=B1%*B2%'],
+        ['=B3%']
+    ]
+
+    for row in data:
+        ws_left_operand_expression.append(row)
+
+    ws_value = wb.create_sheet('value')
+
+    data = [
+        ['=VALUE("123")', '2024-09-15'],
+        ['=VALUE("123.45")'],
+        ['=VALUE("2024-09-15")'],
+        ['=VALUE("12:30:00")'],
+        ['=VALUE(50% /100)'],
+        ['=VALUE("123abc")'],
+        ['=VALUE(B1)']
+    ]
+
+    for row in data:
+        ws_value.append(row)
+
+    ws_text = wb.create_sheet('text')
+    data = [
+        ['=TEXT("1234567", "#,##0")'],
+    ]
+
+    for row in data:
+        ws_text.append(row)
+
+    ws_concatenate = wb.create_sheet('concatenate')
+    data = [
+        ['=CONCATENATE("при", B1)', 'вет'],
+        ['=CONCATENATE("при", 123, "вет")'],
+        ['=CONCATENATE("при", DATE(2024, 9, 12), "вет")']
+    ]
+
+    for row in data:
+        ws_concatenate.append(row)
 
     wb.save(file_name)
