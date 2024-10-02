@@ -162,7 +162,7 @@ class Excel:
 
                     # временное решение для обработки массивной формулы (для хота)
                     if isinstance(cell.value, ArrayFormula):
-                        rows_data.append(str(cell.value.text).strip())
+                        rows_data.append(cell.value.text.strip())
                     else:
                         rows_data.append(cell.value)
                 worksheet_data.append(rows_data)
