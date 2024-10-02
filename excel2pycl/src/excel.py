@@ -160,7 +160,7 @@ class Excel:
                     if cell.value and (suspicious_constructions := cls._get_suspicious_constructions(cell.value)):
                         suspicious_cells[f"'{worksheet.title}'{cell.column_letter}{index+1}"] = suspicious_constructions
 
-                    # временное решение для обработки массивной формулы (для хота)
+                    # обрабатываем ArrayFormula, считываем из него значение формулы
                     if isinstance(cell.value, ArrayFormula):
                         rows_data.append(cell.value.text.strip())
                     else:
