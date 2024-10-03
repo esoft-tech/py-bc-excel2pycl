@@ -3,6 +3,7 @@ from typing import List, Dict
 
 from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter
+from openpyxl.worksheet.formula import ArrayFormula
 
 from excel2pycl.src.cell import Cell
 from excel2pycl.src.exceptions import E2PyclSafetyException, E2PyclParserException
@@ -158,7 +159,12 @@ class Excel:
                 for index, cell in enumerate(row):
                     if cell.value and (suspicious_constructions := cls._get_suspicious_constructions(cell.value)):
                         suspicious_cells[f"'{worksheet.title}'{cell.column_letter}{index+1}"] = suspicious_constructions
-                    rows_data.append(cell.value)
+
+                    # обрабатываем ArrayFormula, считываем из него значение формулы
+                    if isinstance(cell.value, ArrayFormula):
+                        rows_data.append(cell.value.text.strip())
+                    else:
+                        rows_data.append(cell.value)
                 worksheet_data.append(rows_data)
                 rows_data_len = len(rows_data)
                 if max_row_len < rows_data_len:
